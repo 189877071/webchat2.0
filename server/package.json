@@ -1,0 +1,27 @@
+{
+  "name": "webchat2.0-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "socket.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node start.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "formidable": "^1.2.0",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-convert": "^1.2.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^4.0.2",
+    "koa2-cors": "^2.0.5",
+    "md5": "^2.2.1",
+    "mysql": "^2.15.0",
+    "node-transform-mysql": "0.0.3",
+    "uuid": "^3.2.1",
+    "ws": "^5.0.0"
+  }
+}

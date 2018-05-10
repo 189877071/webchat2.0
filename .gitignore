@@ -1,0 +1,9 @@
+node_modules/
+db.config.json
+email.config.json
+yarn.lock
+package-lock.json
+demo.js
+.sql
+uploads/
+.vscode/
