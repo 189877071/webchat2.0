@@ -33,7 +33,6 @@
               </el-form-item>
             </el-form>
           </div>
-
         </div>
 
         <el-table ref="multipleTable" tooltip-effect="dark" :data="cplists" border  @selection-change="deleteUserChange">
@@ -50,7 +49,7 @@
           <el-table-column prop="issystem" label="测试账户" width=""></el-table-column>
           <el-table-column fixed="right" label="操作" width="150">
               <template slot-scope="scope">
-                <el-button type="primary" size="small">修改</el-button>
+                <el-button type="primary" size="small" @click="$router.push({ name: 'UpdateUser', params: { id: scope.row.id } })">修改</el-button>
                 <el-button type="danger" size="small" @click="odelete(scope.row.id, scope.$index)">删除</el-button>
             </template>
           </el-table-column>

@@ -25,6 +25,7 @@ const [userRex, passRex, emailRex, n, error] = [
     (error = 0) => ({ error, success: false }),
 ];
 
+const field = 'id,username,resdate,email,sex,age,name,issystem,class,logindate,resdate';
 
 module.exports = async (ctx) => {
     const { optation } = ctx.query;
@@ -53,7 +54,7 @@ module.exports = async (ctx) => {
 
         const count = await mysql(sql.count().table(tables.dbuser).where(where).select());
 
-        const lists = await mysql(sql.table(tables.dbuser).field('id,username,resdate,email,sex,age,name,issystem,class,logindate,resdate').where(where).limit(page * n, n).select());
+        const lists = await mysql(sql.table(tables.dbuser).field(field).where(where).limit(page * n, n).select());
 
         const toclass = await mysql(sql.table(tables.dbclass).select());
 
@@ -283,6 +284,24 @@ module.exports = async (ctx) => {
         ctx.body = { success: true };
     }
 
+    // 获取指定用户信息
+    const getUserData = async () => {
+        const { id } = ctx.request.body;
+        if (!id) {
+            ctx.body = error();
+            return;
+        }
+
+        const results = await mysql(sql.table(tables.dbuser).where({ id }).field(field).select());
+
+        if(!results || !results.length) {
+            ctx.body = error();
+            return;
+        }
+
+        ctx.body = { success: true, ...results[0] };
+    }
+
     switch (optation) {
         case 'delete':
             odelete();
@@ -301,6 +320,9 @@ module.exports = async (ctx) => {
             break;
         case 'update':
             update();
+            break;
+        case 'user':
+            getUserData();
             break;
         default:
             getUsers();
