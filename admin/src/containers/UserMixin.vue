@@ -29,7 +29,9 @@
                 type="textarea"
                 :rows="5"
                 v-model="synopsis"
-                placeholder="请输入内容">
+                placeholder="请输入内容"
+                format="yyyy 年 MM 月 dd 日"
+                value-format="timestamp">
             </el-input>
         </el-form-item>
 
@@ -113,7 +115,7 @@ export default {
             this.$store("init/error", "后台数据获取失败");
             return;
         }
-
+        // console.log()
         this.oclass = oclass;
     },
     methods: {

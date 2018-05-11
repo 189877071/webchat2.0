@@ -11,18 +11,14 @@ export default {
     },
     methods: {
         async submit() {
-            if (!this.username || this.username.length < 5) {
-                this.error("账户名长度不能少于5位字符！");
-                return;
-            }
-            if (/\W/.test(this.username)) {
-                this.error("账户名只能是字母，数字，下划线！");
+            if (!/^[a-z0-9_-]{5,20}$/.test(this.username)) {
+                this.error("账户名长度为5~20位字符，并且只能是字母/数字/下划线！");
                 return;
             }
 
             const testUsername = await axios.post(
                 "userlist?optation=username",
-                { username: this.username }
+                { username: this.username, _load: true }
             );
 
             if (!testUsername.data.success) {
@@ -30,10 +26,11 @@ export default {
                 return;
             }
 
-            if (!this.password || this.password.length < 6) {
+            if (!/^[a-z0-9_-]{6,20}$/.test(this.password)) {
                 this.error("密码长度不能少于6位字符！");
                 return;
             }
+
             if (!this.name) {
                 this.error("姓名不能为空！");
                 return;
@@ -42,17 +39,14 @@ export default {
                 this.error("邮箱地址不能为空！");
                 return;
             }
-            if (
-                !/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(
-                    this.email
-                )
-            ) {
+            if (!/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(this.email)) {
                 this.error("请输入正确的邮箱地址！");
                 return;
             }
 
             const testEmail = await axios.post("userlist?optation=email", {
-                email: this.email
+                email: this.email,
+                _load: true
             });
 
             if (!testEmail.data.success) {
