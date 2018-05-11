@@ -11,7 +11,11 @@ export default {
         };
     },
     methods: {
-        async submit() {}
+        async submit() {
+            const d = new Date(this.age);
+            console.log(d.getTime())
+            // console.log(this.age)
+        }
     },
     async mounted() {
         const response = await axios.post("userlist?optation=user", {
@@ -19,7 +23,19 @@ export default {
             id: this.$route.params.id
         });
 
+        const { success, age, class: { oclass }, email, issystem, name, username } = response.data;
         
+        if(!success) {
+            alert('获取用户数据失败');
+            this.$router.go(-1);
+            return;
+        }
+
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        console.log(issystem)
+        this.issystem = issystem;
     }
 };
 </script>

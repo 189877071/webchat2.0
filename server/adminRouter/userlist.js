@@ -292,7 +292,7 @@ module.exports = async (ctx) => {
             return;
         }
 
-        const results = await mysql(sql.table(tables.dbuser).where({ id }).field(field).select());
+        const results = await mysql(sql.table(tables.dbuser).where({ id }).field(field + ',synopsis').select());
 
         if(!results || !results.length) {
             ctx.body = error();
