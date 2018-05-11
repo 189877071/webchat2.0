@@ -85,7 +85,7 @@
 
 <script>
 import axios from "../axios";
-import { getDate, getClassName } from "../fn";
+import { getDate, getClassName, getAge } from "../fn";
 export default {
     data() {
         return {
@@ -188,6 +188,7 @@ export default {
                 item.issystem = item.issystem == 1 ? "YES" : "NO";
                 item.logindate = getDate(item.logindate);
                 item.resdate = getDate(item.resdate);
+                item.age = getAge(item.age);
                 arr.push(item);
             }
             return arr;

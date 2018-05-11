@@ -323,22 +323,27 @@ module.exports = async (ctx) => {
             password: md5('123456')
         }
 
-        function fn(i) {
-            if (!users[i]) {
-                ctx.body = { success: true };
-                return;
-            }
+        let key = '(name,username,email,sex,age,class,logindate,synopsis,resdate,password,headphoto)';
 
+        let values = users.map(item => {
             let n = Math.floor(Math.random() * headphotos.length);
+            const { name, username, email, sex, age, class: oclass, logindate, synopsis, resdate, password, headphoto } = {
+                ...item,
+                ...def,
+                headphoto: headphotos[n].url
+            };
+            return `('${name}','${username}','${email}','${sex}',${age},${oclass},${logindate},'${synopsis}',${resdate},'${password}','${headphoto}')`
+        });
 
-            let data = { ...users[i], ...def, headphoto: headphotos[n].url }
-            
-            mysql(sql.table(tables.dbuser).data(data).insert()).then(results => {
-                fn(++i);
-            });
-        }
+        values = values.join(',');
 
-        fn(0);
+        const sqlstr = `INSERT INTO ${tables.dbuser} ${key} VALUES ${values}`;
+
+        const onoff = await mysql(sqlstr);
+        
+        console.log(onoff);
+
+        ctx.body = { success: true };
     }
 
     switch (optation) {
