@@ -36,7 +36,7 @@
 
         </div>
 
-        <el-table ref="multipleTable" tooltip-effect="dark" :data="cplists" border style="width: 100%"  @selection-change="deleteUserChange">
+        <el-table ref="multipleTable" tooltip-effect="dark" :data="cplists" border  @selection-change="deleteUserChange">
           <el-table-column type="selection" width="38"></el-table-column>
           <el-table-column prop="id" label="id" width="55"></el-table-column>
           <el-table-column prop="username" label="账号" width=""></el-table-column>

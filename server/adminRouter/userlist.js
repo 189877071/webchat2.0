@@ -1,5 +1,7 @@
 const sql = require('node-transform-mysql');
 
+const md5 = require('md5');
+
 const mysql = require('../common/db');
 
 const { tables, static } = require('../common/config');
@@ -8,16 +10,21 @@ const { getVerify } = require('../common/fn');
 
 const { writeFile } = require('fs');
 
-const n = 15;
-
-const error = (error = 11) => ({ error, success: false });
-
 const writeFileAsync = (data) => new Promise(resolve => {
-    
+
     const name = '/uploads/' + Date.now() + getVerify(5) + '.jpg';
 
-    writeFile(static + name , data, { encoding: 'base64' }, err => resolve(err ? false : name));
+    writeFile(static + name, data, { encoding: 'base64' }, err => resolve(err ? false : name));
 });
+
+const [userRex, passRex, emailRex, n, error] = [
+    /^[a-z0-9_-]{5,20}$/,
+    /^[a-z0-9_-]{6,20}$/,
+    /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
+    15,
+    (error = 0) => ({ error, success: false }),
+];
+
 
 module.exports = async (ctx) => {
     const { optation } = ctx.query;
@@ -61,7 +68,7 @@ module.exports = async (ctx) => {
     // 删除
     const odelete = async () => {
         const { id, ids } = ctx.request.body;
-       
+
         let where = {}
 
         if (ids) {
@@ -74,7 +81,7 @@ module.exports = async (ctx) => {
             ctx.body = error();
             return;
         }
-        
+
         const results = await mysql(sql.table(tables.dbuser).where(where).delet());
 
         if (!results) {
@@ -83,11 +90,11 @@ module.exports = async (ctx) => {
         }
         ctx.body = { success: true };
     }
-    
+
     // 获取 分组数据
     const getClass = async () => {
         const oclass = await mysql(sql.table(tables.dbclass).select());
-        if(!oclass) {
+        if (!oclass) {
             ctx.body = error();
             return;
         }
@@ -98,74 +105,74 @@ module.exports = async (ctx) => {
     // 添加数据
     const insert = async () => {
         let { headphoto, username, password, email, sex, oclass, synopsis, age, name } = ctx.request.body;
-      
+
         age = Number(age);
-        
+
         oclass = Number(oclass);
 
         synopsis = synopsis || '';
 
-        if(!/^[a-z0-9_-]{5,20}$/.test(username) || !/^[a-z0-9_-]{6,20}$/.test(password) || !name) {
+        if (!userRex.test(username) || !passRex.test(password) || !name) {
             ctx.body = error();
             return;
         }
 
-        if(!/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(email) || !headphoto || isNaN(age) || isNaN(oclass)) {
+        if (!emailRex.test(email) || !headphoto || isNaN(age) || isNaN(oclass)) {
             ctx.body = error();
             return;
         }
 
-        let onoff = await mysql(sql.table(tables.dbuser).where({ username , email , '_type': 'or'}).select());
-        
-        if(onoff && onoff.length) {
+        let onoff = await mysql(sql.table(tables.dbuser).where({ username, email, '_type': 'or' }).select());
+
+        if (onoff && onoff.length) {
             ctx.body = error();
             return;
         }
 
         headphoto = await writeFileAsync(headphoto.replace('data:image/png;base64,', ''));
-        
-        if(!headphoto) {
+
+        if (!headphoto) {
             ctx.body = error();
             return;
         }
-    
+
         const time = Date.now();
 
         let data = {
             username,
-            password,
-            resdate: time,
             email,
             synopsis,
             sex,
             age,
-            logindate: time,
             name,
+            headphoto,
+            password: md5(password),
+            resdate: time,
+            logindate: time,
             issystem: '2',
             class: oclass,
-            headphoto
         }
-        
+
         const results = await mysql(sql.table(tables.dbuser).data(data).insert());
 
-        if(!results) {
+        if (!results) {
             ctx.body = error();
             return;
         }
-       
+
         ctx.body = { success: true };
     }
 
     // 检测用户名是否存在
     const testUsername = async () => {
         let { username } = ctx.request.body;
-        if(!username) {
+        if (!username) {
             ctx.body = error();
             return;
         }
         const results = await mysql(sql.table(tables.dbuser).where({ username }).select());
 
-        if(results && results.length) {
+        if (results && results.length) {
             ctx.body = error('用户名已存在');
             return;
         }
@@ -177,15 +184,99 @@ module.exports = async (ctx) => {
     const testEmail = async () => {
         let { email } = ctx.request.body;
 
-        if(!email) {
+        if (!email) {
             ctx.body = error();
             return;
         }
 
         const results = await mysql(sql.table(tables.dbuser).where({ email }).select());
 
-        if(results && results.length) {
+        if (results && results.length) {
             ctx.body = error('邮箱已存在');
+            return;
+        }
+
+        ctx.body = { success: true };
+    }
+
+    // 修改用户
+    const update = async () => {
+        let { headphoto, username, password, email, sex, oclass, synopsis, age, name, id } = ctx.request.body;
+
+        if (!id) {
+            ctx.body = error();
+            return;
+        }
+
+        let data = {};
+
+        if (username) {
+            if (!userRex.test(username)) {
+                ctx.body = error();
+                return;
+            }
+            data.username = username;
+        }
+
+        if (password) {
+            if (!passRex.test(password)) {
+                ctx.body = error();
+                return;
+            }
+            data.password = md5(password);
+        }
+
+        if (name) {
+            data.name = name;
+        }
+
+        if (email) {
+            if (!emailRex.test(email)) {
+                ctx.body = error();
+                return;
+            }
+            data.email = email;
+        }
+
+        if (sex) {
+            data.sex = sex;
+        }
+
+        if (age) {
+            age = Number(age);
+            if (isNaN(age)) {
+                ctx.body = error();
+                return;
+            }
+            data.age = age;
+        }
+
+        if (oclass) {
+            oclass = Number(oclass);
+            if (isNaN(oclass)) {
+                ctx.body = error();
+                return;
+            }
+            data.class = oclass;
+        }
+
+        if (synopsis) {
+            data.synopsis = synopsis;
+        }
+
+        if (headphoto) {
+            headphoto = await writeFileAsync(headphoto.replace('data:image/png;base64,', ''));
+            if (!headphoto) {
+                ctx.body = error();
+                return;
+            }
+            data.headphoto = headphoto;
+        }
+
+        const results = await mysql(sql.table(tables.dbuser).data(data).where({ id }).update());
+
+        if (!results) {
+            ctx.body = error();
             return;
         }
 
@@ -207,6 +298,9 @@ module.exports = async (ctx) => {
             break;
         case 'email':
             testEmail();
+            break;
+        case 'update':
+            update();
             break;
         default:
             getUsers();

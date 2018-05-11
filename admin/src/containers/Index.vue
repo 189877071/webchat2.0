@@ -11,7 +11,7 @@
     </el-header>
 
     <el-container>
-      <el-aside width="300px">
+      <el-aside width="225px">
         <ul>
           <li><router-link to="/index"><i class="iconfont icon-shouye01"></i> 首页</router-link></li>
           <li><router-link to="/setting"><i class="iconfont icon-shezhi"></i> 参数设置</router-link></li>
@@ -28,7 +28,9 @@
       </el-aside>
 
       <el-main>
-        <router-view></router-view>
+        <div class="main-div-box">
+            <router-view></router-view>
+        </div>
       </el-main>
     </el-container>
 
@@ -91,6 +93,10 @@
 
 .el-main {
     position: relative;
+}
+.main-div-box {
+    min-width: 1200px;
+    overflow-y: auto;
 }
 </style>
 
