@@ -25,7 +25,9 @@ const [userRex, passRex, emailRex, n, error] = [
     (error = 0) => ({ error, success: false }),
 ];
 
-const field = 'id,username,resdate,email,sex,age,name,issystem,class,logindate,resdate';
+const field = 'id,username,resdate,email,sex,age,name,issystem,class,logindate';
+
+const fieldupdate = 'id,username,email,sex,age,name,class,synopsis,headphoto';
 
 module.exports = async (ctx) => {
     const { optation } = ctx.query;
@@ -292,7 +294,7 @@ module.exports = async (ctx) => {
             return;
         }
 
-        const results = await mysql(sql.table(tables.dbuser).where({ id }).field(field + ',synopsis').select());
+        const results = await mysql(sql.table(tables.dbuser).where({ id }).field(fieldupdate).select());
 
         if(!results || !results.length) {
             ctx.body = error();

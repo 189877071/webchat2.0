@@ -23,7 +23,7 @@ export default {
             id: this.$route.params.id
         });
 
-        const { success, age, class: { oclass }, email, issystem, name, username } = response.data;
+        const { success, age, class: { oclass }, email, synopsis, name, username } = response.data;
         
         if(!success) {
             alert('获取用户数据失败');
@@ -34,8 +34,8 @@ export default {
         this.username = username;
         this.name = name;
         this.email = email;
-        console.log(issystem)
-        this.issystem = issystem;
+        this.synopsis = synopsis;
+        console.log(synopsis)
     }
 };
 </script>
