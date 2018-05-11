@@ -296,12 +296,49 @@ module.exports = async (ctx) => {
 
         const results = await mysql(sql.table(tables.dbuser).where({ id }).field(fieldupdate).select());
 
-        if(!results || !results.length) {
+        if (!results || !results.length) {
             ctx.body = error();
             return;
         }
 
         ctx.body = { success: true, ...results[0] };
+    }
+
+    // 批量添加用户
+    const inserts = async () => {
+        const { users } = ctx.request.body;
+        let time = Date.now();
+
+        const headphotos = await mysql(sql.table(tables.dbphoto).select());
+
+        if (!headphotos || !headphotos.length) {
+            ctx.body = error();
+            return;
+        }
+
+        let def = {
+            logindate: time,
+            synopsis: '',
+            resdate: time,
+            password: md5('123456')
+        }
+
+        function fn(i) {
+            if (!users[i]) {
+                ctx.body = { success: true };
+                return;
+            }
+
+            let n = Math.floor(Math.random() * headphotos.length);
+
+            let data = { ...users[i], ...def, headphoto: headphotos[n].url }
+            
+            mysql(sql.table(tables.dbuser).data(data).insert()).then(results => {
+                fn(++i);
+            });
+        }
+
+        fn(0);
     }
 
     switch (optation) {
@@ -313,6 +350,8 @@ module.exports = async (ctx) => {
             break;
         case 'add':
             insert();
+        case 'adds':
+            inserts();
             break;
         case 'username':
             testUsername();

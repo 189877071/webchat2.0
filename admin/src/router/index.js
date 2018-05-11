@@ -44,6 +44,12 @@ export default new Router({
           name: 'UpdateUser',
           component: () => import('@/containers/UpdateUser'),
           meta: { title: '修改用户信息' }
+        },
+        {
+          path: '/testusers',
+          name: 'TestUsers',
+          component: () => import('@/containers/TestUsers'),
+          meta: { title: '添加测试用户' }
         }
       ]
     },

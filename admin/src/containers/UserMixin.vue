@@ -29,9 +29,7 @@
                 type="textarea"
                 :rows="5"
                 v-model="synopsis"
-                placeholder="请输入内容"
-                format="yyyy 年 MM 月 dd 日"
-                value-format="timestamp">
+                placeholder="请输入内容">
             </el-input>
         </el-form-item>
 
@@ -41,7 +39,8 @@
                 align="right"
                 type="date"
                 class="w325"
-                placeholder="选择出生日期">
+                placeholder="选择出生日期"
+                format="yyyy 年 MM 月 dd 日">
             </el-date-picker>
         </el-form-item>
 
@@ -115,7 +114,7 @@ export default {
             this.$store("init/error", "后台数据获取失败");
             return;
         }
-        // console.log()
+      
         this.oclass = oclass;
     },
     methods: {

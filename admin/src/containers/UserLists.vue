@@ -85,7 +85,7 @@
 
 <script>
 import axios from "../axios";
-import { getDate } from "../fn";
+import { getDate, getClassName } from "../fn";
 export default {
     data() {
         return {
@@ -183,16 +183,10 @@ export default {
             let arr = [];
             for (let i = 0; i < this.lists.length; i++) {
                 let item = { ...this.lists[i] };
-                for (let i = 0; i < this.oclass.length; i++) {
-                    if (item.class == this.oclass[i].id) {
-                        item.class = this.oclass[i].name;
-                        continue;
-                    }
-                }
+                item.class = getClassName(item.class, this.oclass);
                 item.sex = item.sex == 1 ? "男" : "女";
                 item.issystem = item.issystem == 1 ? "YES" : "NO";
                 item.logindate = getDate(item.logindate);
-
                 item.resdate = getDate(item.resdate);
                 arr.push(item);
             }

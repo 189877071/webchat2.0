@@ -17,8 +17,8 @@
           <li><router-link to="/setting"><i class="iconfont icon-shezhi"></i> 参数设置</router-link></li>
           <li><router-link to="/userlists"><i class="iconfont icon-yonghu"></i> 用户列表</router-link></li>
           <li><router-link to="/adduser"><i class="iconfont icon-tianjiayonghu"></i> 添加用户</router-link></li>
-          <li><router-link to="/2"><i class="iconfont icon-piliangpingjia"></i> 批量生产用户</router-link></li>
-          <li><router-link to="/2"><i class="iconfont icon-tianjia"></i> 添加项目组</router-link></li>
+          <li><router-link to="/testusers"><i class="iconfont icon-piliangpingjia"></i> 添加测试用户</router-link></li>
+          <li><router-link to="/2"><i class="iconfont icon-tianjia"></i> 添加用户组</router-link></li>
           <li><router-link to="/2"><i class="iconfont icon-xiangmu"></i> 项目组列表</router-link></li>
           <li><router-link to="/2"><i class="iconfont icon-tianjiatupian"></i> 添加头像</router-link></li>
           <li><router-link to="/2"><i class="iconfont icon-tupian"></i> 头像列表</router-link></li>
