@@ -192,16 +192,6 @@ module.exports = async (ctx) => {
         ctx.body = { success: true };
     }
 
-    /****
-     * 一共要做以下几个功能
-     * 获取多个员工
-     * 获取当个员工信息
-     * 修改员工信息
-     * 删除单个员工
-     * 删除多个员工
-     * 添加员工
-     * 批量添加员工
-     * */
     switch (optation) {
         case 'delete':
             odelete();

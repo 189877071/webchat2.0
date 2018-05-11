@@ -60,7 +60,8 @@
         </el-form-item>
 
         <el-form-item label="选择头像：">
-            <my-upload-image :imgdata.sync="head" />
+            <!-- <my-upload-image :imgsrc="head" :imgdata.sync="head" /> -->
+            <my-upload-image v-model="head" />
         </el-form-item>
     </el-form>
   </el-card>
@@ -98,6 +99,7 @@ export default {
             activeClass: 1
         };
     },
+    
     components: {
         myUploadImage: UploadImage
     },
@@ -197,28 +199,13 @@ export default {
                 age
             };
 
-            // const response = await axios.post("userlist?optation=add", data);
 
-            const xhr = new XMLHttpRequest();
-            
-            xhr.open('POST','http://127.0.0.1:3000/admin/userlist?optation=add', true);
-            
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            
-            xhr.withCredentials = true;
-
-            xhr.onload = () => {
-                console.log(xhr.responseText)
+            const response = await axios.post("userlist?optation=add", data);
+            if (!response.data.success) {
+                this.error("添加失败");
+                return;
             }
 
-            xhr.send(JSON.stringify(data));
-
-            return;
-            // if (!response.data.success) {
-            //     this.error("添加失败");
-            //     return;
-            // }
-            
             this.$store.commit("init/success", "添加成功");
 
             this.username = "";

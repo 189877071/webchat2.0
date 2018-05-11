@@ -6,7 +6,9 @@ export default axios.create({
     baseURL: config.baseURL,
     withCredentials: true,
     transformRequest: [(data, headers) => {
-        store.commit('init/loading', true);
+        if(data && !data._load) {
+            store.commit('init/loading', true);
+        }
         return JSON.stringify(data);
     }],
     transformResponse: [function (data) {

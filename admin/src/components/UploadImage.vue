@@ -18,7 +18,8 @@
     border-radius: 3px;
     position: relative;
     box-sizing: border-box;
-    &:hover, &.active {
+    &:hover,
+    &.active {
         border-color: #409eff;
     }
     img {
@@ -47,33 +48,43 @@
 </style>
 
 <script>
-    export default {
-        name: 'UpdateImage',
-        data() {
-            return {
-                imgsrc: ''
-            }
-        },
-        methods: {
-            change(evt) {
-                const _this = this;
-                let file = evt.target.files[0];
-                let oFileReader = new FileReader();
-                let oImage = new Image();
-                let oCanvas = document.createElement('canvas');
-                oCanvas.width = 200;
-                oCanvas.height = 200;
-                let context = oCanvas.getContext('2d');
-                oFileReader.addEventListener('load', function(evt){
-                    oImage.src = this.result;
-                });
-                oImage.onload = function() {
-                    context.drawImage(this, 0, 0, this.width, this.height, 0, 0, 200, 200);
-                    _this.imgsrc = oCanvas.toDataURL();
-                    _this.$emit('update:imgdata', _this.imgsrc);
-                }
-                oFileReader.readAsDataURL(file);
-            }
+export default {
+    name: "UpdateImage",
+    props: ["imgsrc"],
+    model: {
+        prop: "imgsrc",
+        event: "change"
+    },
+    methods: {
+        change(evt) {
+            const _this = this;
+            let file = evt.target.files[0];
+            let oFileReader = new FileReader();
+            let oImage = new Image();
+            let oCanvas = document.createElement("canvas");
+            oCanvas.width = 200;
+            oCanvas.height = 200;
+            let context = oCanvas.getContext("2d");
+            oFileReader.addEventListener("load", function(evt) {
+                oImage.src = this.result;
+            });
+            oImage.onload = function() {
+                context.drawImage(
+                    this,
+                    0,
+                    0,
+                    this.width,
+                    this.height,
+                    0,
+                    0,
+                    200,
+                    200
+                );
+                // _this.imgsrc = oCanvas.toDataURL();
+                _this.$emit("change", oCanvas.toDataURL());
+            };
+            oFileReader.readAsDataURL(file);
         }
     }
+};
 </script>

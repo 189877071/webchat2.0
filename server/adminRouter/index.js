@@ -2,10 +2,6 @@ const Router = require('koa-router');
 
 const { join } = require('path');
 
-// const multer = require('koa-multer');
-
-// const upload = multer({ dest: join(__dirname, '../static/uploads/') });
-
 const router = new Router({
     prefix: '/admin'
 });

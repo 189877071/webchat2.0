@@ -127,12 +127,19 @@ export default {
                 this.$store.commit("init/error", "请指定要删除用户的id");
                 return;
             }
-            axios.post("userlist?optation=delete", { id }).then(response => {
-                if (!response.data.success) {
-                    this.$store.commit("init/error", "删除失败");
-                    return;
+            this.$store.commit("init/confirm", {
+                title: "你确定要删除该用户吗？",
+                callback: () => {
+                    axios
+                        .post("userlist?optation=delete", { id })
+                        .then(response => {
+                            if (!response.data.success) {
+                                this.$store.commit("init/error", "删除失败");
+                                return;
+                            }
+                            this.lists.splice(index, 1);
+                        });
                 }
-                this.lists.splice(index, 1);
             });
         },
         deletes() {
@@ -141,27 +148,35 @@ export default {
                 return;
             }
             let ids = this.deleteuser.map(item => item.id);
-     
-            axios
-                .post("userlist?optation=delete", { ids })
-                .then(response => {
-                    if (!response.data.success) {
-                        this.$store.commit("init/error", "删除失败");
-                        return;
-                    }
-                    for (let i = 0; i < this.lists.length; i++) {
-                        let item = this.lists[i];
-                        for (let j = 0; j < this.deleteuser.length; j++) {
-                            if (item.id == this.deleteuser[j].id) {
-                                this.lists.splice(i, 1);
-                                i--;
+            this.$store.commit("init/confirm", {
+                title: "你确定要删除这些用户吗？",
+                callback: () => {
+                    axios
+                        .post("userlist?optation=delete", { ids })
+                        .then(response => {
+                            if (!response.data.success) {
+                                this.$store.commit("init/error", "删除失败");
+                                return;
                             }
-                        }
-                    }
-                });
+                            for (let i = 0; i < this.lists.length; i++) {
+                                let item = this.lists[i];
+                                for (
+                                    let j = 0;
+                                    j < this.deleteuser.length;
+                                    j++
+                                ) {
+                                    if (item.id == this.deleteuser[j].id) {
+                                        this.lists.splice(i, 1);
+                                        i--;
+                                    }
+                                }
+                            }
+                        });
+                }
+            });
         },
         add() {
-            this.$router.push('/adduser');
+            this.$router.push("/adduser");
         }
     },
     computed: {
@@ -235,8 +250,8 @@ export default {
         "$route.query": {
             handler(newval, oddval) {
                 if (
-                    newval.text |
-                    (newval.column && newval.column != 1) |
+                    newval.text ||
+                    (newval.column && newval.column != 1) ||
                     newval.oclass
                 ) {
                     this.showRestore = true;
@@ -244,23 +259,28 @@ export default {
                     this.showRestore = false;
                 }
 
-                axios.post("userlist", newval).then(response => {
-                    const {
-                        success,
-                        lists,
-                        class: oclass,
-                        count,
-                        n
-                    } = response.data;
-                    if (!success) {
-                        this.$store.commit("init/error", "获取用户列表失败");
-                        return;
-                    }
-                    this.lists = lists;
-                    this.oclass = oclass;
-                    this.count = count;
-                    this.n = n;
-                });
+                axios
+                    .post("userlist", { ...newval, _load: true })
+                    .then(response => {
+                        const {
+                            success,
+                            lists,
+                            class: oclass,
+                            count,
+                            n
+                        } = response.data;
+                        if (!success) {
+                            this.$store.commit(
+                                "init/error",
+                                "获取用户列表失败"
+                            );
+                            return;
+                        }
+                        this.lists = lists;
+                        this.oclass = oclass;
+                        this.count = count;
+                        this.n = n;
+                    });
             },
             immediate: true
         }

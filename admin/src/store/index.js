@@ -10,6 +10,8 @@ const init = {
     state: {
         alertSuccess: '',
         alertError: '',
+        confirmT: '',
+        confirmC: null,
         loading: true,
         login: null,
     },
@@ -18,6 +20,11 @@ const init = {
         error: defaultSet('alertError'),
         loading: defaultSet('loading'),
         login: defaultSet('login'), 
+        confirm: (state, optation) => {
+            const { title, callback }  = optation;
+            state.confirmT = title;
+            state.confirmC = callback;
+        },
     }
 }
 

@@ -1,6 +1,7 @@
 <template>
     <transition name="el-fade-in-linear">
         <div class="message-box" v-if="show">
+
             <div class="content-box" v-if="alertSuccess">
                 <div class="title"> <i class="success el-icon-success"></i> 操作成功</div>
                 <div class="content">{{alertSuccess}}</div>
@@ -11,6 +12,7 @@
                     <i class="el-icon-close" @click="close('success')"></i>
                 </div>
             </div>
+
             <div class="content-box" v-if="alertError">
                 <div class="title"> <i class="error el-icon-warning"></i> 错误信息</div>
                 <div class="content">{{alertError}}</div>
@@ -21,6 +23,19 @@
                     <i class="el-icon-close" @click="close('error')"></i>
                 </div>
             </div>
+
+            <div class="content-box" v-if="confirmT">
+                <div class="title"> <i class="success el-icon-question"></i> 提示信息</div>
+                <div class="content">{{confirmT}}</div>
+                <div class="btns">
+                    <el-button type="" @click="corfirmClose">取消</el-button>
+                    <el-button type="primary" @click="corfirmCallback">确定</el-button>
+                </div>
+                <div class="close">
+                    <i class="el-icon-close" @click="close('error')"></i>
+                </div>
+            </div>
+
         </div>
     </transition>
 </template>
@@ -97,15 +112,25 @@ import { mapState } from "vuex";
 export default {
     name: "MessageBox",
     computed: {
-        ...mapState("init", ["alertError", "alertSuccess"]),
+        ...mapState("init", ["alertError", "alertSuccess", "confirmT", "confirmC"]),
         show() {
-            return this.alertError || this.alertSuccess ? true : false;
+            return (this.alertError || this.alertSuccess || this.confirmT) ? true : false;
         }
     },
     methods: {
         close(key) {
             this.$store.commit('init/' + key, '');
+        },
+        corfirmCallback() {
+            this.confirmC && this.confirmC();
+            this.corfirmClose();
+        },
+        corfirmClose() {
+            this.$store.commit('init/confirm', { title: '', callback: false });
         }
+    },
+    mounted() {
+        console.log(this.confirmT)
     }
 };
 </script>
