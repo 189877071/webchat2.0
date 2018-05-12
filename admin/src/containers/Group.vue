@@ -32,7 +32,7 @@
                 <el-table-column prop="sort" label="排序"></el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button type="primary" plain size="small" @click="update(scope.row, scope.$index)">修改</el-button>
+                        <el-button type="primary" plain size="small" @click="toggleUpdate(scope.row, scope.$index)">修改</el-button>
                         <el-button type="danger" plain size="small" @click="delet(scope.row.id, scope.$index)">删除</el-button>
                     </template>
                 </el-table-column>
@@ -64,8 +64,9 @@ export default {
                 sort: 0,
                 synopsis: ""
             },
-            title: '添加分组',
-            up: false
+            title: "添加分组",
+            up: false,
+            upid: 0
         };
     },
     async mounted() {
@@ -82,7 +83,7 @@ export default {
         this.oclass = oclass;
     },
     methods: {
-        async submit() {
+        submit() {
             const { name, sort, synopsis } = this.newGroup;
 
             if (name.length < 1 || name.length > 7) {
@@ -98,6 +99,15 @@ export default {
                 return;
             }
 
+            if (!up) {
+                this.add();
+            } else {
+                this.update();
+            }
+        },
+        async add() {
+            const { name, sort, synopsis } = this.newGroup;
+
             const response = await axios.post("group?optation=add", {
                 name,
                 sort,
@@ -108,13 +118,19 @@ export default {
                 this.$store.commit("init/error", "数据添加失败！");
                 return;
             }
+
             this.$store.commit("init/success", "添加成功!");
 
             this.oclass.push({ id: response.data.id, name, sort, synopsis });
 
+            this.reset();
+        },
+        reset() {
             this.newGroup.name = "";
             this.newGroup.sort = 0;
             this.newGroup.synopsis = "";
+            this.upid = 0;
+            this.up = false;
         },
         delet(id, index) {
             if (!id) {
@@ -137,12 +153,41 @@ export default {
                 }
             });
         },
-        async update(data, index) {
+        toggleUpdate(data, index) {
             this.up = true;
             this.newGroup.name = data.name;
             this.newGroup.sort = data.sort;
             this.newGroup.synopsis = data.synopsis;
-            
+            this.upid = data.id;
+        },
+        async update() {
+            const { name, sort, synopsis } = this.newGroup;
+
+            const response = await axios.post("group?optation=update", {
+                name,
+                sort,
+                synopsis,
+                id: this.upid
+            });
+
+            if (!response.data.success) {
+                this.$store.commit("init/error", "数据修改失败！");
+                return;
+            }
+
+            this.$store.commit("init/success", "修改成功!");
+
+            for(let i=0; i<this.oclass.length; i++) {
+                let item = this.oclass[i];
+                if(item.id == this.upid) {
+                    item.name = name;
+                    item.sort = sort;
+                    item.synopsis = synopsis;
+                    break;
+                }
+            }
+
+            this.reset();
         }
     }
 };

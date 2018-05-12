@@ -81,7 +81,7 @@ module.exports = (ctx) => {
             data.sort = sort;
         }
 
-        synopsis && (data.synopsis = synopsis);
+        data.synopsis = synopsis ? synopsis : '';
 
         const results = await mysql(sql.table(tables.dbclass).data(data).where({ id }).update());
 
