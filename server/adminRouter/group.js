@@ -122,7 +122,7 @@ module.exports = (ctx) => {
     // 查询 分组名是否已存在
     const selectName = async () => {
         const { name, id } = ctx.request.body;
-
+ 
         if (!name) {
             error();
             return;
@@ -133,8 +133,8 @@ module.exports = (ctx) => {
         if (id) {
             where.id = { enq: id };
         }
-
-        const results = await mysql(sql.table(tables.dbclass).where({ where }).select());
+        
+        const results = await mysql(sql.table(tables.dbclass).where(where).select());
 
         if (!results) {
             error();

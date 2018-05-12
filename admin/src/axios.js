@@ -10,7 +10,7 @@ export default axios.create({
             store.commit('init/loading', true);
         }
         else {
-            delete data._load;
+            // delete data._load;
         }
         return JSON.stringify(data);
     }],

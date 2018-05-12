@@ -111,13 +111,13 @@ export default {
                 name,
                 _load: true
             });
-
-            if (!resname.success) {
+            console.log(resname.data)
+            if (!resname.data.success) {
                 this.error("系统出错！");
                 return;
             }
 
-            if (!resname.name) {
+            if (!resname.data.name) {
                 this.error("该分组名称已存在，请换一个！");
                 return;
             }
@@ -199,12 +199,12 @@ export default {
                 _load: true
             });
 
-            if (!resname.success) {
+            if (!resname.data.success) {
                 this.error("系统出错！");
                 return;
             }
 
-            if (!resname.name) {
+            if (!resname.data.name) {
                 this.error("该分组名称已存在，请换一个！");
                 return;
             }
