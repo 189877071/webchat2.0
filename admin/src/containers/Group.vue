@@ -85,7 +85,6 @@ export default {
     methods: {
         submit() {
             const { name, sort, synopsis } = this.newGroup;
-
             if (name.length < 1 || name.length > 7) {
                 this.$store.commit(
                     "init/error",
@@ -93,13 +92,11 @@ export default {
                 );
                 return;
             }
-
             if (sort < 0) {
                 this.$store.commit("init/error", "排序参数不能小于0");
                 return;
             }
-
-            if (!up) {
+            if (!this.up) {
                 this.add();
             } else {
                 this.update();
@@ -132,11 +129,24 @@ export default {
             this.upid = 0;
             this.up = false;
         },
-        delet(id, index) {
+        async delet(id, index) {
             if (!id) {
                 this.$store("init/error", "请指定要删除的分组");
                 return;
             }
+
+            const res = await axios('group?optation=seluser', { id });
+
+            if(!res.data.success) {
+                this.$store("init/error", "系统出错!");
+                return;
+            }
+
+            if(res.data.users > 0) {
+                this.$store("init/error", "该分组下还有用户不能删除!");
+                return;
+            }
+
             this.$store.commit("init/confirm", {
                 title: "你确定要删除吗？",
                 callback: async () => {

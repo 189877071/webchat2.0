@@ -44,6 +44,13 @@ module.exports = (ctx) => {
             return;
         }
 
+        const res = await mysql( sql.table(tables.dbuser).where( { class: id } ).select() );
+
+        if(!res || res.length > 0) {
+            error();
+            return;
+        }
+
         const results = await mysql(sql.table(tables.dbclass).where({ id }).delet());
 
         if (!results) {
@@ -93,6 +100,25 @@ module.exports = (ctx) => {
         ctx.body = { success: true };
     }
 
+    // 查询 指定 分组下是否包含 用户
+    const seluser = async () => {
+        const { id } = ctx.request.body;
+
+        if(!id) {
+            error();
+            return;
+        }
+
+        const results = await mysql( sql.table(tables.dbuser).where( { class: id } ).select() );
+
+        if(!results) {
+            error();
+            return;
+        }
+
+        ctx.body = { success: true, users: results.length };
+    }
+
     switch (optation) {
         case 'add':
             insert();
@@ -102,6 +128,8 @@ module.exports = (ctx) => {
             break;
         case 'update':
             oupdate();
+        case 'seluser':
+            seluser();
             break;
     }
 }
