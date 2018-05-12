@@ -108,6 +108,8 @@ export default {
             }
             this.$store.commit("init/success", "添加成功!");
             
+            this.oclass.push({ id: response.data.id, name, sort, synopsis });
+
             this.newGroup.name = "";
             this.newGroup.sort = 0;
             this.newGroup.synopsis = "";
