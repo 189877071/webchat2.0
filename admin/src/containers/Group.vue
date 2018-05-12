@@ -111,7 +111,7 @@ export default {
                 name,
                 _load: true
             });
-            console.log(resname.data)
+           
             if (!resname.data.success) {
                 this.error("系统出错！");
                 return;
@@ -198,6 +198,8 @@ export default {
                 id: this.upid,
                 _load: true
             });
+
+            
 
             if (!resname.data.success) {
                 this.error("系统出错！");

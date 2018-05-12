@@ -131,7 +131,7 @@ module.exports = (ctx) => {
         let where = { name };
 
         if (id) {
-            where.id = { enq: id };
+            where.id = { neq: id };
         }
         
         const results = await mysql(sql.table(tables.dbclass).where(where).select());
