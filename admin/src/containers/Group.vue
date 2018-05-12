@@ -2,9 +2,9 @@
     <div>
         <el-card class="box-card">
             <div slot="header" class="clearfix">
-                <span> <i class="el-icon-info"></i> 添加分组</span>
+                <span> <i class="el-icon-info"></i> {{title}}</span>
                 <div class="head-right">
-                    <el-button type="primary" size="small" @click="submit" >添加</el-button>
+                    <el-button type="primary" size="small" @click="submit" >提交</el-button>
                 </div>
             </div>
 
@@ -21,7 +21,7 @@
             </el-form>
         </el-card>
 
-        <el-card class="box-card">
+        <el-card class="box-card" v-if="!up">
             <div slot="header" class="clearfix">
                 <span> <i class="el-icon-info"></i> 分组列表</span>
             </div>
@@ -31,9 +31,9 @@
                 <el-table-column prop="synopsis" label="简介" ></el-table-column>
                 <el-table-column prop="sort" label="排序"></el-table-column>
                 <el-table-column label="操作">
-                    <template slot-scope="slot">
-                        <el-button type="primary" plain size="small">修改</el-button>
-                        <el-button type="danger" plain size="small">删除</el-button>
+                    <template slot-scope="scope">
+                        <el-button type="primary" plain size="small" @click="update(scope.row, scope.$index)">修改</el-button>
+                        <el-button type="danger" plain size="small" @click="delet(scope.row.id, scope.$index)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -63,7 +63,9 @@ export default {
                 name: "",
                 sort: 0,
                 synopsis: ""
-            }
+            },
+            title: '添加分组',
+            up: false
         };
     },
     async mounted() {
@@ -107,12 +109,40 @@ export default {
                 return;
             }
             this.$store.commit("init/success", "添加成功!");
-            
+
             this.oclass.push({ id: response.data.id, name, sort, synopsis });
 
             this.newGroup.name = "";
             this.newGroup.sort = 0;
             this.newGroup.synopsis = "";
+        },
+        delet(id, index) {
+            if (!id) {
+                this.$store("init/error", "请指定要删除的分组");
+                return;
+            }
+            this.$store.commit("init/confirm", {
+                title: "你确定要删除吗？",
+                callback: async () => {
+                    const response = await axios.post("group?optation=delete", {
+                        id
+                    });
+
+                    if (!response.data.success) {
+                        this.$store.commit("init/error", "删除失败");
+                        return;
+                    }
+
+                    this.oclass.splice(index, 1);
+                }
+            });
+        },
+        async update(data, index) {
+            this.up = true;
+            this.newGroup.name = data.name;
+            this.newGroup.sort = data.sort;
+            this.newGroup.synopsis = data.synopsis;
+            
         }
     }
 };
