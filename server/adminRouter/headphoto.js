@@ -46,9 +46,30 @@ module.exports = (ctx) => {
         ctx.body = { success: true, imgs: results };
     }
 
+    // 删除
+    const deleted = async () => {
+        const { id } = ctx.request.body;
+        if(!id) {
+            error();
+            return;
+        }
+
+        const results = await mysql( sql.table( tables.dbphoto ).where({ id }).delet() );
+
+        if(!results) {
+            error(1);
+            return;
+        }
+
+        cxt.body = { success: true };
+    }
+
     switch (optation) {
         case 'add':
             updated();
+            break;
+        case 'deleted':
+            deleted();
             break;
         default:
             getdata();
