@@ -6,16 +6,7 @@ const mysql = require('../common/db');
 
 const { tables, static } = require('../common/config');
 
-const { getVerify } = require('../common/fn');
-
-const { writeFile } = require('fs');
-
-const writeFileAsync = (data) => new Promise(resolve => {
-
-    const name = '/uploads/' + Date.now() + getVerify(5) + '.jpg';
-
-    writeFile(static + name, data, { encoding: 'base64' }, err => resolve(err ? false : name));
-});
+const { getVerify, writeFileAsync } = require('../common/fn');
 
 const [userRex, passRex, emailRex, n, error] = [
     /^[a-z0-9_-]{5,20}$/,
@@ -132,7 +123,7 @@ module.exports = async (ctx) => {
             return;
         }
 
-        headphoto = await writeFileAsync(headphoto.replace('data:image/png;base64,', ''));
+        headphoto = await writeFileAsync(headphoto);
 
         if (!headphoto) {
             ctx.body = error();
@@ -268,7 +259,7 @@ module.exports = async (ctx) => {
         }
 
         if (headphoto) {
-            headphoto = await writeFileAsync(headphoto.replace('data:image/png;base64,', ''));
+            headphoto = await writeFileAsync(headphoto);
             if (!headphoto) {
                 ctx.body = error();
                 return;

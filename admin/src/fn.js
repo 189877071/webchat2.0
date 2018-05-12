@@ -1,3 +1,5 @@
+import axios from './axios'
+
 export function defaultSet(key) {
     return (state, value) => {
         (typeof state[key] !== 'undefine') && (state[key] = value)
@@ -42,4 +44,14 @@ export function getClassName(active, classArr) {
         }
     }
     return '';
+}
+
+export async function uploadImg(photo) {
+    const response = await axios.post("headphoto?optation=add", {
+        photo,
+        _load: true
+    });
+    const { name } = response.data;
+    console.log('234');
+    return name ? name : false;
 }

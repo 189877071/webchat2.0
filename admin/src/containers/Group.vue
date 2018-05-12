@@ -4,6 +4,7 @@
             <div slot="header" class="clearfix">
                 <span> <i class="el-icon-info"></i> {{title}}</span>
                 <div class="head-right">
+                    <el-button size="small" v-if="up" @click="reset" >返回</el-button>
                     <el-button type="primary" size="small" @click="submit" >提交</el-button>
                 </div>
             </div>
@@ -47,9 +48,7 @@
     position: relative;
     top: -5px;
 }
-.box-card {
-    margin-bottom: 50px;
-}
+
 </style>
 
 <script>

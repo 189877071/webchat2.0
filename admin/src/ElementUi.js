@@ -1,3 +1,4 @@
+
 import Vue from 'vue'
 import { 
     Input,
@@ -17,8 +18,11 @@ import {
     Pagination,
     DatePicker,
     Radio,
-    Upload
+    Upload,
+    
 } from 'element-ui'
+// import 'element-ui/lib/theme-chalk/base.css'
+// import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
 Vue.use(Input);
 Vue.use(Button);
@@ -38,3 +42,4 @@ Vue.use(Pagination);
 Vue.use(DatePicker);
 Vue.use(Radio);
 Vue.use(Upload);
+// Vue.use(CollapseTransition);

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-card>
+        <el-card  class="box-card">
             <div slot="header" class="clearfix">
                 <span><i class="el-icon-info"></i> 批量添加测试用户</span>
                 <div class="header-r">

@@ -20,7 +20,7 @@
           <li><router-link to="/testusers"><i class="iconfont icon-piliangpingjia"></i> 添加测试用户</router-link></li>
           <li><router-link to="/group"><i class="iconfont icon-xiangmu"></i> 添加分组</router-link></li>
           <!-- <li><router-link to="/2"><i class="iconfont icon-xiangmu"></i> 分组列表</router-link></li> -->
-          <li><router-link to="/2"><i class="iconfont icon-tianjiatupian"></i> 添加头像</router-link></li>
+          <li><router-link to="/addheadphoto"><i class="iconfont icon-tianjiatupian"></i> 添加头像</router-link></li>
           <!-- <li><router-link to="/2"><i class="iconfont icon-tupian"></i> 头像列表</router-link></li> -->
           <li><router-link to="/2"><i class="iconfont icon-gonggao"></i> 发布公告</router-link></li>
           <!-- <li><router-link to="/2"><i class="iconfont icon-ai-list"></i> 公告列表</router-link></li> -->

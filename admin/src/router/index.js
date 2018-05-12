@@ -56,6 +56,12 @@ export default new Router({
           name: 'Group',
           component: () => import('@/containers/Group'),
           meta: { title: '分组设置' }
+        },
+        {
+          path: '/addheadphoto',
+          name: 'AddHeadPhoto',
+          component: () => import('@/containers/AddHeadPhoto'),
+          meta: { title: '添加头像' }
         }
       ]
     },
