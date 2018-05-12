@@ -108,7 +108,7 @@ module.exports = (ctx) => {
             error();
             return;
         }
-
+        
         const results = await mysql( sql.table(tables.dbuser).where( { class: id } ).select() );
 
         if(!results) {
@@ -118,7 +118,7 @@ module.exports = (ctx) => {
 
         ctx.body = { success: true, users: results.length };
     }
-
+    
     switch (optation) {
         case 'add':
             insert();
@@ -128,6 +128,7 @@ module.exports = (ctx) => {
             break;
         case 'update':
             oupdate();
+            break;
         case 'seluser':
             seluser();
             break;

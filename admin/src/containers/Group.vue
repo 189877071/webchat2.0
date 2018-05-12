@@ -77,7 +77,7 @@ export default {
         const { success, oclass } = response.data;
 
         if (!success) {
-            this.$store("init/error", "后台数据获取失败");
+            this.$store.commit("init/error", "后台数据获取失败");
             return;
         }
         this.oclass = oclass;
@@ -131,19 +131,19 @@ export default {
         },
         async delet(id, index) {
             if (!id) {
-                this.$store("init/error", "请指定要删除的分组");
+                this.$store.commit("init/error", "请指定要删除的分组");
                 return;
             }
 
-            const res = await axios('group?optation=seluser', { id });
+            const res = await axios.post('group?optation=seluser', { id });
 
             if(!res.data.success) {
-                this.$store("init/error", "系统出错!");
+                this.$store.commit("init/error", "系统出错!");
                 return;
             }
 
             if(res.data.users > 0) {
-                this.$store("init/error", "该分组下还有用户不能删除!");
+                this.$store.commit("init/error", "该分组下还有用户不能删除!");
                 return;
             }
 
