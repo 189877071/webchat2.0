@@ -52,6 +52,5 @@ export async function uploadImg(photo) {
         _load: true
     });
     const { name } = response.data;
-    console.log('234');
     return name ? name : false;
 }

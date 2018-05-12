@@ -11,12 +11,19 @@ module.exports = (ctx) => {
 
     const error = (error = 0) => ctx.body = { error, success: false };
 
-    const select = async () => {
+    // 上传图片
+    const updated = async () => {
         const { photo } = ctx.request.body;
-        console.log('123')
         const name = await writeFileAsync(photo);
-        console.log(name);
-        if(!name) {
+        if (!name) {
+            error();
+            return;
+        }
+
+        // 保存
+        const results = await mysql( sql.table( tables.dbphoto ).data( { url: name } ).insert() );
+
+        if(!results) {
             error();
             return;
         }
@@ -24,11 +31,26 @@ module.exports = (ctx) => {
         ctx.body = { success: true, name };
     }
 
-    switch(optation) {
+    // 获取图片 每次获取 n 张图片
+    const getdata = async () => {
+        // 获取全都数据  Id 降序
+        let sqlstr = sql.table( tables.dbphoto ).order('id desc').select();
+
+        const results = await mysql( sqlstr );
+
+        if(!results) {
+            error();
+            return;
+        }
+
+        ctx.body = { success: true, imgs: results };
+    }
+
+    switch (optation) {
         case 'add':
-            select();
+            updated();
             break;
         default:
-            error();
+            getdata();
     }
 }

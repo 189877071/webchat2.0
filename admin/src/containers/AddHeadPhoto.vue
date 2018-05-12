@@ -74,22 +74,21 @@ export default {
 
             this.uploadmask = true;
 
-            const whilleFn = i => {
-                if(!files[i]) {
+            const whilleFn = () => {
+                if(!files.length) {
                     // 上传完毕
                     this.success('图片上传完毕！');
                     this.uploadmask = false;
                     return;
                 }
-                uploadImg(files[i]).then(name => {
-                    console.log('123')
+                uploadImg(files[0]).then(name => {
                     // name 为上传成功后的文件路径 false 表示上传失败
-                    this.files.splice(i, 1);
-                    whilleFn(++i);
+                    this.files.shift();
+                    whilleFn();
                 });
             };
 
-            whilleFn(0);
+            whilleFn();
         }
     }
 };
