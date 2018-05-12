@@ -44,9 +44,9 @@ module.exports = (ctx) => {
             return;
         }
 
-        const res = await mysql( sql.table(tables.dbuser).where( { class: id } ).select() );
+        const res = await mysql(sql.table(tables.dbuser).where({ class: id }).select());
 
-        if(!res || res.length > 0) {
+        if (!res || res.length > 0) {
             error();
             return;
         }
@@ -65,23 +65,23 @@ module.exports = (ctx) => {
     const oupdate = async () => {
         const { id, name, sort, synopsis } = ctx.request.body;
 
-        if(!id) {
+        if (!id) {
             error;
             return;
         }
 
         let data = {};
 
-        if(name) {
-            if(name.length > 7 || name.length < 1) {
+        if (name) {
+            if (name.length > 7 || name.length < 1) {
                 error();
                 return;
             }
             data.name = name;
         }
 
-        if(sort) {
-            if(sort < 0) {
+        if (sort) {
+            if (sort < 0) {
                 error();
                 return;
             }
@@ -92,7 +92,7 @@ module.exports = (ctx) => {
 
         const results = await mysql(sql.table(tables.dbclass).data(data).where({ id }).update());
 
-        if(!results) {
+        if (!results) {
             error();
             return;
         }
@@ -104,21 +104,46 @@ module.exports = (ctx) => {
     const seluser = async () => {
         const { id } = ctx.request.body;
 
-        if(!id) {
+        if (!id) {
             error();
             return;
         }
-        
-        const results = await mysql( sql.table(tables.dbuser).where( { class: id } ).select() );
 
-        if(!results) {
+        const results = await mysql(sql.table(tables.dbuser).where({ class: id }).select());
+
+        if (!results) {
             error();
             return;
         }
 
         ctx.body = { success: true, users: results.length };
     }
-    
+
+    // 查询 分组名是否已存在
+    const selectName = async () => {
+        const { name, id } = ctx.request.body;
+
+        if (!name) {
+            error();
+            return;
+        }
+
+        let where = { name };
+
+        if (id) {
+            where.id = { enq: id };
+        }
+
+        const results = await mysql(sql.table(tables.dbclass).where({ where }).select());
+
+        if (!results) {
+            error();
+            return;
+        }
+
+        ctx.body = { success: true, name: results.length > 0 ? false : true };
+    }
+
     switch (optation) {
         case 'add':
             insert();
@@ -132,5 +157,10 @@ module.exports = (ctx) => {
         case 'seluser':
             seluser();
             break;
+        case 'name':
+            selectName();
+            break;
+        default:
+            error();
     }
 }

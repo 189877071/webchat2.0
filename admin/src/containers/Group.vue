@@ -83,17 +83,19 @@ export default {
         this.oclass = oclass;
     },
     methods: {
+        error(text) {
+            this.$store.commit("init/error", text);
+        },
         submit() {
             const { name, sort, synopsis } = this.newGroup;
             if (name.length < 1 || name.length > 7) {
-                this.$store.commit(
-                    "init/error",
+                this.error(
                     "用户名长度不能不符合规划(应为1~7个字符之间的字符串)"
                 );
                 return;
             }
             if (sort < 0) {
-                this.$store.commit("init/error", "排序参数不能小于0");
+                this.error("排序参数不能小于0");
                 return;
             }
             if (!this.up) {
@@ -105,6 +107,21 @@ export default {
         async add() {
             const { name, sort, synopsis } = this.newGroup;
 
+            const resname = await axios.post("group?optation=name", {
+                name,
+                _load: true
+            });
+
+            if (!resname.success) {
+                this.error("系统出错！");
+                return;
+            }
+
+            if (!resname.name) {
+                this.error("该分组名称已存在，请换一个！");
+                return;
+            }
+
             const response = await axios.post("group?optation=add", {
                 name,
                 sort,
@@ -112,7 +129,7 @@ export default {
             });
 
             if (!response.data.success) {
-                this.$store.commit("init/error", "数据添加失败！");
+                this.error("数据添加失败！");
                 return;
             }
 
@@ -131,19 +148,22 @@ export default {
         },
         async delet(id, index) {
             if (!id) {
-                this.$store.commit("init/error", "请指定要删除的分组");
+                this.error("请指定要删除的分组！");
                 return;
             }
 
-            const res = await axios.post('group?optation=seluser', { id });
+            const res = await axios.post("group?optation=seluser", {
+                id,
+                _load: true
+            });
 
-            if(!res.data.success) {
-                this.$store.commit("init/error", "系统出错!");
+            if (!res.data.success) {
+                this.error("系统出错！");
                 return;
             }
 
-            if(res.data.users > 0) {
-                this.$store.commit("init/error", "该分组下还有用户不能删除!");
+            if (res.data.users > 0) {
+                this.error("该分组下还有用户不能删除");
                 return;
             }
 
@@ -155,7 +175,7 @@ export default {
                     });
 
                     if (!response.data.success) {
-                        this.$store.commit("init/error", "删除失败");
+                        this.error("删除失败");
                         return;
                     }
 
@@ -173,6 +193,22 @@ export default {
         async update() {
             const { name, sort, synopsis } = this.newGroup;
 
+            const resname = await axios.post("group?optation=name", {
+                name,
+                id: this.upid,
+                _load: true
+            });
+
+            if (!resname.success) {
+                this.error("系统出错！");
+                return;
+            }
+
+            if (!resname.name) {
+                this.error("该分组名称已存在，请换一个！");
+                return;
+            }
+
             const response = await axios.post("group?optation=update", {
                 name,
                 sort,
@@ -181,15 +217,15 @@ export default {
             });
 
             if (!response.data.success) {
-                this.$store.commit("init/error", "数据修改失败！");
+                this.error("数据修改失败！");
                 return;
             }
 
-            this.$store.commit("init/success", "修改成功!");
+            this.$store.commit("init/success", "修改成功! ");
 
-            for(let i=0; i<this.oclass.length; i++) {
+            for (let i = 0; i < this.oclass.length; i++) {
                 let item = this.oclass[i];
-                if(item.id == this.upid) {
+                if (item.id == this.upid) {
                     item.name = name;
                     item.sort = sort;
                     item.synopsis = synopsis;

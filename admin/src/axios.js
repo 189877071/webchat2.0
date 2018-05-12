@@ -9,6 +9,9 @@ export default axios.create({
         if(data && !data._load) {
             store.commit('init/loading', true);
         }
+        else {
+            delete data._load;
+        }
         return JSON.stringify(data);
     }],
     transformResponse: [function (data) {
