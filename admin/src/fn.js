@@ -6,7 +6,11 @@ export function defaultSet(key) {
 
 export function getDate(num) {
     const d = new Date(num);
-    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    let month = d.getMonth() + 1;
+    let date = d.getDate();
+    month = month > 9 ? month : '0' + month;
+    date = date > 9 ? date : '0' + date;
+    return `${d.getFullYear()}-${month}-${date}`;
 }
 
 export function getAge(time) {
@@ -24,7 +28,7 @@ export function getAge(time) {
 
     let age = aF - oF;
 
-    if(aM < oM || (aM == oM && aD < oD)) {
+    if (aM < oM || (aM == oM && aD < oD)) {
         age++;
     }
 
@@ -32,8 +36,8 @@ export function getAge(time) {
 }
 
 export function getClassName(active, classArr) {
-    for(let i=0; i<classArr.length; i++) {
-        if(classArr[i].id == active) {
+    for (let i = 0; i < classArr.length; i++) {
+        if (classArr[i].id == active) {
             return classArr[i].name;
         }
     }

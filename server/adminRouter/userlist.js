@@ -341,7 +341,10 @@ module.exports = async (ctx) => {
 
         const onoff = await mysql(sqlstr);
         
-        console.log(onoff);
+        if(!onoff) {
+            ctx.body = error();
+            return;
+        }
 
         ctx.body = { success: true };
     }

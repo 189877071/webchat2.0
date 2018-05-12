@@ -2,7 +2,7 @@
   <el-card>
     <div slot="header" class="clearfix">
         <span><i class="iconfont icon-tianjiayonghu t1"></i> {{title}}</span>
-        <el-button type="primary" @click="submit"> 
+        <el-button type="primary" @click="submit" plain> 
             <i class="el-icon-success"></i> {{btn}}
         </el-button>
     </div>

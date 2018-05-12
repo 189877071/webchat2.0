@@ -22,6 +22,8 @@ router.post('/setting', islogin, require('./setting'));
 
 router.post('/userlist', islogin, require('./userlist'));
 
+router.post('/group', islogin, require('./group'));
+
 router.get('*', (ctx) => {
     ctx.body = { error: true };
 })

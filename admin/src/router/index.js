@@ -50,6 +50,12 @@ export default new Router({
           name: 'TestUsers',
           component: () => import('@/containers/TestUsers'),
           meta: { title: '添加测试用户' }
+        },
+        {
+          path: '/group',
+          name: 'Group',
+          component: () => import('@/containers/Group'),
+          meta: { title: '分组设置' }
         }
       ]
     },

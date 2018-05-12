@@ -2,9 +2,9 @@
   <div>
       <el-card class="box-card">
         <div class="li-top">
-          <div class="p50">
-            <el-button type="danger" @click="deletes">删除</el-button>
-            <el-button type="primary" @click="add">添加用户</el-button>
+          <div>
+            <el-button type="danger" plain @click="deletes">删除</el-button>
+            <el-button type="primary" plain @click="add">添加用户</el-button>
           </div>
 
           <div>
@@ -40,17 +40,17 @@
           <el-table-column prop="id" label="id" width="55"></el-table-column>
           <el-table-column prop="username" label="账号" width=""></el-table-column>
           <el-table-column prop="name" label="姓名" width=""></el-table-column>
-          <el-table-column prop="sex" label="性别" width=""></el-table-column>
-          <el-table-column prop="age" label="年龄" width=""></el-table-column>
+          <el-table-column prop="sex" label="性别" width="70"></el-table-column>
+          <el-table-column prop="age" label="年龄" width="70"></el-table-column>
           <el-table-column prop="email" label="邮箱" width=""></el-table-column>
           <el-table-column prop="class" label="分组" width=""></el-table-column>
           <el-table-column prop="logindate" label="最近登陆时间" width=""></el-table-column>
-          <el-table-column prop="resdate" label="注册时间" width=""></el-table-column>
-          <el-table-column prop="issystem" label="测试账户" width=""></el-table-column>
+          <el-table-column prop="resdate" label="注册时间" width="120"></el-table-column>
+          <el-table-column prop="issystem" label="测试账户" width="80"></el-table-column>
           <el-table-column fixed="right" label="操作" width="150">
               <template slot-scope="scope">
-                <el-button type="primary" size="small" @click="$router.push({ name: 'UpdateUser', params: { id: scope.row.id } })">修改</el-button>
-                <el-button type="danger" size="small" @click="odelete(scope.row.id, scope.$index)">删除</el-button>
+                <el-button type="primary" size="small" plain @click="$router.push({ name: 'UpdateUser', params: { id: scope.row.id } })">修改</el-button>
+                <el-button type="danger" size="small" plain @click="odelete(scope.row.id, scope.$index)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -72,9 +72,7 @@
 <style lang="scss" scoped>
 .li-top {
     display: flex;
-    .p50 {
-        padding-right: 50px;
-    }
+    justify-content: space-between;
 }
 .page-box {
     padding: 20px 0;
