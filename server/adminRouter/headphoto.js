@@ -61,7 +61,7 @@ module.exports = (ctx) => {
             return;
         }
 
-        cxt.body = { success: true };
+        ctx.body = { success: true };
     }
 
     switch (optation) {

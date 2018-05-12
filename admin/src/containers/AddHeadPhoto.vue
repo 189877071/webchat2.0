@@ -20,8 +20,8 @@
     <el-card class="box-card">
         <div class="flex-img">
             <el-card class="img-lsit" v-for="(val, index) in cpimgs" :key="index">
-                <my-image :src="val" />
-                <div class="mask"><i class="el-icon-delete"></i></div>
+                <my-image :src="val.url" />
+                <div class="mask"><i class="el-icon-delete" @click="delet(val.id, index)"></i></div>
             </el-card>
         </div>
     </el-card>
@@ -107,7 +107,7 @@ export default {
         cpimgs() {
             let arr = [];
             for(let i=0; i<this.imgs.length; i++) {
-                arr.push( config.serverHostName + this.imgs[i].url );
+                arr.push( {url: config.serverHostName + this.imgs[i].url, id: this.imgs[i].id} );
             }
             return arr;
         }
@@ -147,6 +147,17 @@ export default {
                 return;
             }
             this.imgs = response.data.imgs;
+        },
+        async delet(id, index) {
+            console.log(id, index);
+            const response = await axios.post('headphoto?optation=deleted', { id });
+
+            if(!response.data.success) {
+                this.error('删除失败！');
+                return;
+            }
+            this.success('删除成功！');
+            this.imgs.splice(index, 1);
         }
     },
     mounted() {
