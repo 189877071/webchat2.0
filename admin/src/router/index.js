@@ -19,19 +19,19 @@ export default new Router({
           path: 'index',
           name: 'Home',
           component: () => import('@/containers/Home'),
-          meta: {title: '首页'}
+          meta: { title: '首页' }
         },
         {
           path: 'setting',
           name: 'Setting',
           component: () => import('@/containers/Setting'),
-          meta: {title: '参数设置'}
+          meta: { title: '参数设置' }
         },
         {
           path: '/userlists',
           name: 'UserLists',
           component: () => import('@/containers/UserLists'),
-          meta: {title: '用户列表'}
+          meta: { title: '用户列表' }
         },
         {
           path: '/adduser',
@@ -62,6 +62,24 @@ export default new Router({
           name: 'AddHeadPhoto',
           component: () => import('@/containers/AddHeadPhoto'),
           meta: { title: '添加头像' }
+        },
+        {
+          path: '/addnotice',
+          name: 'AddNotice',
+          component: () => import('@/containers/AddNotice'),
+          meta: { title: '发布公告' }
+        },
+        {
+          path: '/noticelist',
+          name: 'NoticeList',
+          component: () => import('@/containers/NoticeList'),
+          meta: { title: '公告列表' }
+        },
+        {
+          path: '/updatanotice/:id',
+          name: 'UpdateNotice',
+          component: () => import('@/containers/UpdateNotice'),
+          meta: { title: '修改公告', update: true }
         }
       ]
     },

@@ -8,12 +8,11 @@ const { tables, static } = require('../common/config');
 
 const { getVerify, writeFileAsync } = require('../common/fn');
 
-const [userRex, passRex, emailRex, n, error] = [
+const [userRex, passRex, emailRex, n] = [
     /^[a-z0-9_-]{5,20}$/,
     /^[a-z0-9_-]{6,20}$/,
     /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
-    15,
-    (error = 0) => ({ error, success: false }),
+    15
 ];
 
 const field = 'id,username,resdate,email,sex,age,name,issystem,class,logindate';
@@ -22,6 +21,8 @@ const fieldupdate = 'id,username,email,sex,age,name,class,synopsis,headphoto';
 
 module.exports = async (ctx) => {
     const { optation } = ctx.query;
+
+    const error = (error = 0) => ctx.body = ({ error, success: false });
 
     // 获取用户数据
     const getUsers = async () => {
@@ -52,7 +53,7 @@ module.exports = async (ctx) => {
         const toclass = await mysql(sql.table(tables.dbclass).select());
 
         if (!count || !count.length || !lists || !toclass) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -72,14 +73,14 @@ module.exports = async (ctx) => {
             where.id = id;
         }
         else {
-            ctx.body = error();
+            error();
             return;
         }
 
         const results = await mysql(sql.table(tables.dbuser).where(where).delet());
 
         if (!results) {
-            ctx.body = error(2);
+            error(2);
             return;
         }
         ctx.body = { success: true };
@@ -89,7 +90,7 @@ module.exports = async (ctx) => {
     const getClass = async () => {
         const oclass = await mysql(sql.table(tables.dbclass).select());
         if (!oclass) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -107,26 +108,26 @@ module.exports = async (ctx) => {
         synopsis = synopsis || '';
 
         if (!userRex.test(username) || !passRex.test(password) || !name) {
-            ctx.body = error();
+            error();
             return;
         }
 
         if (!emailRex.test(email) || !headphoto || isNaN(age) || isNaN(oclass)) {
-            ctx.body = error();
+            error();
             return;
         }
 
         let onoff = await mysql(sql.table(tables.dbuser).where({ username, email, '_type': 'or' }).select());
 
         if (onoff && onoff.length) {
-            ctx.body = error();
+            error();
             return;
         }
 
         headphoto = await writeFileAsync(headphoto);
 
         if (!headphoto) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -150,7 +151,7 @@ module.exports = async (ctx) => {
         const results = await mysql(sql.table(tables.dbuser).data(data).insert());
 
         if (!results) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -161,13 +162,13 @@ module.exports = async (ctx) => {
     const testUsername = async () => {
         let { username } = ctx.request.body;
         if (!username) {
-            ctx.body = error();
+            error();
             return;
         }
         const results = await mysql(sql.table(tables.dbuser).where({ username }).select());
 
         if (results && results.length) {
-            ctx.body = error('用户名已存在');
+            error();
             return;
         }
 
@@ -179,14 +180,14 @@ module.exports = async (ctx) => {
         let { email } = ctx.request.body;
 
         if (!email) {
-            ctx.body = error();
+            error();
             return;
         }
 
         const results = await mysql(sql.table(tables.dbuser).where({ email }).select());
 
         if (results && results.length) {
-            ctx.body = error('邮箱已存在');
+            error();
             return;
         }
 
@@ -198,7 +199,7 @@ module.exports = async (ctx) => {
         let { headphoto, username, password, email, sex, oclass, synopsis, age, name, id } = ctx.request.body;
 
         if (!id) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -206,7 +207,7 @@ module.exports = async (ctx) => {
 
         if (username) {
             if (!userRex.test(username)) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.username = username;
@@ -214,7 +215,7 @@ module.exports = async (ctx) => {
 
         if (password) {
             if (!passRex.test(password)) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.password = md5(password);
@@ -226,7 +227,7 @@ module.exports = async (ctx) => {
 
         if (email) {
             if (!emailRex.test(email)) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.email = email;
@@ -239,7 +240,7 @@ module.exports = async (ctx) => {
         if (age) {
             age = Number(age);
             if (isNaN(age)) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.age = age;
@@ -248,7 +249,7 @@ module.exports = async (ctx) => {
         if (oclass) {
             oclass = Number(oclass);
             if (isNaN(oclass)) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.class = oclass;
@@ -261,7 +262,7 @@ module.exports = async (ctx) => {
         if (headphoto) {
             headphoto = await writeFileAsync(headphoto);
             if (!headphoto) {
-                ctx.body = error();
+                error();
                 return;
             }
             data.headphoto = headphoto;
@@ -270,7 +271,7 @@ module.exports = async (ctx) => {
         const results = await mysql(sql.table(tables.dbuser).data(data).where({ id }).update());
 
         if (!results) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -281,14 +282,14 @@ module.exports = async (ctx) => {
     const getUserData = async () => {
         const { id } = ctx.request.body;
         if (!id) {
-            ctx.body = error();
+            error();
             return;
         }
 
         const results = await mysql(sql.table(tables.dbuser).where({ id }).field(fieldupdate).select());
 
         if (!results || !results.length) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -303,7 +304,7 @@ module.exports = async (ctx) => {
         const headphotos = await mysql(sql.table(tables.dbphoto).select());
 
         if (!headphotos || !headphotos.length) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -333,7 +334,7 @@ module.exports = async (ctx) => {
         const onoff = await mysql(sqlstr);
         
         if(!onoff) {
-            ctx.body = error();
+            error();
             return;
         }
 

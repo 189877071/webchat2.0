@@ -1,20 +1,20 @@
 <template>
-  <div class="box">
-        <el-card class="box-card">
-            <form @submit.prevent="submit">
-                <h1>WEBCHAT—后台管理</h1>
-                <p>
-                    <el-input v-model="username" autofocus placeholder="请输入用户名"></el-input>
-                </p>
-                <p>
-                    <el-input v-model="password" type="password" placeholder="请输入密码"></el-input>
-                </p>
-                <p class="btn-box">
-                    <el-button type="primary" native-type="submit" class="display">登 录</el-button>
-                </p>
-            </form>
-        </el-card>
-  </div>
+<div class="box">
+    <el-card class="box-card">
+        <form @submit.prevent="submit">
+            <h1>WEBCHAT—后台管理</h1>
+            <p>
+                <el-input v-model="username" autofocus placeholder="请输入用户名"></el-input>
+            </p>
+            <p>
+                <el-input v-model="password" type="password" placeholder="请输入密码"></el-input>
+            </p>
+            <p class="btn-box">
+                <el-button type="primary" native-type="submit" class="display">登 录</el-button>
+            </p>
+        </form>
+    </el-card>
+</div>
 </template>
 
 <style lang="scss" scoped>
@@ -56,6 +56,7 @@
 <script>
 import axios from "../axios";
 import { mapState } from "vuex";
+import commonMixin from "../commonMixin";
 export default {
     name: "Index",
     data() {
@@ -64,20 +65,20 @@ export default {
             password: ""
         };
     },
+    mixins: [commonMixin],
     methods: {
-        submit() {
-            axios
-                .post("login", {
-                    username: this.username,
-                    password: this.password
-                })
-                .then(response => {
-                    if (!response.data.success) {
-                        this.$store.commit("init/error", "用户名或密码错误！");
-                        return;
-                    }
-                    this.$router.replace("/");
-                });
+        async submit() {
+            const response = await axios.post("login", {
+                username: this.username,
+                password: this.password
+            });
+
+            if (!response.data.success) {
+                this.error("用户名或密码错误！");
+                return;
+            }
+
+            this.$router.replace("/");
         }
     },
     computed: {

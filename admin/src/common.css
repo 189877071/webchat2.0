@@ -16,6 +16,11 @@ h1 {
 }
 
 .box-card {
-margin: 10px;
-margin-bottom: 50px;
+    margin: 10px;
+    margin-bottom: 50px;
+}
+.box-card .right {
+    float: right;
+    position: relative;
+    top: -5px;
 }

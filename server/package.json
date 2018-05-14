@@ -21,6 +21,7 @@
     "md5": "^2.2.1",
     "mysql": "^2.15.0",
     "node-transform-mysql": "0.0.3",
+    "ueditor-koa": "^1.1.4",
     "uuid": "^3.2.1",
     "ws": "^5.0.0"
   }

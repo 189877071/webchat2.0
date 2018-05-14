@@ -1,45 +1,45 @@
 <template>
-    <div>
-        <el-card class="box-card">
-            <div slot="header" class="clearfix">
-                <span> <i class="el-icon-info"></i> {{title}}</span>
-                <div class="head-right">
-                    <el-button size="small" v-if="up" @click="reset" >返回</el-button>
-                    <el-button type="primary" size="small" @click="submit" >提交</el-button>
-                </div>
+<div>
+    <el-card class="box-card">
+        <div slot="header" class="clearfix">
+            <span> <i class="el-icon-info"></i> {{title}}</span>
+            <div class="head-right">
+                <el-button size="small" v-if="up" @click="reset" >返回</el-button>
+                <el-button type="primary" size="small" @click="submit" >提交</el-button>
             </div>
+        </div>
 
-            <el-form label-position="top" label-width="80px">
-                <el-form-item label="名称分组名称：">
-                    <el-input v-model="newGroup.name" placeholder="输入分组名称(长度必须是4~7个字符)"></el-input>
-                </el-form-item>
-                <el-form-item label="排序：">
-                    <el-input v-model="newGroup.sort" placeholder="排序(不能小于0)" type="number" ></el-input>
-                </el-form-item>
-                <el-form-item label="分组介绍：">
-                    <el-input v-model="newGroup.synopsis" type="textarea" resize="none" rows="5" placeholder="分组介绍"></el-input>
-                </el-form-item>
-            </el-form>
-        </el-card>
+        <el-form label-position="top" label-width="80px">
+            <el-form-item label="名称分组名称：">
+                <el-input v-model="newGroup.name" placeholder="输入分组名称(长度必须是4~7个字符)"></el-input>
+            </el-form-item>
+            <el-form-item label="排序：">
+                <el-input v-model="newGroup.sort" placeholder="排序(不能小于0)" type="number" ></el-input>
+            </el-form-item>
+            <el-form-item label="分组介绍：">
+                <el-input v-model="newGroup.synopsis" type="textarea" resize="none" rows="5" placeholder="分组介绍"></el-input>
+            </el-form-item>
+        </el-form>
+    </el-card>
 
-        <el-card class="box-card" v-if="!up">
-            <div slot="header" class="clearfix">
-                <span> <i class="el-icon-info"></i> 分组列表</span>
-            </div>
-            <el-table :data="oclass" border style="width: 100%">
-                <el-table-column prop="id" label="id" ></el-table-column>
-                <el-table-column prop="name" label="名称" ></el-table-column>
-                <el-table-column prop="synopsis" label="简介" ></el-table-column>
-                <el-table-column prop="sort" label="排序"></el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button type="primary" plain size="small" @click="toggleUpdate(scope.row, scope.$index)">修改</el-button>
-                        <el-button type="danger" plain size="small" @click="delet(scope.row.id, scope.$index)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-card>
-    </div>
+    <el-card class="box-card" v-if="!up">
+        <div slot="header" class="clearfix">
+            <span> <i class="el-icon-info"></i> 分组列表</span>
+        </div>
+        <el-table :data="oclass" border style="width: 100%">
+            <el-table-column prop="id" label="id" ></el-table-column>
+            <el-table-column prop="name" label="名称" ></el-table-column>
+            <el-table-column prop="synopsis" label="简介" ></el-table-column>
+            <el-table-column prop="sort" label="排序"></el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button type="primary" plain size="small" @click="toggleUpdate(scope.row, scope.$index)">修改</el-button>
+                    <el-button type="danger" plain size="small" @click="delet(scope.row.id, scope.$index)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-card>
+</div>
 </template>
 
 <style lang="scss" scoped>
@@ -48,13 +48,14 @@
     position: relative;
     top: -5px;
 }
-
 </style>
 
 <script>
 import axios from "../axios";
+import commonMixin from "../commonMixin";
 export default {
     name: "Group",
+    mixins: [commonMixin],
     data() {
         return {
             oclass: [],
@@ -76,15 +77,12 @@ export default {
         const { success, oclass } = response.data;
 
         if (!success) {
-            this.$store.commit("init/error", "后台数据获取失败");
+            this.error("后台数据获取失败!");
             return;
         }
         this.oclass = oclass;
     },
     methods: {
-        error(text) {
-            this.$store.commit("init/error", text);
-        },
         submit() {
             const { name, sort, synopsis } = this.newGroup;
             if (name.length < 1 || name.length > 7) {
@@ -110,7 +108,7 @@ export default {
                 name,
                 _load: true
             });
-           
+
             if (!resname.data.success) {
                 this.error("系统出错！");
                 return;
@@ -132,7 +130,7 @@ export default {
                 return;
             }
 
-            this.$store.commit("init/success", "添加成功!");
+            this.success("添加成功!");
 
             this.oclass.push({ id: response.data.id, name, sort, synopsis });
 
@@ -166,20 +164,17 @@ export default {
                 return;
             }
 
-            this.$store.commit("init/confirm", {
-                title: "你确定要删除吗？",
-                callback: async () => {
-                    const response = await axios.post("group?optation=delete", {
-                        id
-                    });
+            this.confirm("你确定要删除吗？", async () => {
+                const response = await axios.post("group?optation=delete", {
+                    id
+                });
 
-                    if (!response.data.success) {
-                        this.error("删除失败");
-                        return;
-                    }
-
-                    this.oclass.splice(index, 1);
+                if (!response.data.success) {
+                    this.error("删除失败");
+                    return;
                 }
+
+                this.oclass.splice(index, 1);
             });
         },
         toggleUpdate(data, index) {
@@ -197,8 +192,6 @@ export default {
                 id: this.upid,
                 _load: true
             });
-
-            
 
             if (!resname.data.success) {
                 this.error("系统出错！");
@@ -222,7 +215,7 @@ export default {
                 return;
             }
 
-            this.$store.commit("init/success", "修改成功! ");
+            this.success("修改成功! ");
 
             for (let i = 0; i < this.oclass.length; i++) {
                 let item = this.oclass[i];

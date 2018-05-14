@@ -19,21 +19,26 @@
     </el-card>
     <el-card class="box-card">
         <div class="flex-img">
-            <el-card class="img-lsit" v-for="(val, index) in cpimgs" :key="index">
-                <my-image :src="val.url" />
+            <el-card class="img-lsit" v-for="(val, index) in imgs" :key="index">
+                <my-image :src="getUrl(val.url)" />
                 <div class="mask"><i class="el-icon-delete" @click="delet(val.id, index)"></i></div>
             </el-card>
+        </div>
+        <div class="page-box" v-if="initImgs.length"> 
+            <a href="javascript:;" @click="page"><i class="el-icon-refresh"></i> 加载更多</a>
         </div>
     </el-card>
 </div>
 </template>
+
 <style lang="scss" scoped>
 .head-right-box {
     float: right;
     position: relative;
     top: -5px;
 }
-.img-list-box, .flex-img {
+.img-list-box,
+.flex-img {
     position: relative;
     .mask {
         position: absolute;
@@ -63,15 +68,15 @@
         height: 178px;
         margin: 10px;
         position: relative;
-        &:hover .mask{
+        &:hover .mask {
             opacity: 1;
         }
     }
     .mask {
         opacity: 0;
-        transition: opacity .3s;
+        transition: opacity 0.3s;
     }
-    
+
     .mask i {
         font-size: 24px;
         cursor: pointer;
@@ -81,15 +86,32 @@
         height: 100%;
     }
 }
+.page-box {
+    text-align: center;
+    font-size: 14px;
+    height: 50px;
+    line-height: 50px;
+    a {
+        color: #606266;
+        &:hover {
+            color: #409eff;
+        }
+    }
+    i {
+        position: relative;
+        font-size: 18px;
+        top: 3px;
+    }
+}
 </style>
 
 <script>
-import myUploadImage from "../components/UploadImage"
-import myImage from '../components/Image'
-import axios from "../axios"
-import commonMixin from "../commonMixin"
-import { uploadImg } from "../fn"
-import config  from '../config'
+import myUploadImage from "../components/UploadImage";
+import myImage from "../components/Image";
+import axios from "../axios";
+import commonMixin from "../commonMixin";
+import { uploadImg } from "../fn";
+import config from "../config";
 export default {
     name: "AddHeadPhoto",
     components: {
@@ -100,18 +122,11 @@ export default {
         return {
             files: [],
             uploadmask: false,
-            imgs: []
+            imgs: [],
+            initImgs: []
         };
     },
-    computed: {
-        cpimgs() {
-            let arr = [];
-            for(let i=0; i<this.imgs.length; i++) {
-                arr.push( {url: config.serverHostName + this.imgs[i].url, id: this.imgs[i].id} );
-            }
-            return arr;
-        }
-    },
+    computed: {},
     mixins: [commonMixin],
     methods: {
         async uploadimg() {
@@ -125,10 +140,12 @@ export default {
             this.uploadmask = true;
 
             const whilleFn = () => {
-                if(!files.length) {
+                if (!files.length) {
                     // 上传完毕
-                    this.success('图片上传完毕！');
+                    this.success("图片上传完毕！");
                     this.uploadmask = false;
+                    // 跟新图片数据
+                    this.getdata();
                     return;
                 }
                 uploadImg(files[0]).then(name => {
@@ -141,23 +158,47 @@ export default {
             whilleFn();
         },
         async getdata() {
-            const response = await axios.post('headphoto');
-            if(!response.data.success) {
-                error('获取数据失败');
+            const response = await axios.post("headphoto");
+            if (!response.data.success) {
+                error("获取数据失败");
                 return;
             }
-            this.imgs = response.data.imgs;
+            this.initImgs = response.data.imgs;
+            // 每次显示20张
+            this.imgs = [];
+            this.page();
+        },
+        page() {
+            if (!this.initImgs.length) return;
+            for (let i = 0; i < 30; i++) {
+                this.imgs.push(this.initImgs.shift());
+                if (!this.initImgs.length) {
+                    break;
+                }
+            }
         },
         async delet(id, index) {
-            console.log(id, index);
-            const response = await axios.post('headphoto?optation=deleted', { id });
+            const response = await axios.post("headphoto?optation=deleted", {
+                id
+            });
 
-            if(!response.data.success) {
-                this.error('删除失败！');
+            if (!response.data.success) {
+                this.error("删除失败！");
                 return;
             }
-            this.success('删除成功！');
-            this.imgs.splice(index, 1);
+
+            this.success("删除成功！");
+
+            let arr = this.imgs;
+
+            arr.splice(index, 1);
+
+            this.imgs = [];
+
+            this.$nextTick(() => (this.imgs = arr));
+        },
+        getUrl(url) {
+            return config.serverHostName + url;
         }
     },
     mounted() {

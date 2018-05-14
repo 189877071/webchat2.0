@@ -92,23 +92,25 @@ export default {
                 data.headphoto = this.head;
             }
 
-            if(this.activeClass != init.class) {
+            if (this.activeClass != init.class) {
                 data.oclass = this.activeClass;
             }
 
             if (JSON.stringify(data) == "{}") {
-                this.error('您还没有修改内容!');
-                return;
-            }
-            
-            const response = await axios.post('userlist?optation=update', {...data, id: init.id});
-
-            if(!response.data.success) {
-                this.error('修改失败!');
+                this.error("您还没有修改内容!");
                 return;
             }
 
-            this.$store.commit('init/success', '修改成功!');
+            const response = await axios.post("userlist?optation=update", {
+                ...data,
+                id: init.id
+            });
+
+            if (!response.data.success) {
+                this.error("修改失败!");
+                return;
+            }
+            this.success("修改成功!");
         }
     },
     async mounted() {
@@ -131,7 +133,7 @@ export default {
 
         if (!success) {
             alert("获取用户数据失败");
-            this.$router.push('/userlists');
+            this.$router.push("/userlists");
             return;
         }
 

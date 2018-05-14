@@ -7,9 +7,7 @@ const db = require('../common/db');
 
 const { tables } = require('../common/config');
 
-const error = (error = 0) => ({ error, success: false });
-
-async function readFileAsync(path) {
+function readFileAsync(path) {
     return new Promise((resolve) => {
         readFile(path, (err, data) => {
             if (err) {
@@ -26,7 +24,7 @@ async function readFileAsync(path) {
     });
 }
 
-async function writeFileAsync(path, data) {
+function writeFileAsync(path, data) {
     return new Promise((resolve) => {
         writeFile(path, data, (err) => {
             if (err) {
@@ -40,13 +38,16 @@ async function writeFileAsync(path, data) {
 }
 
 module.exports = async (ctx) => {
+
+    const error = (error = 0) => ctx.body = ({ error, success: false });
+
     const { optation } = ctx.query;
 
     let { connectionLimit, database, host, password, user, pass, port, username } = ctx.request.body;
 
     const send = (onoff) => {
         if (!onoff) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -60,7 +61,7 @@ module.exports = async (ctx) => {
         const administrator = await db(sqlstr);
 
         if (!mysql || !email || !administrator || !administrator[0]) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -75,12 +76,12 @@ module.exports = async (ctx) => {
     const setMysqlConfig = async () => {
         // 验证信息是否正确
         if (!connectionLimit || !database || !host || !password || !user) {
-            ctx.body = error();
+            error();
             return;
         }
         connectionLimit = Number(connectionLimit);
         if (isNaN(connectionLimit)) {
-            ctx.body = error();
+            error();
             return;
         }
 
@@ -93,12 +94,12 @@ module.exports = async (ctx) => {
 
     const setEmailConfig = async () => {
         if (!host || !pass || !port || !user) {
-            ctx.body = error();
+            error();
             return;
         }
         port = Number(port);
         if (isNaN(port)) {
-            ctx.body = error();
+            error();
             return;
         }
         const str = JSON.stringify({ host, pass, port, user });

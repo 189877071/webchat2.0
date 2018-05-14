@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card">
+<el-card class="box-card">
     <div slot="header" class="clearfix">
         <span><i class="iconfont icon-tianjiayonghu t1"></i> {{title}}</span>
         <el-button type="primary" @click="submit" plain> 
@@ -34,7 +34,7 @@
         </el-form-item>
 
         <el-form-item label="年龄：">
-             <el-date-picker
+            <el-date-picker
                 v-model="age"
                 align="right"
                 type="date"
@@ -61,12 +61,12 @@
         </el-form-item>
 
         <el-form-item label="选择头像：">
-            <!-- <my-upload-image :imgsrc="head" :imgdata.sync="head" /> -->
             <my-upload-image v-model="head" />
         </el-form-item>
     </el-form>
-  </el-card>
+</el-card>
 </template>
+
 <style lang="scss" scoped>
 .clearfix {
     display: flex;
@@ -85,6 +85,7 @@
 <script>
 import UploadImage from "../components/UploadImage";
 import axios from "../axios";
+import commonMixin from "../commonMixin";
 export default {
     data() {
         return {
@@ -100,6 +101,7 @@ export default {
             activeClass: 1
         };
     },
+    mixins: [commonMixin],
     components: {
         myUploadImage: UploadImage
     },
@@ -111,16 +113,11 @@ export default {
         const { success, oclass } = response.data;
 
         if (!success) {
-            this.$store("init/error", "后台数据获取失败");
+            this.error("后台数据获取失败！");
             return;
         }
-      
+
         this.oclass = oclass;
-    },
-    methods: {
-        error(text) {
-            this.$store.commit("init/error", text);
-        }
     }
 };
 </script>

@@ -5,14 +5,16 @@ export default {
     name: "AddUser",
     data() {
         return {
-            title: '输入新用户信息',
-            btn: '添加'
-        }
+            title: "输入新用户信息",
+            btn: "添加"
+        };
     },
     methods: {
         async submit() {
             if (!/^[a-z0-9_-]{5,20}$/.test(this.username)) {
-                this.error("账户名长度为5~20位字符，并且只能是字母/数字/下划线！");
+                this.error(
+                    "账户名长度为5~20位字符，并且只能是字母/数字/下划线！"
+                );
                 return;
             }
 
@@ -39,7 +41,11 @@ export default {
                 this.error("邮箱地址不能为空！");
                 return;
             }
-            if (!/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(this.email)) {
+            if (
+                !/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(
+                    this.email
+                )
+            ) {
                 this.error("请输入正确的邮箱地址！");
                 return;
             }
@@ -76,7 +82,6 @@ export default {
                 email: this.email,
                 sex: this.sex,
                 headphoto: this.head,
-                // headphoto: '/demo.jpg',
                 oclass: this.activeClass,
                 synopsis: this.synopsis,
                 age
@@ -88,7 +93,7 @@ export default {
                 return;
             }
 
-            this.$store.commit("init/success", "添加成功");
+            this.success("添加成功! ");
 
             this.username = "";
             this.password = "";
@@ -101,7 +106,7 @@ export default {
             this.activeClass = 1;
         }
     },
-    mixins: [ UserMixin ]
+    mixins: [UserMixin]
 };
 </script>
 

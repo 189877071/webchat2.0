@@ -7,15 +7,18 @@ const session = require('./common/session');
 const { origin } = require('./common/config');
 const adminRouter = require('./adminRouter');
 const appRouter = require('./appRouter');
+const ueditor = require('./ueditor');
 
 const app = new Koa();
-
-app.use(static(join(__dirname, 'static')));
 
 app.use(cors({
     origin: (ctx) => (origin.indexOf != -1) ? ctx.headers.origin : false,
     credentials: true
 }));
+
+app.use(static(join(__dirname, 'static')));
+
+app.use(ueditor.routes());
 
 app.use(bodyParse());
 

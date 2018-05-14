@@ -98,6 +98,7 @@
 </style>
 
 <script>
+import commonMixin from "../commonMixin";
 import axios from "../axios";
 export default {
     name: "Setting",
@@ -126,6 +127,7 @@ export default {
             infor: null
         };
     },
+    mixins: [commonMixin],
     methods: {
         initInfor(data) {
             const { mysql, email, administrator } = data;
@@ -144,10 +146,7 @@ export default {
 
             this.infor = data;
         },
-        error(text) {
-            this.$store.commit("init/error", text);
-        },
-        mysqlSubmit() {
+        async mysqlSubmit() {
             for (var key in this.mysql) {
                 if (key == "btn") continue;
                 if (this.mysql[key] == "") {
@@ -164,19 +163,20 @@ export default {
                 return;
             }
 
-            axios.post("setting?optation=mysql", this.mysql).then(response => {
-                const { success } = response.data;
-                if (!success) {
-                    this.error("修改失败");
-                } else {
-                    this.$store.commit(
-                        "init/success",
-                        "数据库配置信息修改成功！"
-                    );
-                }
-            });
+            const response = await axios.post(
+                "setting?optation=mysql",
+                this.mysql
+            );
+
+            const { success } = response.data;
+
+            if (!success) {
+                this.error("修改失败");
+            } else {
+                this.success("数据库配置信息修改成功！");
+            }
         },
-        emailSubmit() {
+        async emailSubmit() {
             for (var key in this.email) {
                 if (key == "btn") continue;
                 if (this.email[key] == "") {
@@ -192,19 +192,19 @@ export default {
                 this.error("端口号不能少于1");
                 return;
             }
-            axios.post("setting?optation=email", this.email).then(response => {
-                const { success } = response.data;
-                if (!success) {
-                    this.error("修改失败");
-                } else {
-                    this.$store.commit(
-                        "init/success",
-                        "邮箱配置信息修改成功！"
-                    );
-                }
-            });
+
+            const response = await axios.post(
+                "setting?optation=email",
+                this.email
+            );
+            const { success } = response.data;
+            if (!success) {
+                this.error("修改失败");
+            } else {
+                this.success("邮箱配置信息修改成功！");
+            }
         },
-        adminSubmit() {
+        async adminSubmit() {
             if (!this.administrator.username || !this.administrator.password) {
                 this.error("请填写完整参数！");
                 return;
@@ -213,17 +213,19 @@ export default {
                 this.error("密码长度不能少于6位数");
                 return;
             }
-            axios.post("setting?optation=administrator", this.administrator).then((response) => {
-                const { success } = response.data;
-                if (!success) {
-                    this.error("修改失败");
-                } else {
-                    this.$store.commit(
-                        "init/success",
-                        "管理员登录信息修改成功！"
-                    );
-                }
-            });
+
+            const response = await axios.post(
+                "setting?optation=administrator",
+                this.administrator
+            );
+
+            const { success } = response.data;
+            
+            if (!success) {
+                this.error("修改失败");
+            } else {
+                this.success("管理员登录信息修改成功！");
+            }
         }
     },
     watch: {
@@ -267,16 +269,15 @@ export default {
             deep: true
         }
     },
-    created() {
+    async created() {
         // 要获取 数据库配置信息 邮箱配置信息 管理员账户
-        axios.post("setting").then(response => {
-            const { success } = response.data;
-            if (!success) {
-                this.error("获取数据失败");
-                return;
-            }
-            this.initInfor(response.data);
-        });
+        const response = await axios.post("setting");
+        const { success } = response.data;
+        if (!success) {
+            this.error("获取数据失败");
+            return;
+        }
+        this.initInfor(response.data);
     }
 };
 </script>

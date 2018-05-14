@@ -54,3 +54,8 @@ export async function uploadImg(photo) {
     const { name } = response.data;
     return name ? name : false;
 }
+
+export function getActive(active) {
+    let n = Number(active);
+            return isNaN(n) ? 1 : n;
+}

@@ -1,72 +1,72 @@
 <template>
-  <div>
-      <el-card class="box-card">
-        <div class="li-top">
-          <div>
-            <el-button type="danger" plain @click="deletes">删除</el-button>
-            <el-button type="primary" plain @click="add">添加用户</el-button>
-          </div>
-
-          <div>
-            <el-form :inline="true" class="demo-form-inline">
-              <el-form-item label="搜索:">
-                <el-input type="search" v-model="cptext" placeholder="输入要搜索用户的信息"></el-input>
-              </el-form-item>
-
-              <el-form-item label="选择字段:">
-                <el-select v-model="cpcolumn" placeholder="选择搜索字段">
-                  <el-option label="用户姓名" value="1"></el-option>
-                  <el-option label="用户账号" value="2"></el-option>
-                  <el-option label="用户邮箱" value="3"></el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item label="选择分组:">
-                <el-select v-model="cpclass" placeholder="所有用户">
-                  <el-option label="所有用户" value=""></el-option>
-                  <el-option v-for="(key, index) in oclass" :key="index" :label="key.name" :value="key.id"></el-option>
-                </el-select>
-              </el-form-item>
-
-              <el-form-item v-if="showRestore">
-                <el-button @click="restore">还原</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
+<div>
+    <el-card class="box-card">
+    <div class="li-top">
+        <div>
+        <el-button type="danger" plain @click="deletes">删除</el-button>
+        <el-button type="primary" plain @click="add">添加用户</el-button>
         </div>
 
-        <el-table ref="multipleTable" tooltip-effect="dark" :data="cplists" border  @selection-change="deleteUserChange">
-          <el-table-column type="selection" width="38"></el-table-column>
-          <el-table-column prop="id" label="id" width="55"></el-table-column>
-          <el-table-column prop="username" label="账号" width=""></el-table-column>
-          <el-table-column prop="name" label="姓名" width=""></el-table-column>
-          <el-table-column prop="sex" label="性别" width="70"></el-table-column>
-          <el-table-column prop="age" label="年龄" width="70"></el-table-column>
-          <el-table-column prop="email" label="邮箱" width=""></el-table-column>
-          <el-table-column prop="class" label="分组" width=""></el-table-column>
-          <el-table-column prop="logindate" label="最近登陆时间" width=""></el-table-column>
-          <el-table-column prop="resdate" label="注册时间" width="120"></el-table-column>
-          <el-table-column prop="issystem" label="测试账户" width="80"></el-table-column>
-          <el-table-column fixed="right" label="操作" width="150">
-              <template slot-scope="scope">
-                <el-button type="primary" size="small" plain @click="$router.push({ name: 'UpdateUser', params: { id: scope.row.id } })">修改</el-button>
-                <el-button type="danger" size="small" plain @click="odelete(scope.row.id, scope.$index)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div>
+        <el-form :inline="true" class="demo-form-inline">
+            <el-form-item label="搜索:">
+            <el-input type="search" v-model="cptext" placeholder="输入要搜索用户的信息"></el-input>
+            </el-form-item>
 
-        <div class="page-box">
-            <el-pagination 
-                background 
-                layout="prev, pager, next" 
-                :current-page="cppage" 
-                :total="count" 
-                :page-size="n" 
-                @current-change="togglePage">
-            </el-pagination>
+            <el-form-item label="选择字段:">
+            <el-select v-model="cpcolumn" placeholder="选择搜索字段">
+                <el-option label="用户姓名" value="1"></el-option>
+                <el-option label="用户账号" value="2"></el-option>
+                <el-option label="用户邮箱" value="3"></el-option>
+            </el-select>
+            </el-form-item>
+
+            <el-form-item label="选择分组:">
+            <el-select v-model="cpclass" placeholder="所有用户">
+                <el-option label="所有用户" value=""></el-option>
+                <el-option v-for="(key, index) in oclass" :key="index" :label="key.name" :value="key.id"></el-option>
+            </el-select>
+            </el-form-item>
+
+            <el-form-item v-if="showRestore">
+            <el-button @click="restore">还原</el-button>
+            </el-form-item>
+        </el-form>
         </div>
-      </el-card>
-  </div>
+    </div>
+
+    <el-table ref="multipleTable" tooltip-effect="dark" :data="cplists" border  @selection-change="deleteUserChange">
+        <el-table-column type="selection" width="38"></el-table-column>
+        <el-table-column prop="id" label="id" width="55"></el-table-column>
+        <el-table-column prop="username" label="账号" width=""></el-table-column>
+        <el-table-column prop="name" label="姓名" width=""></el-table-column>
+        <el-table-column prop="sex" label="性别" width="70"></el-table-column>
+        <el-table-column prop="age" label="年龄" width="70"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width=""></el-table-column>
+        <el-table-column prop="class" label="分组" width=""></el-table-column>
+        <el-table-column prop="logindate" label="最近登陆时间" width=""></el-table-column>
+        <el-table-column prop="resdate" label="注册时间" width="120"></el-table-column>
+        <el-table-column prop="issystem" label="测试账户" width="80"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="150">
+            <template slot-scope="scope">
+            <el-button type="primary" size="small" plain @click="$router.push({ name: 'UpdateUser', params: { id: scope.row.id } })">修改</el-button>
+            <el-button type="danger" size="small" plain @click="odelete(scope.row.id, scope.$index)">删除</el-button>
+        </template>
+        </el-table-column>
+    </el-table>
+
+    <div class="page-box">
+        <el-pagination 
+            background 
+            layout="prev, pager, next" 
+            :current-page="cppage" 
+            :total="count" 
+            :page-size="n" 
+            @current-change="togglePage">
+        </el-pagination>
+    </div>
+    </el-card>
+</div>
 </template>
 
 <style lang="scss" scoped>
@@ -84,7 +84,9 @@
 <script>
 import axios from "../axios";
 import { getDate, getClassName, getAge } from "../fn";
+import commonMixin from "../commonMixin";
 export default {
+    name: "UserList",
     data() {
         return {
             lists: [],
@@ -95,6 +97,7 @@ export default {
             showRestore: false
         };
     },
+    mixins: [commonMixin],
     methods: {
         deleteUserChange(val) {
             this.deleteuser = val;
@@ -121,54 +124,46 @@ export default {
         },
         odelete(id, index) {
             if (!id || typeof index != "number") {
-                this.$store.commit("init/error", "请指定要删除用户的id");
+                this.error("请指定要删除用户的id");
                 return;
             }
-            this.$store.commit("init/confirm", {
-                title: "你确定要删除该用户吗？",
-                callback: () => {
-                    axios
-                        .post("userlist?optation=delete", { id })
-                        .then(response => {
-                            if (!response.data.success) {
-                                this.$store.commit("init/error", "删除失败");
-                                return;
-                            }
-                            this.lists.splice(index, 1);
-                        });
+
+            this.confirm("你确定要删除该用户吗？", async () => {
+                const response = await axios.post("userlist?optation=delete", {
+                    id
+                });
+                if (!response.data.success) {
+                    this.error("删除失败!");
+                    return;
                 }
+                this.lists.splice(index, 1);
             });
         },
         deletes() {
             if (this.deleteuser.length == 0) {
-                this.$store.commit("init/error", "请选择要删除的用户");
+                this.error("请选择要删除的用户");
                 return;
             }
             let ids = this.deleteuser.map(item => item.id);
-            this.$store.commit("init/confirm", {
-                title: "你确定要删除这些用户吗？",
-                callback: () => {
-                    axios
-                        .post("userlist?optation=delete", { ids })
-                        .then(response => {
-                            if (!response.data.success) {
-                                this.$store.commit("init/error", "删除失败");
-                                return;
-                            }
-                            for (let i = 0; i < this.lists.length; i++) {
-                                let item = this.lists[i];
-                                for (
-                                    let j = 0;
-                                    j < this.deleteuser.length;
-                                    j++
-                                ) {
-                                    if (item.id == this.deleteuser[j].id) {
-                                        this.lists.splice(i, 1);
-                                        i--;
-                                    }
-                                }
-                            }
-                        });
+
+            this.confirm("你确定要删除这些用户吗？", async () => {
+                const response = await axios.post("userlist?optation=delete", {
+                    ids
+                });
+
+                if (!response.data.success) {
+                    this.error("删除失败");
+                    return;
+                }
+
+                for (let i = 0; i < this.lists.length; i++) {
+                    let item = this.lists[i];
+                    for (let j = 0; j < this.deleteuser.length; j++) {
+                        if (item.id == this.deleteuser[j].id) {
+                            this.lists.splice(i, 1);
+                            i--;
+                        }
+                    }
                 }
             });
         },
@@ -240,7 +235,7 @@ export default {
     },
     watch: {
         "$route.query": {
-            handler(newval, oddval) {
+            async handler(newval, oddval) {
                 if (
                     newval.text ||
                     (newval.column && newval.column != 1) ||
@@ -251,32 +246,31 @@ export default {
                     this.showRestore = false;
                 }
 
-                axios
-                    .post("userlist", { ...newval, _load: true })
-                    .then(response => {
-                        const {
-                            success,
-                            lists,
-                            class: oclass,
-                            count,
-                            n
-                        } = response.data;
-                        if (!success) {
-                            this.$store.commit(
-                                "init/error",
-                                "获取用户列表失败"
-                            );
-                            return;
-                        }
-                        this.lists = lists;
-                        this.oclass = oclass;
-                        this.count = count;
-                        this.n = n;
-                    });
+                const response = await axios.post("userlist", {
+                    ...newval,
+                    _load: true
+                });
+
+                const {
+                    success,
+                    lists,
+                    class: oclass,
+                    count,
+                    n
+                } = response.data;
+
+                if (!success) {
+                    this.error("获取用户列表失败");
+                    return;
+                }
+
+                this.lists = lists;
+                this.oclass = oclass;
+                this.count = count;
+                this.n = n;
             },
             immediate: true
         }
     }
 };
 </script>
-
