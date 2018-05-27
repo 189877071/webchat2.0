@@ -6,15 +6,13 @@ import { Animated, Easing } from 'react-native'
 
 import Box from '../components/Box'
 
-import { LogoImg, Webchat, LogoBox } from '../components/Logo'
+import { LogoImg, WebchatImg, LogoBox, Background } from '../components/Image'
 
-import LgForm from '../components/LgForm'
+import { LoginForm } from '../components/Input'
 
-import LgBottom from '../components/LgBottom'
+import { LoginBottom } from '../components/Bottom'
 
-import LgBg from '../components/LgBg'
-
-import { ratio } from '../public/config'
+import { ratio } from '../public/fn'
 
 class Login extends Component {
     constructor(props) {
@@ -46,22 +44,22 @@ class Login extends Component {
             transform: [{
                 translateY: this.state.translateY.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, -400 / ratio]
+                    outputRange: [0, -ratio(400)]
                 })
             }]
         };
-        const bottom = this.props.keyboard || <LgBottom />;
+        const bottom = this.props.keyboard || <LoginBottom />;
         return (
             <Box>
-                <LgBg />
+                <Background active='login' />
                 <Animated.View style={transform}>
                     <LogoBox>
                         <Animated.View style={{ opacity: this.state.opacity }}>
                             <LogoImg />
                         </Animated.View>
-                        <Webchat />
+                        <WebchatImg />
                     </LogoBox>
-                    <LgForm />
+                    <LoginForm />
                 </Animated.View>
                 {bottom}
             </Box>

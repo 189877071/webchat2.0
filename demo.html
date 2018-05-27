@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width='device-width', initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas></canvas>
+</body>
+</html>
+<script>
+    var oCanvas = document.querySelector('canvas');
+    var content = oCanvas.getContext('2d');
+    
+    oCanvas.width = parseFloat(window.innerWidth);
+    
+    oCanvas.height = 100;
+
+    content.shadowColor = 'rgba(0,0,0,.8)';
+
+    content.shadowOffsetX = 0;
+
+    content.shadowOffsetY = 0;
+
+    content.shadowBlur = 10;
+
+    content.font = '30px 微软雅黑';
+
+    content.fillStyle = '#fff';
+
+    content.textAlign = 'center';
+
+    content.textBaseline = 'middle';
+
+    content.fillText('现在学习也不晚', oCanvas.width / 2, 50);
+
+    content.restore();
+</script>

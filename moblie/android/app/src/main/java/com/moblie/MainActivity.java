@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.mehcode.reactnative.splashscreen.SplashScreen;
 
 import com.facebook.react.ReactActivity;
+import com.horcrux.svg.SvgPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainActivity extends ReactActivity {

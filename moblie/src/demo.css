@@ -1,4 +1,7 @@
 body {
     position: absolute;
-    line-height: 
+    line-height: 0;
+    overflow: hidden;
+    border-radius: '';
+    align-items: 
 }

@@ -9,9 +9,9 @@ const { tables, static } = require('../common/config');
 const { getVerify, writeFileAsync } = require('../common/fn');
 
 const [userRex, passRex, emailRex, n] = [
-    /^[a-z0-9_-]{5,20}$/,
-    /^[a-z0-9_-]{6,20}$/,
-    /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/,
+    /^[A-Za-z0-9_-]{5,20}$/,
+    /^[A-Za-z0-9_-]{6,20}$/,
+    /^([A-Za-z0-9_\.-]+)@([\dA-Za-z\.-]+)\.([A-Za-z\.]{2,6})$/,
     15
 ];
 
