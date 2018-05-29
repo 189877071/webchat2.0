@@ -29,10 +29,10 @@ app.use(bodyParse());
 
 app.use(session());
 
-app.use(async (ctx, next) => {
-    ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
-    await next();
-});
+// app.use(async (ctx, next) => {
+//     ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
+//     await next();
+// });
 
 app.use(adminRouter.routes());
 
