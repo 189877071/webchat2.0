@@ -4,7 +4,7 @@ import { View, TextInput, StyleSheet, Button, Text } from 'react-native'
 
 import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
-import { ratio, windowW } from '../public/fn'
+import { ratio, windowW, ofetch } from '../public/fn'
 
 import { BigButton } from './Button'
 
@@ -22,6 +22,18 @@ const style = StyleSheet.create({
         height: ratio(116),
         marginTop: ratio(50),
         paddingLeft: ratio(20),
+        position: 'relative'
+    },
+    err: {
+        position: 'absolute',
+        right: ratio(10),
+        top: 0,
+        height: ratio(116),
+        justifyContent: 'center'
+    },
+    errText: {
+        color: '#f00',
+        fontSize: ratio(38)
     },
     input: {
         width: windowW - pleft - pright - ratio(20),
@@ -67,8 +79,13 @@ const style = StyleSheet.create({
 });
 
 export class BigInput extends PureComponent {
+    errorView = () => (
+        <View style={style.err}>
+            <Text style={style.errText}>{this.props.error}</Text>
+        </View>
+    )
     render() {
-        const { borderColor, placeholder, password } = this.props;
+        const { borderColor, placeholder, password, value, change, maxlength, error } = this.props;
 
         const ostyle = { borderColor: inputBorderColor };
 
@@ -84,7 +101,13 @@ export class BigInput extends PureComponent {
                     placeholderTextColor="#afa6a7"
                     underlineColorAndroid="transparent"
                     secureTextEntry={password ? true : false}
+                    value={value}
+                    onChangeText={change}
+                    maxLength={maxlength}
+                    autoCorrect={false}
+                    blurOnSubmit={true}
                 />
+                {error ? this.errorView() : false}
             </View>
         )
     }
@@ -94,27 +117,79 @@ export class LoginForm extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            checkbox: false
+            autologin: false,
+            username: '',
+            password: '',
+            usererr: '',
+            passerr: ''
         }
     }
-    checkBoxChange = () => {
-        this.setState({ checkbox: this.state.checkbox ? false : true });
+
+    checkBoxChange = () => this.setState({ autologin: this.state.checkbox ? false : true });
+
+    usernameChange = (value) => this.setState({ username: value });
+
+    passwordChange = (value) => this.setState({ password: value });
+
+    submit = async () => {
+        const { username, password, autologin } = this.state;
+
+        const [userRex, passRex, emailRex] = [
+            /^[A-Za-z0-9_]{5,20}$/,
+            /^[A-Za-z0-9_]{6,20}$/,
+            /^([A-Za-z0-9_\.-]+)@([\dA-Za-z\.-]+)\.([A-Za-z\.]{2,6})$/
+        ];
+
+        if (!emailRex.test(username)) {
+            if (/^.{5,20}$/.test(username)) {
+                this.setState({ usererr: '用户名长度为5~20位字符' });
+                return;
+            }
+            if (!userRex.test(username)) {
+                this.setState({ usererr: '用户名只能是字母/数字/下划线' });
+                return;
+            }
+        }
+        if (/^.{6,20}$/.test(password)) {
+            this.setState({ usererr: '密码长度为6~20位字符' });
+            return;
+        }
+        if (!passRex.test(password)) {
+            this.setState({ passerr: '密码只能是字母/数字/下划线' });
+            return;
+        }
+
+        const data = await ofetch('/login', { username, password, autologin });
+
+        
+
     }
+
     render() {
+        const { autologin, username, password, usererr, passerr } = this.state;
         return (
             <View style={style.box}>
                 <BigInput
                     placeholder="用户名/邮箱"
+                    value={username}
+                    change={this.usernameChange}
+                    maxlength={20}
+                    error={usererr}
                 />
                 <BigInput
                     placeholder="密码"
                     password
+                    value={password}
+                    change={this.passwordChange}
+                    maxlength={20}
+                    error={passerr}
                 />
                 <BigButton
                     title="登 录"
+                    onPress={this.submit}
                 />
                 <LoginFormBottom
-                    value={this.state.checkbox}
+                    value={autologin}
                     valueChange={this.checkBoxChange}
                 />
             </View>

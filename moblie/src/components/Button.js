@@ -36,12 +36,13 @@ const styles = StyleSheet.create({
 
 export class BigButton extends PureComponent {
     render() {
+        const { title, onPress } = this.props;
         return (
             <View style={styles.btnbox}>
                 <Button
-                    title={this.props.title}
+                    title={title}
                     color={btnColor}
-                    onPress={() => { }}
+                    onPress={onPress}
                 />
             </View>
         )

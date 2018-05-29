@@ -9,7 +9,7 @@ import Index from '../containers/Index'
 export default createSwitchNavigator(
     {
         loading: Loading,
-        login: Loading,
+        login: Login,
         index: Index
     }, 
     {

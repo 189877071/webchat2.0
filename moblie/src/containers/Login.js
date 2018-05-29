@@ -22,6 +22,7 @@ class Login extends Component {
             translateY: new Animated.Value(0)
         }
     }
+
     showlogo(onoff) {
         Animated.parallel([
             Animated.timing(this.state.opacity, {
@@ -36,9 +37,11 @@ class Login extends Component {
             })
         ]).start();
     }
+
     componentWillUpdate() {
         this.showlogo(this.props.keyboard);
     }
+
     render() {
         const transform = {
             transform: [{
@@ -48,7 +51,9 @@ class Login extends Component {
                 })
             }]
         };
+
         const bottom = this.props.keyboard || <LoginBottom />;
+
         return (
             <Box>
                 <Background active='login' />
@@ -59,7 +64,7 @@ class Login extends Component {
                         </Animated.View>
                         <WebchatImg />
                     </LogoBox>
-                    <LoginForm />
+                    <LoginForm navigation={this.props.navigation} />
                 </Animated.View>
                 {bottom}
             </Box>
@@ -67,8 +72,7 @@ class Login extends Component {
     }
 }
 
-export default connect((state, props) => {
-    return {
-        keyboard: state.c.keyboard
-    }
-})(Login);
+export default connect((state, props) => ({
+    keyboard: state.c.keyboard,
+    navigation: props.navigation,
+}))(Login);

@@ -4,6 +4,8 @@ import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 import { headerBackground, hostname } from '../public/config'
 
+import { ofetch } from '../public/fn'
+
 import { connect } from 'react-redux';
 
 import Box from '../components/Box'
@@ -23,17 +25,10 @@ class Container extends Component {
         this.init();
     }
     async init() {
-        // 先获取 
-        const response = await fetch(hostname + '/init', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'credentials': "include"
-            },
-        });
 
-        this.props.navigation.navigate(response.success ? 'index' : 'login');
+        const data = await ofetch('/init');
+
+        this.props.navigation.navigate(data.success ? 'index' : 'login');
     }
     render() {
         return (

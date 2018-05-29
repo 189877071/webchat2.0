@@ -24,6 +24,11 @@ app.use(cors({
 
 app.use(static(join(__dirname, 'static')));
 
+app.use((ctx, next) => {
+    ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
+    next();
+})
+
 app.use(ueditor.routes());
 
 app.use(bodyParse());
