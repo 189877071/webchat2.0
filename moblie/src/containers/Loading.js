@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
-import { headerBackground } from '../public/config'
+import { headerBackground, hostname } from '../public/config'
 
 import { connect } from 'react-redux';
 
@@ -17,6 +17,19 @@ const styles = StyleSheet.create({
 })
 
 class Container extends Component {
+    async constructor(props) {
+        super(props);
+        this.state = {};
+        // 先获取 
+        await fetch(hostname + '/init', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'credentials': "include"
+            },
+        })
+    }
     render() {
         return (
             <Box>

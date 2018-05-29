@@ -12,7 +12,10 @@ const ueditor = require('./ueditor');
 const app = new Koa();
 
 app.use(cors({
-    origin: (ctx) => (origin.indexOf != -1) ? ctx.headers.origin : false,
+    origin: (ctx) => {
+        console.log(ctx.headers.origin)
+        return (origin.indexOf != -1) ? ctx.headers.origin : false;
+    },
     credentials: true
 }));
 
