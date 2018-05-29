@@ -18,10 +18,11 @@ export function ratio(w) {
 }
 
 export async function ofetch(url, data) {
-    
+
     const response = await fetch(hostname + url, {
         method: 'POST',
         headers: {
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
             'credentials': "include"
         },
