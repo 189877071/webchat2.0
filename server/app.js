@@ -13,7 +13,6 @@ const app = new Koa();
 
 app.use(cors({
     origin: (ctx) => {
-        console.log(ctx.headers.origin)
         if(!ctx.headers.origin) {
             return '*';
         }

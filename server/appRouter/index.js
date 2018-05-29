@@ -14,6 +14,8 @@ const islogin = (ctx, next) => {
 
 router.post('/init', require('./init'));
 
+router.post('/login', require('./login'));
+
 router.get('*', (ctx) => {
     ctx.status = 404;
     ctx.body = { error: 404, success: false };

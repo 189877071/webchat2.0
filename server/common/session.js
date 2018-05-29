@@ -18,9 +18,21 @@ class MysqlStore {
 
     async create() {
         const id = uuid();
+
         this.id = id;
+
         this.ctx.cookies.set(sessionName, id);
-        this.ctx.session = {};
+
+        this.ctx.session = new Proxy({ _null: true }, {
+            get(target, key) {
+                return target[key];
+            },
+            set(target, key, value) {
+                _this.isAlter = true;
+                target[key] = value;
+            }
+        });
+
         const oSql = sql
             .table(session)
             .data({ id, data: JSON.stringify(this.ctx.session), expires: Date.now() })
@@ -49,7 +61,9 @@ class MysqlStore {
         const results = await db(oSql);
         try {
             const _this = this;
+            
             const session = (results || results[0] || results[0].data) ? JSON.parse(results[0].data) : { _null: true };
+
             this.ctx.session = new Proxy(session, {
                 get(target, key) {
                     return target[key];
@@ -97,13 +111,13 @@ async function sessionTo(ctx, next) {
     await oMysqlStore.get();
     // 跟新session时间
     await oMysqlStore.updateExpires();
-    
+
     // ##~~%%^^%%
     await next();
 
     // 跟新或者销毁session
     if (ctx.session && Object.keys(ctx.session).length) {
-        
+
         delete ctx.session['_null'];
 
         if (oMysqlStore.isAlter) {

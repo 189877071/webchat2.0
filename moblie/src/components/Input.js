@@ -161,8 +161,11 @@ export class LoginForm extends PureComponent {
 
         const data = await ofetch('/login', { username, password, autologin });
 
-        
-
+        if(data.success) {
+            this.props.navigation.navigate('index');
+            return;
+        }
+        alert('用户名或密码错误');
     }
 
     render() {
