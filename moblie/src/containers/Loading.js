@@ -17,18 +17,23 @@ const styles = StyleSheet.create({
 })
 
 class Container extends Component {
-    async constructor(props) {
+    constructor(props) {
         super(props);
         this.state = {};
+        this.init();
+    }
+    async init() {
         // 先获取 
-        await fetch(hostname + '/init', {
+        const response = await fetch(hostname + '/init', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'credentials': "include"
             },
-        })
+        });
+
+        this.props.navigation.navigate(response.success ? 'index' : 'login');
     }
     render() {
         return (
@@ -43,4 +48,6 @@ class Container extends Component {
     }
 }
 
-export default connect((state, props) => ({}), (dispatch, props) => ({}))(Container);
+export default connect((state, props) => ({
+    navigation: props.navigation
+}), (dispatch, props) => ({}))(Container);

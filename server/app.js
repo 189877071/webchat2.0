@@ -14,6 +14,9 @@ const app = new Koa();
 app.use(cors({
     origin: (ctx) => {
         console.log(ctx.headers.origin)
+        if(!ctx.headers.origin) {
+            return '*';
+        }
         return (origin.indexOf != -1) ? ctx.headers.origin : false;
     },
     credentials: true
