@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import SplashScreen from 'rn-splash-screen'
 import { Keyboard } from 'react-native'
 
-import Navigator from './containers/Navigator'
+import Router from './Router'
 
 import { Provider } from 'react-redux'
 
@@ -14,7 +14,7 @@ export default class App extends Component {
     render() {
         return (
             <Provider store={store}>
-                <Navigator />
+                <Router />
             </Provider>
         )
     }
