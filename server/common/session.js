@@ -135,6 +135,7 @@ async function sessionTo(ctx, next) {
     }
     // 跟新或者销毁session
     if (ctx.session && Object.keys(ctx.session).length) {
+        console.log('3')
         if (oMysqlStore.isAlter) {
             await oMysqlStore.set();
         }
