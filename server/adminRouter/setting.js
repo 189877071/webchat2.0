@@ -54,6 +54,7 @@ module.exports = async (ctx) => {
         ctx.body = { success: true };
     }
 
+    console.log('1')
     const sendData = async () => {
         
         const mysql = await readFileAsync(join(__dirname, '../common/db.config.json'));
@@ -72,6 +73,7 @@ module.exports = async (ctx) => {
             email,
             administrator: administrator[0]
         }
+        console.log('2')
     }
 
     const setMysqlConfig = async () => {
