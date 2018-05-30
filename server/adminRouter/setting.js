@@ -56,7 +56,7 @@ module.exports = async (ctx) => {
 
     console.log('1')
     const sendData = async () => {
-        
+
         const mysql = await readFileAsync(join(__dirname, '../common/db.config.json'));
         const email = await readFileAsync(join(__dirname, '../common/email.config.json'));
         const sqlstr = sql.table(tables.dbadminUser).field('username').select();
@@ -127,15 +127,15 @@ module.exports = async (ctx) => {
 
     switch (optation) {
         case 'mysql':
-            setMysqlConfig();
+            await setMysqlConfig();
             return;
         case 'email':
-            setEmailConfig();
+            await setEmailConfig();
             return;
         case 'administrator':
-            setAdministratorConfig();
+            await setAdministratorConfig();
             return;
         default:
-            sendData();
+            await sendData();
     }
 }
