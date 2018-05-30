@@ -61,7 +61,7 @@ class MysqlStore {
             .select();
 
         const results = await db(oSql);
-        
+
         try {
             const _this = this;
 
@@ -133,6 +133,7 @@ async function sessionTo(ctx, next) {
     }
     // 跟新或者销毁session
     if (ctx.session && Object.keys(ctx.session).length) {
+        console.log(ctx.session)
         if (oMysqlStore.isAlter) {
             await oMysqlStore.set();
         }
