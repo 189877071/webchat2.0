@@ -4,9 +4,9 @@ const router = new Router({
     prefix: '/app'
 });
 
-const islogin = (ctx, next) => {
+const islogin = async (ctx, next) => {
     if (ctx.session && ctx.session.mlogin) {
-        next();
+        await next();
         return;
     }
     ctx.body = { success: false, error: 0 };

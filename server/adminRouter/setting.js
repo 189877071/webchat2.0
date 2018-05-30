@@ -55,6 +55,7 @@ module.exports = async (ctx) => {
     }
 
     const sendData = async () => {
+        
         const mysql = await readFileAsync(join(__dirname, '../common/db.config.json'));
         const email = await readFileAsync(join(__dirname, '../common/email.config.json'));
         const sqlstr = sql.table(tables.dbadminUser).field('username').select();

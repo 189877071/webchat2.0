@@ -6,9 +6,9 @@ const router = new Router({
     prefix: '/admin'
 });
 
-const islogin = (ctx, next) => {
+const islogin = async (ctx, next) => {
     if (ctx.session && ctx.session.login) {
-        next();
+        await next();
         return;
     }
     ctx.body = { success: false, error: 0 };
@@ -29,6 +29,7 @@ router.post('/headphoto', islogin, require('./headphoto'));
 router.all('/notice', islogin, require('./notice'));
 
 router.get('*', (ctx) => {
+    
     ctx.status = 404;
     ctx.body = { error: 404, success: false };
 })
