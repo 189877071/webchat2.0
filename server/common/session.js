@@ -46,6 +46,7 @@ class MysqlStore {
             .data({ data: JSON.stringify(this.ctx.session) })
             .where({ id: this.id })
             .update();
+        console.log(oSql);
         return await db(oSql);
     }
 
@@ -133,7 +134,7 @@ async function sessionTo(ctx, next) {
     }
     // 跟新或者销毁session
     if (ctx.session && Object.keys(ctx.session).length) {
-        console.log(ctx.session, oMysqlStore.isAlter);
+
         if (oMysqlStore.isAlter) {
             await oMysqlStore.set();
         }
