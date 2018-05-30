@@ -21,9 +21,9 @@ module.exports = (ctx) => {
         }
 
         // 保存
-        const results = await mysql( sql.table( tables.dbphoto ).data( { url: name } ).insert() );
+        const results = await mysql(sql.table(tables.dbphoto).data({ url: name }).insert());
 
-        if(!results) {
+        if (!results) {
             error();
             return;
         }
@@ -34,11 +34,11 @@ module.exports = (ctx) => {
     // 获取图片 每次获取 n 张图片
     const getdata = async () => {
         // 获取全都数据  Id 降序
-        let sqlstr = sql.table( tables.dbphoto ).order('id desc').select();
+        let sqlstr = sql.table(tables.dbphoto).order('id desc').select();
 
-        const results = await mysql( sqlstr );
+        const results = await mysql(sqlstr);
 
-        if(!results) {
+        if (!results) {
             error();
             return;
         }
@@ -49,14 +49,14 @@ module.exports = (ctx) => {
     // 删除
     const deleted = async () => {
         const { id } = ctx.request.body;
-        if(!id) {
+        if (!id) {
             error();
             return;
         }
 
-        const results = await mysql( sql.table( tables.dbphoto ).where({ id }).delet() );
+        const results = await mysql(sql.table(tables.dbphoto).where({ id }).delet());
 
-        if(!results) {
+        if (!results) {
             error(1);
             return;
         }
@@ -66,12 +66,12 @@ module.exports = (ctx) => {
 
     switch (optation) {
         case 'add':
-            updated();
+            await updated();
             break;
         case 'deleted':
-            deleted();
+            await deleted();
             break;
         default:
-            getdata();
+            await getdata();
     }
 }

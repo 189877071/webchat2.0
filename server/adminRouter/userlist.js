@@ -343,29 +343,29 @@ module.exports = async (ctx) => {
 
     switch (optation) {
         case 'delete':
-            odelete();
+            await odelete();
             break;
         case 'class':
-            getClass();
+            await getClass();
             break;
         case 'add':
-            insert();
+            await insert();
         case 'adds':
-            inserts();
+            await inserts();
             break;
         case 'username':
-            testUsername();
+            await testUsername();
             break;
         case 'email':
-            testEmail();
+            await testEmail();
             break;
         case 'update':
-            update();
+            await update();
             break;
         case 'user':
-            getUserData();
+            await getUserData();
             break;
         default:
-            getUsers();
+            await getUsers();
     }
 }

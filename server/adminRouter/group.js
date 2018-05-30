@@ -122,7 +122,7 @@ module.exports = (ctx) => {
     // 查询 分组名是否已存在
     const selectName = async () => {
         const { name, id } = ctx.request.body;
- 
+
         if (!name) {
             error();
             return;
@@ -133,7 +133,7 @@ module.exports = (ctx) => {
         if (id) {
             where.id = { neq: id };
         }
-        
+
         const results = await mysql(sql.table(tables.dbclass).where(where).select());
 
         if (!results) {
@@ -146,19 +146,19 @@ module.exports = (ctx) => {
 
     switch (optation) {
         case 'add':
-            insert();
+            await insert();
             break;
         case 'delete':
-            odelete();
+            await odelete();
             break;
         case 'update':
-            oupdate();
+            await oupdate();
             break;
         case 'seluser':
-            seluser();
+            await seluser();
             break;
         case 'name':
-            selectName();
+            await selectName();
             break;
         default:
             error();

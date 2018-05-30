@@ -104,15 +104,15 @@ module.exports = (ctx) => {
 
     switch (optation) {
         case 'add':
-            insetr();
+            await insetr();
             break;
         case 'delete':
-            deleted();
+            await deleted();
             break;
         case 'update':
-            updated();
+            await updated();
             break;
         default:
-            select();
+            await select();
     }
 }
