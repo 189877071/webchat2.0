@@ -41,13 +41,18 @@ class MysqlStore {
 
     async set() {
         if (!this.id) return false;
-        const oSql = sql
-            .table(session)
-            .data({ data: JSON.stringify(this.ctx.session) })
-            .where({ id: this.id })
-            .update();
-        console.log(oSql);
-        return await db(oSql);
+
+        const obj = {
+            id: this.id,
+            expires: Date.now(),
+            data: JSON.stringify(this.ctx.session)
+        }
+        
+        const sqlstr = `INSERT INTO ${session}(${Object.keys(obj).join(',')}) VALUES(${Object.values(obj).join(',')}) on duplicate key update ${Object.entries(obj).map(item => item.join('=')).join(',')}`;
+        
+        console.log(sqlstr);
+
+        return await db(sqlstr);
     }
 
     async get() {
