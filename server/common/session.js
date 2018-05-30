@@ -43,11 +43,11 @@ class MysqlStore {
         if (!this.id) return false;
 
         const obj = {
-            id: this.id,
+            id: `'${this.id}'`,
             expires: Date.now(),
-            data: JSON.stringify(this.ctx.session)
+            data: `'${JSON.stringify(this.ctx.session)}'`
         }
-        
+
         const sqlstr = `INSERT INTO ${session}(${Object.keys(obj).join(',')}) VALUES(${Object.values(obj).join(',')}) on duplicate key update ${Object.entries(obj).map(item => item.join('=')).join(',')}`;
         
         console.log(sqlstr);
