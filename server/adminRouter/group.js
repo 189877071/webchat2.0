@@ -2,7 +2,7 @@ const sql = require('node-transform-mysql');
 const mysql = require('../common/db');
 const { tables } = require('../common/config');
 
-module.exports = (ctx) => {
+module.exports = async (ctx) => {
 
     const { optation } = ctx.query;
 

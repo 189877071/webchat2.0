@@ -4,7 +4,7 @@ const sql = require('node-transform-mysql');
 
 const { tables } = require('../common/config');
 
-module.exports = (ctx) => {
+module.exports = async (ctx) => {
     const { optation } = ctx.query;
 
     const error = (error = 0) => ctx.body = { error, success: false };
