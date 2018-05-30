@@ -137,14 +137,12 @@ async function sessionTo(ctx, next) {
     }
     // 跟新或者销毁session
     if (ctx.session && Object.keys(ctx.session).length) {
-
         if (oMysqlStore.isAlter) {
             await oMysqlStore.set();
         }
     }
     else {
         await oMysqlStore.destory();
-        ctx.cookies.set(sessionName, '');
     }
 }
 

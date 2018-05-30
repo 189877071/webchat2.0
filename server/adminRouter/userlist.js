@@ -350,6 +350,7 @@ module.exports = async (ctx) => {
             break;
         case 'add':
             await insert();
+            break;
         case 'adds':
             await inserts();
             break;

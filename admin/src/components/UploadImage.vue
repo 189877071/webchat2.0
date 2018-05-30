@@ -179,7 +179,8 @@ export default {
         delet(index) {
             let arr = [...this.imgsrc];
             arr.splice(index, 1);
-            this.$emit("change", arr);
+            this.$emit("change", []);
+            this.$nextTick(() => this.$emit("change", arr))
         }
     },
     data() {
