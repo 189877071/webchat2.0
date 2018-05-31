@@ -1,4 +1,6 @@
-import { Dimensions } from 'react-native';
+import { Dimensions, AsyncStorage } from 'react-native';
+
+import Storage from 'react-native-storage'
 
 import { hostname } from './config'
 
@@ -30,4 +32,22 @@ export async function ofetch(url, data) {
     });
 
     return await response.json();
+}
+
+export const storage = new Storage({
+    size: 1000,
+    storageBackend: AsyncStorage,
+    defaultExpires: null,
+    enableCache: true,
+    sync: require('./storageSync')
+});
+
+export function getAction(type) {
+    return value => ({ type, value });
+}
+
+export function uuid() {
+    let num = 0;
+    uuid = () => `ACTIONTYPE${num++}`;
+    return uuid();
 }

@@ -25,3 +25,5 @@ export const pleft = ratio(45);
 export const pright = ratio(45);
 
 export const hostname = 'http://39.104.80.68:3000/app';
+
+export const socketurl = 'ws://39.104.80.68:4000';
