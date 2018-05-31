@@ -1,7 +1,7 @@
 const { join } = require('path');
 
 module.exports = {
-    "tables": {
+    tables: {
         "session": "_mysql_session_store",
         "dbadminUser": "chat_adminuser",
         "dbphoto": "chat_photo",
@@ -25,7 +25,7 @@ module.exports = {
         "imageInsertAlign": "none", /* 插入的图片浮动方式 */
         "imageUrlPrefix": "http://127.0.0.1:3000/uploads", /* 图片访问路径前缀 */
         "imagePathFormat": "/uploads/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
-        
+
         /* 涂鸦图片上传配置项 */
         "scrawlActionName": "uploadscrawl", /* 执行上传涂鸦的action名称 */
         "scrawlFieldName": "upfile", /* 提交的图片表单名称 */
@@ -93,5 +93,13 @@ module.exports = {
             ".rar", ".zip", ".tar", ".gz", ".7z", ".bz2", ".cab", ".iso",
             ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"
         ] /* 列出的文件类型 */
+    },
+    server: {
+        http: [
+            { "port": 3000 }
+        ],
+        socket: [
+            { socketport: 4000, udpport: 5000, udphost: '127.0.0.1' }
+        ]
     }
 }

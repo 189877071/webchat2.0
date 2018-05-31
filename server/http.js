@@ -8,12 +8,13 @@ const { origin } = require('./common/config');
 const adminRouter = require('./adminRouter');
 const appRouter = require('./appRouter');
 const ueditor = require('./ueditor');
+const { udpsend, udpexit } = require('./udpServer');
 
 const app = new Koa();
 
 app.use(cors({
     origin: (ctx) => {
-        if(!ctx.headers.origin) {
+        if (!ctx.headers.origin) {
             return '*';
         }
         return (origin.indexOf != -1) ? ctx.headers.origin : false;
@@ -31,6 +32,8 @@ app.use(session());
 
 app.use(async (ctx, next) => {
     ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
+    ctx.udpsend = udpsend;
+    ctx.udpexit = udpexit;
     await next();
 });
 
@@ -42,4 +45,4 @@ app.use(appRouter.routes());
 
 app.use(appRouter.allowedMethods());
 
-app.listen(3000);
+process.on('message', ({ port }) => app.listen(port));

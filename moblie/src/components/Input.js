@@ -141,7 +141,7 @@ export class LoginForm extends PureComponent {
         ];
 
         if (!emailRex.test(username)) {
-            if (/^.{5,20}$/.test(username)) {
+            if (!/^.{5,20}$/.test(username)) {
                 this.setState({ usererr: '用户名长度为5~20位字符' });
                 return;
             }
@@ -150,7 +150,7 @@ export class LoginForm extends PureComponent {
                 return;
             }
         }
-        if (/^.{6,20}$/.test(password)) {
+        if (!/^.{6,20}$/.test(password)) {
             this.setState({ usererr: '密码长度为6~20位字符' });
             return;
         }
@@ -159,13 +159,16 @@ export class LoginForm extends PureComponent {
             return;
         }
 
+        
+
         const data = await ofetch('/login', { username, password, autologin });
 
         if(data.success) {
             this.props.navigation.navigate('index');
             return;
         }
-        alert('用户名或密码错误');
+
+        this.setState({ passerr: '密码输入不正确！' });
     }
 
     render() {
