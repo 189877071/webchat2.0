@@ -22,11 +22,12 @@ class Container extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {};
-        // this.init();
+        // alert(this.props.loginActiveState)
     }
     componentDidUpdate() {
         const { loginActiveState } = this.props;
-        switch (localStorage) {
+
+        switch (loginActiveState) {
             case 1:
                 this.props.navigation.navigate('index');
                 break;
@@ -36,10 +37,7 @@ class Container extends PureComponent {
         }
     }
     async init() {
-
         const data = await ofetch('/init');
-
-
     }
     render() {
         return (

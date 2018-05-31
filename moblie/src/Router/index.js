@@ -6,16 +6,15 @@ import Login from '../containers/Login'
 
 import Index from '../containers/Index'
 
-import Demo from '../containers/Demo'
+// import Demo from '../containers/Demo'
 
 export default createSwitchNavigator(
     {
         loading: Loading,
         login: Login,
-        index: Index,
-        demo: Demo
+        index: Index
     }, 
     {
-        initialRouteName: 'demo'
+        initialRouteName: 'loading'
     }
 )

@@ -2,26 +2,31 @@ import { Dimensions, AsyncStorage } from 'react-native';
 
 import Storage from 'react-native-storage'
 
-import { hostname } from './config'
-
 const { height, width } = Dimensions.get('window');
-
-const _r = 1080 / width;
 
 export const windowW = width;
 
 export const windowH = height;
 
 export function ratio(w) {
-    if (ratio[`${w}`]) return ratio[`${w}`];
-    let ow = w / _r;
-    ratio[`${w}`] = ow;
-    return ow;
+
+    const _r = 1080 / width;
+    
+    let obj = {};
+
+    ratio = w => {
+        if (!obj[w]) {
+            obj[w] = w / _r;
+        }
+        return obj[w];
+    }
+    
+    return ratio(w);
 }
 
 export async function ofetch(url, data) {
 
-    const response = await fetch(hostname + url, {
+    const response = await fetch('http://39.104.80.68:3000/app' + url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -39,7 +44,6 @@ export const storage = new Storage({
     storageBackend: AsyncStorage,
     defaultExpires: null,
     enableCache: true,
-    sync: require('./storageSync')
 });
 
 export function getAction(type) {

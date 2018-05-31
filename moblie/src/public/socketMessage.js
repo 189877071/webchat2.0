@@ -15,13 +15,12 @@ const controller = {
 function message(data) {
     try {
         const MessageObj = JSON.parse(data);
-
-        controller[MessageObj.controller] && controller[data.controller](MessageObj.infor);
+        controller[MessageObj.controller] && controller[MessageObj.controller](MessageObj.infor);
     }
     catch (e) { }
 }
 
-let time = nulll;
+let time = null;
 
 let ws = null;
 

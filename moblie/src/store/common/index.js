@@ -33,7 +33,7 @@ const init = {
 export default function (state = init, action) {
     const { value } = action;
     switch (action.type) {
-        case type.keyboard:
+        case type.Keyboard:
             return { ...state, keyboard: value };
         case type.socketInfor:
             return { ...state, socketInfor: value };

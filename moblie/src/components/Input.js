@@ -10,6 +10,7 @@ import { BigButton } from './Button'
 
 import { LoginFormBottom } from './Bottom'
 
+
 const style = StyleSheet.create({
     box: {
         justifyContent: 'center',
