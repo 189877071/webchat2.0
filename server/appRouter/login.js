@@ -6,8 +6,6 @@ const mysql = require('../common/db');
 
 const { tables, userField } = require('../common/config');
 
-const { userclassify } = require('../common/fn');
-
 const loginMixin = require('./loginMixin');
 
 const [userRex, passRex, emailRex] = [
@@ -23,7 +21,7 @@ module.exports = async (ctx) => {
     // 验证登录
     const verifyLogin = async () => {
         const { username, password, autokey, udphost, udpport, socketid } = ctx.request.body;
-    
+
         if (!udphost || !udpport || !socketid) {
             ctx.oerror('socket信息不存在');
             return;
@@ -47,7 +45,7 @@ module.exports = async (ctx) => {
         }
 
         // 验证用户名或密码是否准确
-        const results = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).select());
+        const results = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).field(userField).select());
 
         if (!results || !results.length) {
             // 用户名或者密码不正确
@@ -61,9 +59,9 @@ module.exports = async (ctx) => {
 
         await mysql(sql.table(tables.dbuser).where({ id: userid }).data({ logindate: otime, loginnum: ++results[0].loginnum }).update());
 
-        const { users, aclass, islogin, loginusers } = await loginMixin(ctx, userid, otime);
+        const data = await loginMixin(ctx, userid, otime, activeuser);
 
-        if (!users || !aclass || !islogin || !loginusers) {
+        if (!data) {
             ctx.oerror('users / aclass / islogin / loginusers 读取出错');
             return;
         }
@@ -77,12 +75,42 @@ module.exports = async (ctx) => {
 
         ctx.session.userid = results[0].id;
 
-        ctx.body = { success: true, data: userclassify(aclass, users, loginusers) };
+        ctx.body = { success: true, data };
     }
 
     // 测试登录
     const testLogin = async () => {
+        // 获取所有登录数据
+        let loginusers = await mysql(sql.table(tables.dblogin).field('userid').select());
+        if (!loginusers) {
+            ctx.oerror('查询登录数据出错');
+            return;
+        }
+        loginusers = loginusers.map(item => item.userid);
 
+        const where = `id not in (${loginusers.join(',')}) and issystem=1`;
+
+        const activeuser = await mysql(sql.table(tables.dbuser).where(where).field(userField).limit(1).select());
+
+        if(!activeuser || !activeuser.length) {
+            ctx.oerror('获取测试用户出错');
+            return;
+        }
+
+        const userid = activeuser[0].id;
+
+        const data = await loginMixin(ctx, userid, Date.now(), activeuser);
+
+        if (!data) {
+            ctx.oerror('users / aclass / islogin / loginusers 读取出错');
+            return;
+        }
+
+        ctx.session.mlogin = true;
+
+        ctx.session.userid = userid;
+
+        ctx.body = { success: true, data };
     }
 
     switch (optation) {

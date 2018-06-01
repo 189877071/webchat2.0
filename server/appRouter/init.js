@@ -4,8 +4,6 @@ const mysql = require('../common/db');
 
 const { tables, userField } = require('../common/config');
 
-const { userclassify } = require('../common/fn');
-
 const loginMixin = require('./loginMixin');
 
 module.exports = async (ctx) => {
@@ -36,17 +34,17 @@ module.exports = async (ctx) => {
     }
 
     // 获取当前用户信息
-    const activeuser = await mysql(sql.table(tables.dbuser).where({ id: userid }).select());
+    const activeuser = await mysql(sql.table(tables.dbuser).where({ id: userid }).field(userField).select());
 
     if (!activeuser || !activeuser.length) {
         ctx.oerror();
         return;
     }
 
-    const { users, aclass, islogin, loginusers } = await loginMixin(ctx, userid, Date.now());
+    const data = await loginMixin(ctx, userid, Date.now(), activeuser);
 
-    if (!users || !aclass || !islogin || !loginusers) {
-        ctx.oerror('users / aclass / islogin 操作出错');
+    if (!data) {
+        ctx.oerror('users / aclass / islogin / loginusers 读取出错');
         return;
     }
 
@@ -54,5 +52,5 @@ module.exports = async (ctx) => {
 
     ctx.session.userid = userid;
 
-    ctx.body = { success: true, data: userclassify(aclass, users, loginusers) };
+    ctx.body = { success: true, data };
 }
