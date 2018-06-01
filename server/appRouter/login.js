@@ -25,7 +25,7 @@ module.exports = async (ctx) => {
         const { username, password, autokey, udphost, udpport, socketid } = ctx.request.body;
         console.log('1')
         if (!udphost || !udpport || !socketid) {
-            ctx.oerror();
+            ctx.oerror('socket信息不存在');
             return;
         }
 
