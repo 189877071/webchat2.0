@@ -39,7 +39,7 @@ module.exports = async (ctx) => {
         let field = 'id,title,otime';
         if (id) {
             where.id = id;
-            field = 'id,title,content';
+            field = 'id,title,content,description';
         }
 
         const sqlstr = sql
