@@ -41,7 +41,7 @@ module.exports = async (ctx) => {
         return;
     }
 
-    const data = await loginMixin(ctx, userid, Date.now(), activeuser);
+    const data = await loginMixin(ctx, userid, Date.now(), activeuser[0]);
 
     if (!data) {
         ctx.oerror('users / aclass / islogin / loginusers 读取出错');

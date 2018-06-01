@@ -59,7 +59,7 @@ module.exports = async (ctx) => {
 
         await mysql(sql.table(tables.dbuser).where({ id: userid }).data({ logindate: otime, loginnum: ++results[0].loginnum }).update());
 
-        const data = await loginMixin(ctx, userid, otime, activeuser);
+        const data = await loginMixin(ctx, userid, otime, results[0]);
 
         if (!data) {
             ctx.oerror('users / aclass / islogin / loginusers 读取出错');
@@ -99,7 +99,7 @@ module.exports = async (ctx) => {
 
         const userid = activeuser[0].id;
 
-        const data = await loginMixin(ctx, userid, Date.now(), activeuser);
+        const data = await loginMixin(ctx, userid, Date.now(), activeuser[0]);
 
         if (!data) {
             ctx.oerror('users / aclass / islogin / loginusers 读取出错');
