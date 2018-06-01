@@ -45,7 +45,7 @@ module.exports = async (ctx) => {
         }
 
         // 验证用户名或密码是否准确
-        const activeuser = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).field(userField).select());
+        const activeuser = await mysql(sql.table(tables.dbuser).field(userField).where({ [userkey]: username, password: md5(password) }).select());
 
         if (!activeuser || !activeuser.length) {
             // 用户名或者密码不正确
@@ -90,7 +90,7 @@ module.exports = async (ctx) => {
 
         const where = `id not in (${loginusers.join(',')}) and issystem=1`;
 
-        const activeuser = await mysql(sql.table(tables.dbuser).where(where).field(userField).limit(1).select());
+        const activeuser = await mysql(sql.table(tables.dbuser).field(userField).where(where).limit(1).select());
 
         if(!activeuser || !activeuser.length) {
             ctx.oerror('获取测试用户出错');
