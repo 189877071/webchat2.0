@@ -10,16 +10,16 @@ module.exports = async (ctx) => {
     const error = (error = 0) => ctx.body = { error, success: false };
 
     const insetr = async () => {
-        const { title, content, description } = ctx.request.body;
+        const { title, content, description, mobliecontent } = ctx.request.body;
 
-        if (!title || !content || !description) {
+        if (!title || !content || !description || !mobliecontent) {
             error();
             return;
         }
 
         const sqlstr = sql
             .table(tables.dbnotice)
-            .data({ title, content, otime: Date.now(), description })
+            .data({ title, content, otime: Date.now(), description, mobliecontent })
             .insert();
 
         const results = await mysql(sqlstr);
@@ -84,13 +84,13 @@ module.exports = async (ctx) => {
     }
 
     const updated = async () => {
-        const { id, title, content, description } = ctx.request.body;
-        if (!id || !title || !content || !description) {
+        const { id, title, content, description, mobliecontent } = ctx.request.body;
+        if (!id || !title || !content || !description || !mobliecontent) {
             error();
             return;
         }
 
-        const sqlstr = sql.table(tables.dbnotice).where({ id }).data({ title, content, description }).update();
+        const sqlstr = sql.table(tables.dbnotice).where({ id }).data({ title, content, description, mobliecontent }).update();
 
         const results = await mysql(sqlstr);
 

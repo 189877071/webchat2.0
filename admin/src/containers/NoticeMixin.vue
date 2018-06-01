@@ -74,7 +74,8 @@ export default {
             let url = "notice?optation=add";
 
             let data = {
-                content: JSON.stringify(virtualDom(content)),
+                content,
+                mobliecontent: JSON.stringify(virtualDom(content)),
                 title: this.title,
                 description: this.description
             };
