@@ -12,7 +12,7 @@ module.exports = {
         "dbchat": "chat_record",
         "dbnotice": "chat_notice"
     },
-    origin: ['http://127.0.0.1:8080'],
+    origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:3000'],
     static: join(__dirname, '../static'),
     ueditor: {
         /* 上传图片配置项 */
