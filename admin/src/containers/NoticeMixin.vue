@@ -13,6 +13,15 @@
             <el-form-item label="公告标题：">
                 <el-input v-model="title" placeholder="输入公告标题"></el-input>
             </el-form-item>
+            <el-form-item label="公告描述：">
+                <el-input
+                    type="textarea"
+                    :rows="3"
+                    placeholder="请输入内容"
+                    resize='none'
+                    v-model="description">
+                </el-input>
+            </el-form-item>
         </el-form>
         <div class="lable-title">公告内容：</div>
         <div class="ueditor-box">
@@ -34,11 +43,15 @@
 <script>
 import commonMxin from "../commonMixin";
 import axios from "../axios";
+
+import { virtualDom } from '../fn';
+
 export default {
     data() {
         return {
             title: "",
-            editor: null
+            editor: null,
+            description: ''
         };
     },
     methods: {
@@ -49,6 +62,10 @@ export default {
                 this.error("请先输入公告标题！");
                 return;
             }
+            if(!this.description) {
+                this.error("公告描述不能为空！");
+                return;
+            }
             if (!content) {
                 this.error("请输入公告内容！");
                 return;
@@ -57,10 +74,11 @@ export default {
             let url = "notice?optation=add";
 
             let data = {
-                content,
-                title: this.title
+                content: JSON.stringify(virtualDom(content)),
+                title: this.title,
+                description: this.description
             };
-
+            
             if (this.$route.meta.update) {
                 data.id = this.$route.params.id;
                 url = "notice?optation=update";
