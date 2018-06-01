@@ -22,4 +22,4 @@ exports.writeFileAsync = (str) => new Promise(resolve => {
     writeFile(static + name, data, { encoding: 'base64' }, err => resolve(err ? false : name));
 });
 
-exports.userclassify = (aclass, users) => aclass.map(({ id, name }) => ({ class: { id, name }, users: users.filters(item => (item.class == id)) }));
+exports.userclassify = (aclass, users) => aclass.map(({ id, name }) => ({ class: { id, name }, users: users.filter(item => (item.class == id)) }));
