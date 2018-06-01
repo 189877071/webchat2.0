@@ -1,9 +1,7 @@
 const db = require('./db');
 const sql = require('node-transform-mysql');
 const uuid = require('uuid');
-const { tables: { session } } = require('./config');
-
-const expires = 24 * 60 * 60 * 1000;
+const { tables: { session }, expires } = require('./config');
 
 const sessionName = 'USER_SESSION_ID';
 

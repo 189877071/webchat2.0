@@ -1,14 +1,28 @@
 const { join } = require('path');
+
 const Koa = require('koa');
+
 const static = require('koa-static');
+
 const cors = require('koa2-cors');
+
 const bodyParse = require('koa-bodyparser');
+
 const session = require('./common/session');
+
 const { origin } = require('./common/config');
+
 const adminRouter = require('./adminRouter');
+
 const appRouter = require('./appRouter');
+
 const ueditor = require('./ueditor');
+
 const { udpsend, udpexit } = require('./udpServer');
+
+const mysql = require('./common/db');
+
+const { tables } = require('./common/config');
 
 const app = new Koa();
 
@@ -45,4 +59,10 @@ app.use(appRouter.routes());
 
 app.use(appRouter.allowedMethods());
 
-process.on('message', ({ port }) => app.listen(port));
+process.on('message', ({ port, main }) => {
+    app.listen(port);
+    if (main) {
+        // 清空 登录表数据
+        mysql(`TRUNCATE TABLE ${tables.dblogin}`);
+    }
+});

@@ -96,10 +96,12 @@ module.exports = {
     },
     server: {
         http: [
-            { "port": 3000 }
+            { "port": 3000, main: true }
         ],
         socket: [
             { socketport: 4000, udpport: 5000, udphost: '127.0.0.1' }
         ]
-    }
+    },
+    userField: 'id,username,headphoto,email,synopsis,sex,age,logindate,name,class',
+    expires: 24 * 60 * 60 * 1000
 }
