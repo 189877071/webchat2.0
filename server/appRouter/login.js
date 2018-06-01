@@ -23,7 +23,7 @@ module.exports = async (ctx) => {
     // 验证登录
     const verifyLogin = async () => {
         const { username, password, autokey, udphost, udpport, socketid } = ctx.request.body;
-
+        console.log('1')
         if (!udphost || !udpport || !socketid) {
             ctx.oerror();
             return;
@@ -34,7 +34,7 @@ module.exports = async (ctx) => {
         // 验证 提交数据是否合法
         if (!emailRex.test(username)) {
             if (!userRex.test(username)) {
-                ctx.oerror();
+                ctx.oerror('用户名输入不合法');
                 return;
             }
         } else {
@@ -42,7 +42,7 @@ module.exports = async (ctx) => {
         }
 
         if (!passRex.test(password)) {
-            ctx.oerror();
+            ctx.oerror('密码输入不合法');
             return;
         }
 
@@ -51,7 +51,7 @@ module.exports = async (ctx) => {
 
         if (!results || !results.length) {
             // 用户名或者密码不正确
-            ctx.oerror(1);
+            ctx.oerror('用户名或者密码不正确');
             return;
         }
 
@@ -77,7 +77,7 @@ module.exports = async (ctx) => {
         const islogin = await mysql(sql.table(tables.dblogin).data({ userid, socketid, udphost, udpport, otime }).insert());
 
         if (!users || !aclass || !islogin) {
-            ctx.oerror();
+            ctx.oerror('users / aclass / islogin 操作出错');
             return;
         }
 
