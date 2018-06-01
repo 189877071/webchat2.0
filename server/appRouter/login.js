@@ -10,41 +10,63 @@ const [userRex, passRex, emailRex] = [
 ];
 
 module.exports = async (ctx) => {
-    const { username, password, autologin } = ctx.request.body;
+    const { optation } = ctx.query;
 
-    let userkey = 'username';
+    // 验证登录
+    const verifyLogin = async () => {
+        const { username, password, autokey } = ctx.request.body;
 
-    // 验证 提交数据是否合法
-    if (!emailRex.test(username)) {
-        if (!userRex.test(username)) {
+        let userkey = 'username';
+        // 验证 提交数据是否合法
+        if (!emailRex.test(username)) {
+            if (!userRex.test(username)) {
+                ctx.oerror();
+                return;
+            }
+        } else {
+            userkey = 'email';
+        }
+
+        if (!passRex.test(password)) {
             ctx.oerror();
             return;
         }
-    } else {
-        userkey = 'email';
-    }
-    if (!passRex.test(password)) {
-        ctx.oerror();
-        return;
+
+        // 验证用户名或密码是否准确
+        const results = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).select());
+        
+        if (!results || !results.length) {
+            // 用户名或者密码不正确
+            ctx.oerror(1);
+            return;
+        }
+        // 如果需要自动登录添加数据
+        if (autokey) {
+            await mysql(sql.table(tables.dbautokey).data({ userid: results[0].id, autokey, otime: Date.now() }).insert());
+        }
+        
+        ctx.session.mlogin = true;
+
+        ctx.session.userid = results[0].id;
+
+
+        // 我先不想这些东西 一步一步来！
+
+        ctx.body = { success: true };
     }
 
-    let where = {
-        [userkey]: username,
-        password: md5(password)
+    // 测试登录
+    const testLogin = async () => {
+
     }
 
-    // 验证用户名或密码是否准确
-    // 获取用户数据
-    const results = await mysql(sql.table(tables.dbuser).where(where).select());
-    if (!results || !results.length) {
-        // 用户名或者密码不正确
-        ctx.oerror(1);
-        return;
+    switch (optation) {
+        case 'test':
+            // 使用测试用户登录
+            await testLogin();
+            break;
+        default:
+            // 验证登录
+            await verifyLogin();
     }
-
-    // 获取其他数据
-    
-    ctx.session.mlogin = true;
-
-    ctx.body = { success: true }
 }

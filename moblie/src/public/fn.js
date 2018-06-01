@@ -11,7 +11,7 @@ export const windowH = height;
 export function ratio(w) {
 
     const _r = 1080 / width;
-    
+
     let obj = {};
 
     ratio = w => {
@@ -20,7 +20,7 @@ export function ratio(w) {
         }
         return obj[w];
     }
-    
+
     return ratio(w);
 }
 
@@ -52,6 +52,18 @@ export function getAction(type) {
 
 export function uuid() {
     let num = 0;
-    uuid = () => `ACTIONTYPE${num++}`;
+    uuid = () => {
+        const str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ0123456789";
+
+        let key = '';
+
+        let len = Math.floor(Math.random() * 5 + 5);
+
+        for (let i = 0; i < len; i++) {
+            key += str[Math.floor(Math.random() * str.length)];
+        }
+
+        return `${key}-${num++}-${Date.now()}`;
+    };
     return uuid();
 }

@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react'
 
-import { View, TextInput, StyleSheet, Button, Text } from 'react-native'
+import { View, TextInput, StyleSheet, Button, Text, AsyncStorage } from 'react-native'
 
 import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
-import { ratio, windowW, ofetch } from '../public/fn'
+import { ratio, windowW, ofetch, uuid } from '../public/fn'
 
 import { BigButton } from './Button'
 
@@ -160,11 +160,20 @@ export class LoginForm extends PureComponent {
             return;
         }
 
-        
+        let autokey = '';
 
-        const data = await ofetch('/login', { username, password, autologin });
+        // 如果自动登录为true要生成一个唯一的key值并保存在本地
+        if (autologin) {
+            autokey = uuid();
+            await AsyncStorage.setItem('autokey', autokey);
+        }
+        else {
+            await AsyncStorage.removeItem('autokey');
+        }
 
-        if(data.success) {
+        const data = await ofetch('/login', { username, password, autokey });
+
+        if (data.success) {
             this.props.navigation.navigate('index');
             return;
         }
