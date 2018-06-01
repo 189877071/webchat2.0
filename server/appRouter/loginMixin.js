@@ -6,7 +6,7 @@ const { tables, userField } = require('../common/config');
 
 const { userclassify } = require('../common/fn');
 
-module.exports = async (ctx, userid, otime, activeuser) => {
+module.exports = async (ctx, userid, otime) => {
     const {socketid, udphost, udpport} = ctx.request.body;
     // 获取所有用户
     const users = await mysql(sql.table(tables.dbuser).field(userField).order('class,logindate desc').where({ id: { neq: userid } }).select());
@@ -28,5 +28,5 @@ module.exports = async (ctx, userid, otime, activeuser) => {
         return false;
     }
 
-    return userclassify(aclass, users, loginusers, activeuser);
+    return userclassify(aclass, users, loginusers);
 }

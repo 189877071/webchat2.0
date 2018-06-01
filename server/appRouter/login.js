@@ -45,21 +45,21 @@ module.exports = async (ctx) => {
         }
 
         // 验证用户名或密码是否准确
-        const results = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).field(userField).select());
+        const activeuser = await mysql(sql.table(tables.dbuser).where({ [userkey]: username, password: md5(password) }).field(userField).select());
 
-        if (!results || !results.length) {
+        if (!activeuser || !activeuser.length) {
             // 用户名或者密码不正确
             ctx.oerror('用户名或者密码不正确');
             return;
         }
 
-        const userid = results[0].id;
+        const userid = activeuser[0].id;
 
         const otime = Date.now();
 
-        await mysql(sql.table(tables.dbuser).where({ id: userid }).data({ logindate: otime, loginnum: ++results[0].loginnum }).update());
+        await mysql(sql.table(tables.dbuser).where({ id: userid }).data({ logindate: otime, loginnum: ++activeuser[0].loginnum }).update());
 
-        const data = await loginMixin(ctx, userid, otime, results[0]);
+        const data = await loginMixin(ctx, userid, otime);
 
         if (!data) {
             ctx.oerror('users / aclass / islogin / loginusers 读取出错');
@@ -73,9 +73,9 @@ module.exports = async (ctx) => {
 
         ctx.session.mlogin = true;
 
-        ctx.session.userid = results[0].id;
+        ctx.session.userid = activeuser[0].id;
 
-        ctx.body = { success: true, data };
+        ctx.body = { success: true, data, activeuser: activeuser[0] };
     }
 
     // 测试登录
@@ -99,7 +99,7 @@ module.exports = async (ctx) => {
 
         const userid = activeuser[0].id;
 
-        const data = await loginMixin(ctx, userid, Date.now(), activeuser[0]);
+        const data = await loginMixin(ctx, userid, Date.now());
 
         if (!data) {
             ctx.oerror('users / aclass / islogin / loginusers 读取出错');
@@ -110,7 +110,7 @@ module.exports = async (ctx) => {
 
         ctx.session.userid = userid;
 
-        ctx.body = { success: true, data };
+        ctx.body = { success: true, data, activeuser: activeuser[0] };
     }
 
     switch (optation) {
