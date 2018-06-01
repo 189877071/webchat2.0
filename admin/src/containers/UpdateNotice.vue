@@ -29,9 +29,11 @@ export default {
                 return;
             }
 
-            const { title, content } = response.data.lists[0];
+            const { title, content, description } = response.data.lists[0];
 
             this.title = title;
+            
+            this.description = description;
 
             this.editor = UE.getEditor("editor");
 
