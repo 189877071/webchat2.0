@@ -43,7 +43,7 @@ exports.writeFileAsync = (str) => new Promise(resolve => {
         if (err) {
             return false;
         }
-        writeFileAsync(static + name, static + gray).then((onoff) => {
+        grayImg(static + name, static + gray).then((onoff) => {
             resolve(onoff ? { name, gray } : false);
         })
     });
