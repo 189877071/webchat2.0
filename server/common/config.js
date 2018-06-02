@@ -103,5 +103,6 @@ module.exports = {
         ]
     },
     userField: ['id', 'username', 'headphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class'],
-    expires: 24 * 60 * 60 * 1000
+    expires: 24 * 60 * 60 * 1000,
+    grayurl: 'http://localhost:8088/gray.php'
 }

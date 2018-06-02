@@ -14,14 +14,16 @@ module.exports = async (ctx) => {
     // 上传图片
     const updated = async () => {
         const { photo } = ctx.request.body;
-        const name = await writeFileAsync(photo);
-        if (!name) {
+        
+        const imgresult = await writeFileAsync(photo);
+
+        if (!imgresult) {
             error();
             return;
         }
 
         // 保存
-        const results = await mysql(sql.table(tables.dbphoto).data({ url: name }).insert());
+        const results = await mysql(sql.table(tables.dbphoto).data({ url: imgresult.name, grayurl: imgresult.gray }).insert());
 
         if (!results) {
             error();

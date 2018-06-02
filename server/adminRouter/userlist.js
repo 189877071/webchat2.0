@@ -124,9 +124,9 @@ module.exports = async (ctx) => {
             return;
         }
 
-        headphoto = await writeFileAsync(headphoto);
+        const imgresult = await writeFileAsync(headphoto);
 
-        if (!headphoto) {
+        if (!imgresult) {
             error();
             return;
         }
@@ -140,7 +140,8 @@ module.exports = async (ctx) => {
             sex,
             age,
             name,
-            headphoto,
+            headphoto: imgresult.name,
+            grayheadphoto: imgresult.gray,
             password: md5(password),
             resdate: time,
             logindate: time,
@@ -260,12 +261,15 @@ module.exports = async (ctx) => {
         }
 
         if (headphoto) {
-            headphoto = await writeFileAsync(headphoto);
-            if (!headphoto) {
+            const imgresult = await writeFileAsync(headphoto);
+            if (!imgresult) {
                 error();
                 return;
             }
-            data.headphoto = headphoto;
+            
+            data.headphoto = imgresult.name;
+
+            data.grayheadphoto = imgresult.gray;
         }
 
         const results = await mysql(sql.table(tables.dbuser).data(data).where({ id }).update());
@@ -322,7 +326,8 @@ module.exports = async (ctx) => {
             const { name, username, email, sex, age, class: oclass, logindate, synopsis, resdate, password, headphoto } = {
                 ...item,
                 ...def,
-                headphoto: headphotos[n].url
+                headphoto: headphotos[n].url,
+                grayheadphoto: headphotos[n].grayurl,
             };
             return `('${name}','${username}','${email}','${sex}',${age},${oclass},${logindate},'${synopsis}',${resdate},'${password}','${headphoto}')`
         });
