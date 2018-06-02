@@ -33,7 +33,7 @@ exports.writeFileAsync = (str) => new Promise(resolve => {
 
     let data = str.replace('data:image/png;base64,', '');
 
-    let name = '/uploads/' + Date.now() + getVerify(5);
+    let name = '/uploads/image/' + Date.now() + getVerify(5);
 
     let gray = name + '-gray.jpg';
 
