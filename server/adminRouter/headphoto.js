@@ -30,7 +30,7 @@ module.exports = async (ctx) => {
             return;
         }
 
-        ctx.body = { success: true, name };
+        ctx.body = { success: true, name: imgresult.name };
     }
 
     // 获取图片 每次获取 n 张图片
