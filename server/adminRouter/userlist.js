@@ -319,7 +319,7 @@ module.exports = async (ctx) => {
             password: md5('123456')
         }
 
-        let key = '(name,username,email,sex,age,class,logindate,synopsis,resdate,password,headphoto)';
+        let key = '(name,username,email,sex,age,class,logindate,synopsis,resdate,password,headphoto,grayheadphoto)';
 
         let values = users.map(item => {
             let n = Math.floor(Math.random() * headphotos.length);
