@@ -323,13 +323,13 @@ module.exports = async (ctx) => {
 
         let values = users.map(item => {
             let n = Math.floor(Math.random() * headphotos.length);
-            const { name, username, email, sex, age, class: oclass, logindate, synopsis, resdate, password, headphoto } = {
+            const { name, username, email, sex, age, class: oclass, logindate, synopsis, resdate, password, headphoto, grayheadphoto } = {
                 ...item,
                 ...def,
                 headphoto: headphotos[n].url,
                 grayheadphoto: headphotos[n].grayurl,
             };
-            return `('${name}','${username}','${email}','${sex}',${age},${oclass},${logindate},'${synopsis}',${resdate},'${password}','${headphoto}')`
+            return `('${name}','${username}','${email}','${sex}',${age},${oclass},${logindate},'${synopsis}',${resdate},'${password}','${headphoto}', '${grayheadphoto}')`;
         });
 
         values = values.join(',');
