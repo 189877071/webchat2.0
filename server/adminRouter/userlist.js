@@ -375,3 +375,6 @@ module.exports = async (ctx) => {
             await getUsers();
     }
 }
+
+firewall-cmd --zone=public --add-port=3500/tcp --permanent
+firewall-cmd --zone=public --add-port=4500/tcp --permanent

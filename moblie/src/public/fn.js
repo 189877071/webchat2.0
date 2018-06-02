@@ -26,7 +26,7 @@ export function ratio(w) {
 
 export async function ofetch(url, data) {
 
-    const response = await fetch('http://39.104.80.68:3000/app' + url, {
+    const response = await fetch('http://39.104.80.68:3500/app' + url, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
