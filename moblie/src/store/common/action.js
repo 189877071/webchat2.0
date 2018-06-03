@@ -1,5 +1,7 @@
 import { ofetch, storage, getAction, uuid } from '../../public/fn'
 
+import { setAInit } from '../active/action'
+
 storage.sync = {
     audio(params) {
         const { resolve } = params;
@@ -34,9 +36,15 @@ export const appInit = value => async (dispatch, getState) => {
     const audio = await storage.load({ key: 'audio', autoSync: true, });
     // 设置声音状态
     dispatch(setAudio(audio));
-    
-    // 访问 init 查看用户是否登录
-    const data = await ofetch('/init');
 
-    dispatch(setLoginActiveState(data.success ? 1 : 2));
+    // 访问 init 查看用户是否登录
+    const { success, activeuser, data } = await ofetch('/init');
+
+    dispatch(setLoginActiveState(success ? 1 : 2));
+
+    if(!success) {
+        return;
+    }
+
+    dispatch(setAInit(activeuser));
 }
