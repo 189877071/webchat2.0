@@ -44,6 +44,7 @@ export const storage = new Storage({
     storageBackend: AsyncStorage,
     defaultExpires: null,
     enableCache: true,
+    sync: {}
 });
 
 export function getAction(type) {
@@ -66,4 +67,8 @@ export function uuid() {
         return `${key}-${num++}-${Date.now()}`;
     };
     return uuid();
+}
+
+export function getClass(arr) {
+    return arr.map(item => item.class);
 }

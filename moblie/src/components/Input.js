@@ -114,6 +114,59 @@ export class BigInput extends PureComponent {
     }
 }
 
+export class VerifyInput extends PureComponent {
+    render() {
+        const { borderColor, placeholder } = this.props;
+
+        const ostyle = { borderColor: '#07bb98' };
+
+        if (borderColor) {
+            ostyle.borderColor = borderColor;
+        }
+
+        return (
+            <View style={[style.verifybox, ostyle]}>
+                <TextInput
+                    style={style.verifyinput}
+                    placeholder={placeholder}
+                    placeholderTextColor="#afa6a7"
+                    underlineColorAndroid="transparent"
+                />
+            </View>
+        )
+    }
+}
+
+export class Textarea extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            val: ''
+        };
+    }
+    render() {
+        const { placeholder } = this.props;
+        return (
+            <View style={style.textarea}>
+                <TextInput
+                    multiline={true}
+                    placeholder={placeholder}
+                    returnKeyLabel='done'
+                    placeholderTextColor='#aba7a8'
+                    underlineColorAndroid="transparent"
+                    style={style.textareainput}
+                    onChangeText={(val) => this.setState({ val })}
+                >
+                    <Text style={{ lineHeight: ratio(80) }}>{this.state.val}</Text>
+                </TextInput>
+                <View style={style.bottomnum}>
+                    <Text style={style.bottomnumt}>0 / 50</Text>
+                </View>
+            </View>
+        )
+    }
+}
+
 export class LoginForm extends PureComponent {
     constructor(props) {
         super(props);
@@ -171,14 +224,14 @@ export class LoginForm extends PureComponent {
             await AsyncStorage.removeItem('autokey');
         }
 
-        const data = await ofetch('/login', { username, password, autokey });
+        const { success, data, activeuser } = await ofetch('/login', { username, password, autokey });
 
-        if (data.success) {
-            this.props.navigation.navigate('index');
+        if (!success) {
+            this.setState({ passerr: '密码输入不正确！' });
             return;
         }
 
-        this.setState({ passerr: '密码输入不正确！' });
+        this.props.toLogin({ data, activeuser });
     }
 
     render() {
@@ -208,59 +261,6 @@ export class LoginForm extends PureComponent {
                     value={autologin}
                     valueChange={this.checkBoxChange}
                 />
-            </View>
-        )
-    }
-}
-
-export class VerifyInput extends PureComponent {
-    render() {
-        const { borderColor, placeholder } = this.props;
-
-        const ostyle = { borderColor: '#07bb98' };
-
-        if (borderColor) {
-            ostyle.borderColor = borderColor;
-        }
-
-        return (
-            <View style={[style.verifybox, ostyle]}>
-                <TextInput
-                    style={style.verifyinput}
-                    placeholder={placeholder}
-                    placeholderTextColor="#afa6a7"
-                    underlineColorAndroid="transparent"
-                />
-            </View>
-        )
-    }
-}
-
-export class Textarea extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            val: ''
-        };
-    }
-    render() {
-        const { placeholder } = this.props;
-        return (
-            <View style={style.textarea}>
-                <TextInput
-                    multiline={true}
-                    placeholder={placeholder}
-                    returnKeyLabel='done'
-                    placeholderTextColor='#aba7a8'
-                    underlineColorAndroid="transparent"
-                    style={style.textareainput}
-                    onChangeText={(val) => this.setState({ val })}
-                >
-                    <Text style={{ lineHeight: ratio(80) }}>{this.state.val}</Text>
-                </TextInput>
-                <View style={style.bottomnum}>
-                    <Text style={style.bottomnumt}>0 / 50</Text>
-                </View>
             </View>
         )
     }

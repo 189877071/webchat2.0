@@ -25,5 +25,12 @@ export const setAAge = getAction(type.age);
 export const setAName = getAction(type.name); 
 
 export const setAInit = value => (dispatch, getState) => {
-    
+    const { id, username, headphoto, email, sex, age, name } = value;
+    dispatch(setAId(id));
+    dispatch(setAUsername(username));
+    dispatch(setAHeadphoto(headphoto));
+    dispatch(setAEmail(email));
+    dispatch(setASex(sex));
+    dispatch(setAAge(age));
+    dispatch(setAName(name));
 }

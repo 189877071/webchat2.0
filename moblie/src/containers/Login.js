@@ -14,6 +14,8 @@ import { LoginBottom } from '../components/Bottom'
 
 import { ratio } from '../public/fn'
 
+import { setCData } from '../store/common/action'
+
 class Login extends Component {
     constructor(props) {
         super(props);
@@ -42,6 +44,12 @@ class Login extends Component {
         this.showlogo(this.props.keyboard);
     }
 
+    toLogin = (params) => {
+        this.props.dispatch(setCData(params));
+        
+        this.props.navigation.navigate('index');
+    }
+
     render() {
         const transform = {
             transform: [{
@@ -64,7 +72,7 @@ class Login extends Component {
                         </Animated.View>
                         <WebchatImg />
                     </LogoBox>
-                    <LoginForm navigation={this.props.navigation} />
+                    <LoginForm callback={this.toLogin} />
                 </Animated.View>
                 {bottom}
             </Box>
