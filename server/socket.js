@@ -48,7 +48,7 @@ process.on('message', ({ socketport, udpport, udphost }) => {
             udp.send(message, 0, message.length, socket.rinfo.port, socket.rinfo.address);
         });
         
-        socket.on('disconnect', evt => {
+        socket.on('end', evt => {
             console.log('disconnect事件')
         });
 
