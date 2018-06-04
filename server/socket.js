@@ -40,31 +40,34 @@ process.on('message', ({ socketport, udpport, udphost }) => {
             delete clients[id];
 
             console.log('有人离开了');
-            
+
             if (!socket.rinfo) return;
 
             const message = new Buffer(JSON.stringify({ controller: 'exit', socketid: socket.id }));
 
             udp.send(message, 0, message.length, socket.rinfo.port, socket.rinfo.address);
         });
-        
+
         socket.on('end', evt => {
             console.log('disconnect事件')
         });
 
-        socket.onerror = function() {
+        socket.onerror = function () {
             console.log('出现错误');
         }
-
+        setInterval(() => {
+            socket.send(JSON.stringify({ controller: 'ceshi' }), err => {
+                if(err) {
+                    console.log('推送失败');
+                }
+                else {
+                    console.log('推送成功')
+                }
+            })
+        }, 1000);
         socket.send(JSON.stringify({ controller: 'init', infor: { udphost, udpport, socketid: id } }));
     });
     ws.on('error', () => {
         console.log('lala出现错误');
     });
 });
-
-setInterval(() => {
-    for(let key in clients) {
-        console.log(key + ':' + clients[key] ? '在' : '不在');
-    }
-}, 1000);
