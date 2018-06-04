@@ -63,7 +63,7 @@ process.on('message', ({ socketport, udpport, udphost }) => {
     });
 });
 
-setTimeout(() => {
+setInterval(() => {
     for(let key in clients) {
         console.log(key + ':' + clients[key] ? '在' : '不在');
     }
