@@ -48,9 +48,9 @@ process.on('message', ({ socketport, udpport, udphost }) => {
             udp.send(message, 0, message.length, socket.rinfo.port, socket.rinfo.address);
         });
 
-        socket.on('error', evt => { 
+        socket.onerror = function() {
             console.log('出现错误');
-        });
+        }
 
         socket.send(JSON.stringify({ controller: 'init', infor: { udphost, udpport, socketid: id } }));
     });
