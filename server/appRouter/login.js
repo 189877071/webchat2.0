@@ -82,13 +82,20 @@ module.exports = async (ctx) => {
     const testLogin = async () => {
         // 获取所有登录数据
         let loginusers = await mysql(sql.table(tables.dblogin).field('userid').select());
+        
         if (!loginusers) {
             ctx.oerror('查询登录数据出错');
             return;
         }
-        loginusers = loginusers.map(item => item.userid);
 
-        const where = `id not in (${loginusers.join(',')}) and issystem=1`;
+        let where = `issystem='1'`;
+
+        if(loginusers.length) {
+            
+            loginusers = loginusers.map(item => item.userid);
+
+            where = `id not in (${loginusers.join(',')}) and issystem='1'`;
+        }
 
         const activeuser = await mysql(sql.table(tables.dbuser).field(userField).where(where).limit(1).select());
 

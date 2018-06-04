@@ -6,7 +6,9 @@ import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
 import { ratio, windowW, ofetch, uuid } from '../public/fn'
 
-import { BigButton, LoginFormBottom, EditorBtn  } from './Button'
+import { BigButton, EditorBtn  } from './Button'
+
+import { LoginFormBottom } from './Bottom'
 
 const style = StyleSheet.create({
     box: {
@@ -250,6 +252,17 @@ export class LoginForm extends PureComponent {
         this.props.callback({ data, activeuser });
     }
 
+    // 测试登录
+    testSubmit = async () => {
+        const { success, data, activeuser, error } = await ofetch('/login?optation=test', this.props.socketInfor);
+        if (!success) {
+            alert(error);
+            return;
+        }
+
+        this.props.callback({ data, activeuser });
+    }
+
     render() {
         const { autologin, username, password, usererr, passerr } = this.state;
         return (
@@ -276,6 +289,7 @@ export class LoginForm extends PureComponent {
                 <LoginFormBottom
                     value={autologin}
                     valueChange={this.checkBoxChange}
+                    submit={this.testSubmit}
                 />
             </View>
         )

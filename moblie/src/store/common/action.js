@@ -39,9 +39,8 @@ export const appInit = value => async (dispatch, getState) => {
     // 访问 init 查看用户是否登录
     const { success, activeuser, data } = await ofetch('/init', value);
 
-    dispatch(setLoginActiveState(success ? 1 : 2));
-
     if (!success) {
+        dispatch(setLoginActiveState(2));
         return;
     }
 
@@ -55,4 +54,5 @@ export const setCData = ({ activeuser, data }) => async (dispatch, getState) => 
     if (data) {
         dispatch(setUInit(data));
     }
+    dispatch(setLoginActiveState(1));
 }

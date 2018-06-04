@@ -9,12 +9,12 @@ const udp = dgram.createSocket('udp4');
 let clients = {};
 
 udp.on('message', (msg, rinfo) => {
+
     try {
         const data = JSON.parse(msg.toString());
-
         if (clients[data.socketid]) {
 
-            clients[data.socketid].send('message', data.message);
+            clients[data.socketid].send(JSON.stringify(data.message));
 
             clients[data.socketid].rinfo = rinfo;
         }
@@ -29,18 +29,15 @@ process.on('message', ({ socketport, udpport, udphost }) => {
     const ws = new WebSocket.Server({ port: socketport });
 
     ws.on('connection', (socket, req) => {
-        console.log('有人进来了');
 
         const id = uuid();
 
         socket.id = id;
 
         clients[id] = socket;
-        
+
         socket.on('close', evt => {
             delete clients[id];
-
-            console.log('有人离开了');
 
             if (!socket.rinfo) return;
 

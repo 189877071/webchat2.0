@@ -19,26 +19,6 @@ const styles = StyleSheet.create({
 })
 
 class Container extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {};
-        // alert(this.props.loginActiveState)
-    }
-    componentDidUpdate() {
-        const { loginActiveState } = this.props;
-
-        switch (loginActiveState) {
-            case 1:
-                this.props.navigation.navigate('index');
-                break;
-            case 2:
-                this.props.navigation.navigate('login');
-                break;
-        }
-    }
-    async init() {
-        const data = await ofetch('/init');
-    }
     render() {
         return (
             <Box>
@@ -52,7 +32,4 @@ class Container extends PureComponent {
     }
 }
 
-export default connect((state, props) => ({
-    navigation: props.navigation,
-    loginActiveState: state.c.loginActiveState,
-}), (dispatch, props) => ({}))(Container);
+export default connect((state, props) => ({}), (dispatch, props) => ({}))(Container);

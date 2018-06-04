@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
 
-import { Animated, Easing } from 'react-native'
+import { Animated, Easing, Keyboard } from 'react-native'
 
 import Box from '../components/Box'
 
@@ -21,7 +21,8 @@ class Login extends Component {
         super(props);
         this.state = {
             opacity: new Animated.Value(1),
-            translateY: new Animated.Value(0)
+            translateY: new Animated.Value(0),
+            bottom: true,
         }
     }
 
@@ -38,18 +39,19 @@ class Login extends Component {
                 easing: Easing.linear
             })
         ]).start();
+        this.setState({ bottom: onoff });
     }
-
-    componentWillUpdate() {
-        this.showlogo(this.props.keyboard);
+    componentWillMount() {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.showlogo(false));
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.showlogo(true));
     }
-
-    toLogin = (params) => {
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+    loginSuccess = (params) => {
         this.props.dispatch(setCData(params));
-
-        this.props.navigation.navigate('index');
     }
-
     render() {
         const transform = {
             transform: [{
@@ -60,7 +62,7 @@ class Login extends Component {
             }]
         };
 
-        const bottom = this.props.keyboard || <LoginBottom />;
+        const bottom = this.state.bottom && <LoginBottom />;
 
         return (
             <Box>
@@ -72,7 +74,7 @@ class Login extends Component {
                         </Animated.View>
                         <WebchatImg />
                     </LogoBox>
-                    <LoginForm callback={this.toLogin} socketInfor={this.props.socketInfor} />
+                    <LoginForm callback={this.loginSuccess} socketInfor={this.props.socketInfor} />
                 </Animated.View>
                 {bottom}
             </Box>
@@ -82,6 +84,5 @@ class Login extends Component {
 
 export default connect((state, props) => ({
     keyboard: state.c.keyboard,
-    navigation: props.navigation,
     socketInfor: state.c.socketInfor
 }))(Login);

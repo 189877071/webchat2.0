@@ -18,7 +18,8 @@ const style = StyleSheet.create({
         alignItems: 'center'
     },
     text: {
-        color: '#435059'
+        color: '#435059',
+        paddingRight: ratio(20),
     },
     row: {
         flexDirection: 'row',
@@ -59,7 +60,7 @@ export class LoginFormBottom extends PureComponent {
                     </View>
                 </View>
                 <View>
-                    <Text style={style.text}>直接进入</Text>
+                    <Text style={style.text} onPress={this.props.submit}>直接进入</Text>
                 </View>
             </View>
         )
