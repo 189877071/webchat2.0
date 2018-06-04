@@ -36,8 +36,6 @@ process.on('message', ({ socketport, udpport, udphost }) => {
         socket.id = id;
 
         clients[id] = socket;
-
-        let time = null;
         
         socket.on('close', evt => {
             delete clients[id];
@@ -52,6 +50,5 @@ process.on('message', ({ socketport, udpport, udphost }) => {
         });
 
         socket.send(JSON.stringify({ controller: 'init', infor: { udphost, udpport, socketid: id } }));
-
     });
 });
