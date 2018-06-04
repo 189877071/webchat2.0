@@ -23,7 +23,7 @@ class Setting extends Component {
                     <UserPhoto />
                     <UserName />
                     <SettingItems navigation={this.props.navigation} />
-                    <BigButton title='退出' />
+                    <BigButton title='退出' onPress={() => { }} />
                     <View style={{ paddingBottom: ratio(100) }} />
                 </ScrollBox>
             </Box>

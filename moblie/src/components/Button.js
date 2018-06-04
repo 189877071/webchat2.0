@@ -31,6 +31,19 @@ const styles = StyleSheet.create({
     smailtext: {
         color: '#fff',
         fontSize: ratio(32),
+    },
+    editor: {
+        position: 'relative',
+        backgroundColor: '#a7b3bf',
+        height: ratio(124),
+        width: ratio(175),
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: ratio(20),
+        borderRadius: ratio(10),
+    },
+    editorbox: {
+        justifyContent: 'flex-end'
     }
 });
 
@@ -54,6 +67,7 @@ export class FeedBackBtn extends PureComponent {
         return (
             <TouchableNativeFeedback
                 background={TouchableNativeFeedback.SelectableBackground()}
+                {...this.props}
             >
                 <View style={styles.feedback} />
             </TouchableNativeFeedback>
@@ -77,6 +91,19 @@ export class SmallButton extends PureComponent {
             <View style={[styles.autobox, ostyle]}>
                 <Text style={styles.smailtext}>{this.props.title}</Text>
                 <FeedBackBtn />
+            </View>
+        )
+    }
+}
+
+export class EditorBtn extends PureComponent {
+    render() {
+        return (
+            <View style={styles.editorbox}>
+                <View style={styles.editor}>
+                    <Text style={{ color: '#fff', fontSize: ratio(40) }}>发送</Text>
+                    <FeedBackBtn onPress={this.props.getvalue} />
+                </View>
             </View>
         )
     }

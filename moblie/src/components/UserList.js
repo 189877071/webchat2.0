@@ -8,6 +8,8 @@ import { ratio, windowW } from '../public/fn'
 
 import { FeedBackBtn } from './Button'
 
+import Icons from '../Icons'
+
 const [w130, w174, w126, w162, w450, w20, w26, w30, w60, w40, w35, w55, w28, w46] = [
     ratio(130),
     ratio(174),
@@ -119,6 +121,23 @@ const styles = StyleSheet.create({
     white: {
         color: '#fff',
         fontSize: w46
+    },
+    classify: {
+        borderBottomWidth: 0,
+        borderTopWidth: 1,
+        alignItems: 'center',
+        paddingLeft: ratio(20),
+        position: 'relative'
+    },
+    jiantou: {
+        width: ratio(60),
+        height: ratio(60),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    classTitle: {
+        color: '#4a6f8a',
+        fontSize: ratio(40)
     }
 })
 
@@ -180,22 +199,6 @@ class UserHideBtn extends PureComponent {
                 </View>
                 <View style={styles.delete}>
                     <Text style={styles.white}>删除</Text>
-                </View>
-            </View>
-        )
-    }
-}
-
-export class UserItem extends PureComponent {
-    render() {
-        return (
-            <View style={styles.useritembox}>
-                <View style={styles.usercontent}>
-                    <View style={styles.useritemlist}>
-                        <UserPortrait />
-                        <UserInfor />
-                        <FeedBackBtn />
-                    </View>
                 </View>
             </View>
         )
@@ -302,6 +305,55 @@ export class MessageItem extends PureComponent {
                     </View>
                     <UserHideBtn />
                 </MessageContent>
+            </View>
+        )
+    }
+}
+
+export class UserItem extends PureComponent {
+    render() {
+        return (
+            <View style={styles.useritembox}>
+                <UserPortrait />
+                <UserInfor />
+                <FeedBackBtn />
+            </View>
+        )
+    }
+}
+
+export class UserClassify extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            rotate: new Animated.Value(0)
+        };
+    }
+    startRotate = (num) => {
+        Animated.timing(this.state.rotate, {
+            toValue: num,
+            duration: 100
+        }).start();
+    }
+    render() {
+        return (
+            <View style={[styles.useritembox, styles.classify]}>
+                <Animated.View style={[styles.jiantou, {
+                    transform: [{
+                        rotate: this.state.rotate.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['0deg', '90deg']
+                        })
+                    }]
+                }]}>
+                    <Icons name='icon-202-copy' size={ratio(50)} style={{transform: [{
+                        translateY: ratio(3)
+                    }]}} color='#bebec0' />
+                </Animated.View>
+                <View>
+                    <Text style={styles.classTitle}>默认项目组</Text>
+                </View>
+                <FeedBackBtn />
             </View>
         )
     }

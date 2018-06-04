@@ -16,6 +16,7 @@ const img = {
     user: require('../public/image/user.jpg'),
     setting: require('../public/image/setting.jpg'),
     settingchildren: require('../public/image/settingchildren.jpg'),
+    chat: require('../public/image/chat.jpg'), 
 }
 
 const style = StyleSheet.create({

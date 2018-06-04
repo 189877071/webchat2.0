@@ -19,11 +19,11 @@ export const borderColor = '#e7e6e4';
 export const listBg = 'rgba(255,255,255,.6)';
 
 // 左边距
-export const pleft = ratio(45);
+export const pleft = ratio(30);
 
 // 右边距
-export const pright = ratio(45);
+export const pright = ratio(30);
 
-export const hostname = 'http://39.104.80.68:3000/app';
+export const hostname = 'http://39.104.80.68:3500';
 
 export const socketurl = 'ws://39.104.80.68:4500';

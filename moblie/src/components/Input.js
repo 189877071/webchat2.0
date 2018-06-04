@@ -6,10 +6,7 @@ import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
 import { ratio, windowW, ofetch, uuid } from '../public/fn'
 
-import { BigButton } from './Button'
-
-import { LoginFormBottom } from './Bottom'
-
+import { BigButton, LoginFormBottom, EditorBtn  } from './Button'
 
 const style = StyleSheet.create({
     box: {
@@ -76,6 +73,24 @@ const style = StyleSheet.create({
     bottomnumt: {
         fontSize: ratio(30),
         color: '#646464'
+    },
+    editor: {
+        flex: 1,
+        paddingTop: ratio(20),
+        paddingBottom: ratio(20),
+        paddingLeft: ratio(20),
+        paddingRight: ratio(20),
+        lineHeight: ratio(68),
+        fontSize: ratio(40),
+        color: '#333',
+        backgroundColor: '#fff',
+        borderRadius: ratio(10),
+    },
+    editorbox: {
+        flexDirection: 'row',
+        paddingLeft: pleft,
+        paddingRight: pright,
+        maxHeight: ratio(324)
     }
 });
 
@@ -151,7 +166,6 @@ export class Textarea extends PureComponent {
                 <TextInput
                     multiline={true}
                     placeholder={placeholder}
-                    returnKeyLabel='done'
                     placeholderTextColor='#aba7a8'
                     underlineColorAndroid="transparent"
                     style={style.textareainput}
@@ -224,14 +238,16 @@ export class LoginForm extends PureComponent {
             await AsyncStorage.removeItem('autokey');
         }
 
-        const { success, data, activeuser } = await ofetch('/login', { username, password, autokey });
+        // alert(JSON.stringify({ username, password, autokey, ...this.props.socketInfor }));
+
+        const { success, data, activeuser, error } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
 
         if (!success) {
             this.setState({ passerr: '密码输入不正确！' });
             return;
         }
 
-        this.props.toLogin({ data, activeuser });
+        this.props.callback({ data, activeuser });
     }
 
     render() {
@@ -261,6 +277,39 @@ export class LoginForm extends PureComponent {
                     value={autologin}
                     valueChange={this.checkBoxChange}
                 />
+            </View>
+        )
+    }
+}
+
+export class EditorInput extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: ''
+        };
+        this.time = null;
+        this.value = '';
+    }
+    setvalue = (value) => {
+        this.value = value;
+    }
+    getvalue = () => {
+        // alert(this.value);
+        this.setState({ value: this.value+'123' });
+    }
+    render() {
+        return (
+            <View style={style.editorbox}>
+                <TextInput
+                    multiline={true}
+                    underlineColorAndroid="transparent"
+                    style={style.editor}
+                    onChangeText={this.setvalue}
+                    defaultValue={this.state.value}
+                >
+                </TextInput>
+                <EditorBtn getvalue={this.getvalue} />
             </View>
         )
     }

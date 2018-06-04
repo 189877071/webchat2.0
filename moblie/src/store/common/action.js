@@ -2,7 +2,7 @@ import { ofetch, storage, getAction, uuid } from '../../public/fn'
 
 import { setAInit } from '../active/action'
 
-import { setUInit } from '../active/action'
+import { setUInit } from '../users/action'
 
 storage.sync.audio = (params) => {
     const { resolve } = params;
@@ -28,7 +28,6 @@ export const setLoginActiveState = getAction(type.loginActiveState);
 
 // 初始化信息
 export const appInit = value => async (dispatch, getState) => {
-
     // 设置 socket挂载信息
     dispatch(setSocketInfor(value));
 
@@ -38,7 +37,7 @@ export const appInit = value => async (dispatch, getState) => {
     dispatch(setAudio(audio));
 
     // 访问 init 查看用户是否登录
-    const { success, activeuser, data } = await ofetch('/init');
+    const { success, activeuser, data } = await ofetch('/init', value);
 
     dispatch(setLoginActiveState(success ? 1 : 2));
 
@@ -46,14 +45,14 @@ export const appInit = value => async (dispatch, getState) => {
         return;
     }
 
-    dispatch(setCData({activeuser, data}));
+    dispatch(setCData({ activeuser, data }));
 }
 
-export const setCData = ({activeuser, data}) => async (dispatch, getState) => {
-    if(activeuser) {
+export const setCData = ({ activeuser, data }) => async (dispatch, getState) => {
+    if (activeuser) {
         dispatch(setAInit(activeuser));
     }
-    if(data) {
+    if (data) {
         dispatch(setUInit(data));
     }
 }

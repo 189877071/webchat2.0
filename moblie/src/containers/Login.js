@@ -46,7 +46,7 @@ class Login extends Component {
 
     toLogin = (params) => {
         this.props.dispatch(setCData(params));
-        
+
         this.props.navigation.navigate('index');
     }
 
@@ -72,7 +72,7 @@ class Login extends Component {
                         </Animated.View>
                         <WebchatImg />
                     </LogoBox>
-                    <LoginForm callback={this.toLogin} />
+                    <LoginForm callback={this.toLogin} socketInfor={this.props.socketInfor} />
                 </Animated.View>
                 {bottom}
             </Box>
@@ -83,4 +83,5 @@ class Login extends Component {
 export default connect((state, props) => ({
     keyboard: state.c.keyboard,
     navigation: props.navigation,
+    socketInfor: state.c.socketInfor
 }))(Login);

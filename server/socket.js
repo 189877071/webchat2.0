@@ -29,8 +29,8 @@ process.on('message', ({ socketport, udpport, udphost }) => {
     const ws = new WebSocket.Server({ port: socketport });
 
     ws.on('connection', socket => {
-
-        const id = uuid()
+        console.log('有人进来了')
+        const id = uuid();
 
         socket.id = id;
 
@@ -39,6 +39,8 @@ process.on('message', ({ socketport, udpport, udphost }) => {
         socket.on('close', evt => {
             delete clients[id];
 
+            console.log('有人离开了');
+            
             if (!socket.rinfo) return;
 
             const message = new Buffer(JSON.stringify({ controller: 'exit', socketid: socket.id }));

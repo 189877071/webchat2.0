@@ -17,6 +17,12 @@ const style = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    mainbox: {
+        height: ratio(147),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: headerBackground,
+    },
     title: {
         flex: 1,
         justifyContent: 'center',
@@ -26,18 +32,36 @@ const style = StyleSheet.create({
         color: '#fff',
         fontSize: ratio(52),
     },
-    bothEnds: {
+    btnleft: {
         justifyContent: 'center',
         paddingLeft: pleft,
         flex: 1,
     },
-    inlineright: {
+    btnight: {
         flex: 1,
         paddingRight: pright,
         alignItems: 'flex-end'
+    },
+    chat: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        height: ratio(147)
+    },
+    chatchild: {
+        height: ratio(110),
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    chatName: {
+        fontSize: ratio(40),
+        color: '#fff'
+    },
+    chatState: {
+        fontSize: ratio(30),
+        color: '#fff'
     }
-})
-
+});
 
 class HeadLeft extends PureComponent {
     render() {
@@ -58,29 +82,7 @@ class HeadLeft extends PureComponent {
             </TouchableNativeFeedback>
         );
         return (
-            <View style={style.bothEnds}>
-                {oIcon}
-            </View>
-        )
-    }
-}
-
-class HeadRight extends PureComponent {
-    render() {
-        const transform = {
-            transform: [{
-                translateY: ratio(3)
-            }]
-        }
-        const oIcon = this.props.event && (
-            <TouchableNativeFeedback onPress={() => { }}>
-                <Text style={transform}>
-                    <Icons name='icon-xingming' size={ratio(52)} color='#fff' />
-                </Text>
-            </TouchableNativeFeedback>
-        )
-        return (
-            <View style={style.bothEnds}>
+            <View style={style.btnleft}>
                 {oIcon}
             </View>
         )
@@ -89,14 +91,10 @@ class HeadRight extends PureComponent {
 
 export class Header extends PureComponent {
     render() {
-        const { title, leftEvent, rightEvent } = this.props;
+        const { title } = this.props;
         return (
-            <View style={[style.box, { backgroundColor: headerBackground }]}>
-                <HeadLeft event={leftEvent} color='#fff' />
-                <View style={style.title}>
-                    <Text style={style.titleText}>{title}</Text>
-                </View>
-                <HeadRight event={rightEvent} />
+            <View style={[style.mainbox]}>
+                <Text style={style.titleText}>{title}</Text>
             </View>
         )
     }
@@ -112,8 +110,36 @@ export class InlineHeader extends PureComponent {
                         {this.props.title}
                     </Text>
                 </View>
-                <View style={style.inlineright}>
+                <View style={style.btnight}>
                     <SmallButton title='保存' />
+                </View>
+            </View>
+        )
+    }
+}
+
+export class ChatHeader extends PureComponent {
+    render() {
+        const transform = {
+            transform: [{
+                translateY: ratio(3)
+            }]
+        }
+        return (
+            <View style={[style.box, { backgroundColor: headerBackground }]}>
+                <HeadLeft event={() => { }} color='#fff' />
+                <View style={style.chat}>
+                    <View style={style.chatchild}>
+                        <Text style={style.chatName}>范疆养眼</Text>
+                        <Text style={style.chatState}>离线</Text>
+                    </View>
+                </View>
+                <View style={style.btnight}>
+                    <TouchableNativeFeedback onPress={() => { }}>
+                        <Text style={transform}>
+                            <Icons name='icon-xingming' size={ratio(52)} color='#fff' />
+                        </Text>
+                    </TouchableNativeFeedback>
                 </View>
             </View>
         )

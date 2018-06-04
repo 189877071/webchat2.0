@@ -50,8 +50,12 @@ storage.sync.chatting = (params) => {
             ……
         }
     */
-    let data = {};
+    let data = {
+        [dbname]: []
+    };
+
     storage.save({ key: 'chatting', data, expires: null });
+
     resolve(data);
 }
 
@@ -59,6 +63,7 @@ export const type = {
     users: uuid(),
     classify: uuid(),
     chatting: uuid(),
+    show: uuid(),
 };
 
 export const setUUsers = getAction(type.users);
@@ -67,15 +72,30 @@ export const setUClass = getAction(type.classify);
 
 export const setUChat = getAction(type.chatting);
 
+export const setUShow = getAction(type.show);
+
 export const setUInit = value => async (dispatch, getState) => {
     // 提取分类
     dispatch(setUClass(getClass(value)));
+    /*
+        [
+            {
+                class: {},
+                users: [],
+                show: false
+            }
+        ]
+    */
     // 设置用户
     dispatch(setUUsers(value));
+    // 显示设置
+    let arr = [];
+    arr.length = value.length;
+    dispatch(setUShow(arr));
 
     const dbname = 'chatting-' + value.id;
     // 提取聊天记录
-    const chattings = await storage.save({ key: 'chatting', autoSync: true, syncParams: { dbname } });
+    const chattings = await storage.load({ key: 'chatting', autoSync: true, syncParams: { dbname } });
 
     if(chattings[dbname]) {
         dispatch(setUChat(chattings[dbname]));
