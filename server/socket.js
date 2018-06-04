@@ -54,4 +54,7 @@ process.on('message', ({ socketport, udpport, udphost }) => {
 
         socket.send(JSON.stringify({ controller: 'init', infor: { udphost, udpport, socketid: id } }));
     });
+    ws.on('error', () => {
+        console.log('lala出现错误');
+    });
 });
