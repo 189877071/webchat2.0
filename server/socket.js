@@ -62,3 +62,9 @@ process.on('message', ({ socketport, udpport, udphost }) => {
         console.log('lala出现错误');
     });
 });
+
+setTimeout(() => {
+    for(let key in clients) {
+        console.log(key + ':' + clients[key] ? '在' : '不在');
+    }
+}, 1000);
