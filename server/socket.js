@@ -47,6 +47,10 @@ process.on('message', ({ socketport, udpport, udphost }) => {
 
             udp.send(message, 0, message.length, socket.rinfo.port, socket.rinfo.address);
         });
+        
+        socket.on('disconnect', evt => {
+            console.log('disconnect事件')
+        });
 
         socket.onerror = function() {
             console.log('出现错误');
