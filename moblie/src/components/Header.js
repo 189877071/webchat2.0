@@ -70,20 +70,17 @@ class HeadLeft extends PureComponent {
                 translateY: ratio(3)
             }]
         };
-        const oIcon = this.props.event && (
-            <TouchableNativeFeedback onPress={() => { }}>
-                <Text style={transform}>
-                    <Icons
-                        name='icon-fanhui'
-                        size={ratio(52)}
-                        color={this.props.color}
-                    />
-                </Text>
-            </TouchableNativeFeedback>
-        );
         return (
             <View style={style.btnleft}>
-                {oIcon}
+                <TouchableNativeFeedback onPress={this.props.event}>
+                    <Text style={transform}>
+                        <Icons
+                            name='icon-fanhui'
+                            size={ratio(52)}
+                            color={this.props.color}
+                        />
+                    </Text>
+                </TouchableNativeFeedback>
             </View>
         )
     }
@@ -120,6 +117,7 @@ export class InlineHeader extends PureComponent {
 
 export class ChatHeader extends PureComponent {
     render() {
+        const { goBack, name, state } = this.props;
         const transform = {
             transform: [{
                 translateY: ratio(3)
@@ -127,11 +125,11 @@ export class ChatHeader extends PureComponent {
         }
         return (
             <View style={[style.box, { backgroundColor: headerBackground }]}>
-                <HeadLeft event={() => { }} color='#fff' />
+                <HeadLeft event={goBack} color='#fff' />
                 <View style={style.chat}>
                     <View style={style.chatchild}>
-                        <Text style={style.chatName}>范疆养眼</Text>
-                        <Text style={style.chatState}>离线</Text>
+                        <Text style={style.chatName}>{name}</Text>
+                        <Text style={style.chatState}>{state ? '在线' : '离线'}</Text>
                     </View>
                 </View>
                 <View style={style.btnight}>

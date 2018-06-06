@@ -21,7 +21,6 @@ module.exports = async (ctx, userid, otime) => {
         const loginArr = loginusers.filter(item => item.userid === userid);
 
         if (loginArr.length) {
-
             // 当前用户已在其他设备登录，通知其退出
             loginArr.forEach(item => {
                 ctx.udpsend({
@@ -33,9 +32,21 @@ module.exports = async (ctx, userid, otime) => {
         }
         else {
             // 通知其他在线用户有人上线了
-
+            loginusers.forEach(item => {
+                ctx.udpsend({
+                    data: { socketid: item.socketid, message: { controller: 'userlogin', userid } },
+                    host: item.udphost,
+                    port: item.udpport,
+                });
+            });
         }
     }
+    // 推一条信息到当前用户挂载的socket进程上初始化信
+    await ctx.udpsend({
+        data: { socketid, message: { login: true } },
+        host: udphost,
+        port: udpport
+    });
 
     // 添加到登录用户表
     const islogin = await mysql(sql.table(tables.dblogin).data({ userid, socketid, udphost, udpport, otime }).insert());

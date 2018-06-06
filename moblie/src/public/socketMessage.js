@@ -4,34 +4,40 @@ import store from '../store'
 
 import { socketurl } from './config'
 
-import { ofetch } from './fn'
+import { appInit, setCExit } from '../store/common/action'
 
-import { appInit, setLoginActiveState } from '../store/common/action'
+import { setUonLine, setUAddChat } from '../store/users/action'
 
 const controller = {
-    init(infor) {
-        if (infor && infor.udphost && infor.udpport && infor.socketid) {
-            store.dispatch(appInit(infor));
-        }
+    init({ infor }) {
+        //初始化信息
+        if (!infor || !infor.udphost || !infor.udpport || !infor.socketid) return;
+        store.dispatch(appInit(infor));
     },
-    async elsewhereLogin() {
-        const { socketInfor } = store.getState().c;
-        // 通知其退出先 访问 /exit?optation=1 然后转调到 login页面
-        const { success, error } = await ofetch('/exit?optation=1', socketInfor);
-        if (!success) {
-            alert(error);
-        }
-
-        alert('检测到您的设备在其他地方登录');
-
-        store.dispatch(setLoginActiveState(2));
+    elsewhereLogin() {
+        // 用户在其他设备登录，此设备被动退出
+        store.dispatch(setCExit());
+    },
+    userlogin({ userid }) {
+        // 有人上线了
+        if (!userid) return;
+        store.dispatch(setUonLine({ userid, onoff: true }));
+    },
+    userexit({ userid }) {
+        // 有人离线了
+        if (!userid) return;
+        store.dispatch(setUonLine({ userid, onoff: false }));
+    },
+    message(data) {
+        // 接收消息
+        store.dispatch(setUAddChat({ ...data, sender: 'he', time: Date.now() }));
     }
 }
 
 function message(data) {
     try {
         const MessageObj = JSON.parse(data);
-        controller[MessageObj.controller] && controller[MessageObj.controller](MessageObj.infor);
+        controller[MessageObj.controller] && controller[MessageObj.controller](MessageObj);
     }
     catch (e) { }
 }

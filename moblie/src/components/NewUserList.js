@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
 export class UserItem extends PureComponent {
     render() {
-        const { name, username, synopsis, id, isonline, grayheadphoto, headphoto, end } = this.props;
+        const { name, username, synopsis, id, isonline, grayheadphoto, headphoto, end, show, href } = this.props;
 
         const imgurl = hostname + (isonline ? headphoto : grayheadphoto);
 
@@ -80,8 +80,16 @@ export class UserItem extends PureComponent {
 
         const osynopsis = synopsis || '该用户未填写个人介绍';
 
+        const ostyle = {};
+
+        if (end) ostyle.borderBottomWidth = 0;
+
+        if (!show) {
+            ostyle.display = 'none';
+        }
+
         return (
-            <View style={[styles.box, styles.itembox, { borderBottomWidth: end ? 0 : 1 }]}>
+            <View style={[styles.box, styles.itembox, ostyle]}>
                 <Image
                     source={{ uri: imgurl }}
                     resizeMethod='scale'
@@ -95,7 +103,7 @@ export class UserItem extends PureComponent {
                         <Text style={styles.synopsis}>{osynopsis}</Text>
                     </View>
                 </View>
-                <FeedBackBtn />
+                <FeedBackBtn onPress={() => href({ id })} />
             </View>
         )
     }
@@ -121,7 +129,7 @@ export class Classify extends PureComponent {
                 <View>
                     <Text style={styles.className}>{name}</Text>
                 </View>
-                <FeedBackBtn onPress={onshow} />
+                <FeedBackBtn onPress={() => onshow(id)} />
             </View>
         )
     }

@@ -50,13 +50,20 @@ exports.writeFileAsync = (str) => new Promise(resolve => {
 });
 
 exports.userclassify = (aclass, users, loginusers) => {
-    for (let i = 0; i < loginusers.length; i++) {
-        for (let j = 0; j < users.length; j++) {
-            if (users[j].id === loginusers[i].userid) {
-                users[j].isonline = true;
-            }
-        }
+
+    const loginUserids = loginusers.map(item => item.userid);
+
+    for (let i = 0; i < users.length; i++) {
+        users[i].isonline = (loginUserids.indexOf(users[i].id) > -1);
+        users[i].key = i;
     }
-    return aclass.map(({ id, name }) => ({ class: { id, name }, users: users.filter(item => (item.class == id)) }));
+
+    return aclass.map(({ id, name }, index) => ({
+        key: index,
+        class: { id, name },
+        data: users.filter((item) => (item.class == id))
+    }))
 };
+
+exports.log = (text) => console.log(text);
 

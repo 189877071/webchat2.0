@@ -1,10 +1,10 @@
 import React, { PureComponent, Component } from 'react'
 
-import { View } from 'react-native'
+import { View, SectionList } from 'react-native'
 
 import { connect } from 'react-redux'
 
-import Box, { ScrollBox } from '../components/Box'
+import Box from '../components/Box'
 
 import { Background } from '../components/Image'
 
@@ -18,52 +18,71 @@ import { borderColor } from '../public/config'
 
 import { ratio } from '../public/fn'
 
-import { setUShow } from '../store/users/action'
+import { setUShow, setUActiveid } from '../store/users/action'
 
 class User extends PureComponent {
 
-    setShow = (index) => {
+    setShow = (id) => {
         let show = [...this.props.show];
 
-        show[index] = !show[index];
+        const index = show.indexOf(id);
 
-        this.props.dispatch(setUShow(show));
+        if (index > -1) {
+            show.splice(index, 1);
+        }
+        else {
+            show.push(id);
+        }
+        setTimeout(() => {
+            this.props.dispatch(setUShow(show));
+        }, 0);
+    }
+
+    renderItem = ({ item }) => (
+        <UserItem
+            {...item}
+            href={this.tochat}
+            show={this.props.show.indexOf(item.class) > -1}
+        />
+    );
+    // 分类标题
+    renderSectionHeader = ({ section }) => (
+        <Classify
+            {...section.class}
+            show={this.props.show.indexOf(section.class.id) > -1}
+            onshow={this.setShow}
+        />
+    );
+
+    tochat = (data) => {
+        setTimeout(() => {
+            this.props.dispatch(setUActiveid(data.id));
+            this.props.navigation.navigate('chat', data);
+        }, 0);
     }
 
     render() {
         const { users, show } = this.props;
 
-        const UserList = users.map((item, index) => {
+        for (let i = 0; i < users.length; i++) {
+            users[i].data[users[i].data.length - 1].end = true;
+        }
 
-            const isend = (index == users.length - 1);
-
-            const userlen = item.users.length - 1;
-
-            let ouser = item.users.map((uitem, uindex) => (
-                < UserItem key={uindex} {...uitem} end={(uindex == userlen && !isend)} />
-            ));
-
-            return (
-                <View key={index} style={{
-                    borderBottomWidth: (isend && !show[index]) ? 1 : 0,
-                    borderColor: borderColor
-                }}>
-                    <Classify {...item.class} show={show[index]} onshow={() => { this.setShow(index) }} />
-                    <View style={{ display: show[index] ? 'flex' : 'none' }}>
-                        {ouser}
-                    </View>
-                </View>
-            )
-        });
         return (
             <Box>
                 <Background active="user" />
+
                 <Header title="好友列表" />
-                <ScrollBox>
-                    <SearchBtn />
-                    {UserList}
-                    <View style={{ height: ratio(200) }}></View>
-                </ScrollBox>
+
+                <SectionList
+                    ListHeaderComponent={SearchBtn}
+                    ListFooterComponent={(
+                        <View style={{ height: ratio(200), borderTopWidth: 1, borderColor: borderColor }}></View>
+                    )}
+                    sections={users}
+                    renderSectionHeader={this.renderSectionHeader}
+                    renderItem={this.renderItem}
+                />
             </Box >
         )
     }

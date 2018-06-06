@@ -6,7 +6,7 @@ import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
 import { ratio, windowW, ofetch, uuid } from '../public/fn'
 
-import { BigButton, EditorBtn  } from './Button'
+import { BigButton, EditorBtn } from './Button'
 
 import { LoginFormBottom } from './Bottom'
 
@@ -297,21 +297,6 @@ export class LoginForm extends PureComponent {
 }
 
 export class EditorInput extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: ''
-        };
-        this.time = null;
-        this.value = '';
-    }
-    setvalue = (value) => {
-        this.value = value;
-    }
-    getvalue = () => {
-        // alert(this.value);
-        this.setState({ value: this.value+'123' });
-    }
     render() {
         return (
             <View style={style.editorbox}>
@@ -319,11 +304,11 @@ export class EditorInput extends PureComponent {
                     multiline={true}
                     underlineColorAndroid="transparent"
                     style={style.editor}
-                    onChangeText={this.setvalue}
-                    defaultValue={this.state.value}
+                    onChangeText={this.props.setvalue}
+                    defaultValue={this.props.value}
                 >
                 </TextInput>
-                <EditorBtn getvalue={this.getvalue} />
+                <EditorBtn submit={this.props.send} />
             </View>
         )
     }

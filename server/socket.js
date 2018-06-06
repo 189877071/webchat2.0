@@ -37,12 +37,13 @@ process.on('message', ({ socketport, udpport, udphost }) => {
         clients[id] = socket;
 
         socket.on('close', evt => {
+            
             delete clients[id];
 
             if (!socket.rinfo) return;
 
             const message = new Buffer(JSON.stringify({ controller: 'exit', socketid: socket.id }));
-
+            
             udp.send(message, 0, message.length, socket.rinfo.port, socket.rinfo.address);
         });
 

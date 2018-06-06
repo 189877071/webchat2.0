@@ -18,6 +18,8 @@ router.post('/login', require('./login'));
 
 router.post('/exit', islogin, require('./exit'));
 
+router.post('/message', islogin, require('./message'));
+
 router.get('*', (ctx) => {
     ctx.status = 404;
     ctx.body = { error: 404, success: false };

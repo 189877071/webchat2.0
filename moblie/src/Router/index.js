@@ -34,8 +34,8 @@ const Main = createStackNavigator(
         transitionConfig() {
             return {
                 transitionSpec: {
-                    duration: 100,
-                    easing: Easing.out(Easing.poly(4)),
+                    duration: 200,
+                    // easing: Easing.out(Easing.poly(4)),
                     timing: Animated.timing,
                 },
                 screenInterpolator: sceneProps => {

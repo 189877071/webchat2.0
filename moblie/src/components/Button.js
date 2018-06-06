@@ -102,7 +102,7 @@ export class EditorBtn extends PureComponent {
             <View style={styles.editorbox}>
                 <View style={styles.editor}>
                     <Text style={{ color: '#fff', fontSize: ratio(40) }}>发送</Text>
-                    <FeedBackBtn onPress={this.props.getvalue} />
+                    <FeedBackBtn onPress={this.props.submit} />
                 </View>
             </View>
         )

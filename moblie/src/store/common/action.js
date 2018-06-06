@@ -2,7 +2,7 @@ import { ofetch, storage, getAction, uuid } from '../../public/fn'
 
 import { setAInit } from '../active/action'
 
-import { setUInit } from '../users/action'
+import { setUInit, setUName } from '../users/action'
 
 storage.sync.audio = (params) => {
     const { resolve } = params;
@@ -52,7 +52,20 @@ export const setCData = ({ activeuser, data }) => async (dispatch, getState) => 
         dispatch(setAInit(activeuser));
     }
     if (data) {
+        dispatch(setUName('chatting-' + activeuser.id));
         dispatch(setUInit(data));
     }
     dispatch(setLoginActiveState(1));
+}
+
+export const setCExit = () => async (dispatch, getState) => {
+    const { socketInfor } = getState().c;
+
+    const { success, error } = await ofetch('/exit?optation=1', socketInfor);
+
+    if (!success) {
+        alert(error);
+    }
+    alert('检测到您的设备在其他地方登录');
+    dispatch(setLoginActiveState(2));
 }
