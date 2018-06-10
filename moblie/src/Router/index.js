@@ -22,13 +22,16 @@ import Search from '../containers/Search'
 
 import Infor from '../containers/Infor'
 
+import NoticeChildren from '../containers/NoticeChildren'
+
 const Main = createStackNavigator(
     {
         index: Index,
         chat: Chat,
         settingChildren: SettingChildren,
         search: Search,
-        infor: Infor
+        infor: Infor,
+        noticechildren: NoticeChildren
     },
     {
         initialRouteName: 'index',

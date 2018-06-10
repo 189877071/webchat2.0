@@ -86,9 +86,10 @@ export class Background extends PureComponent {
                 return require('../public/image/infor.jpg');
             case 'search':
                 return require('../public/image/search.jpg');
+            case 'noticechildren':
+                return require('../public/image/noticechildren.jpg');
         }
     }
-
     render() {
         return (
             <Image source={this.getImg()} resizeMode='cover' style={style.bg} />

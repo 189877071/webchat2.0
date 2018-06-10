@@ -103,7 +103,7 @@ module.exports = {
             { socketport: 4500, udpport: 5500, udphost: '127.0.0.1' }
         ]
     },
-    userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class'],
+    userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class', 'readnotice'],
     expires: 24 * 60 * 60 * 1000,
     grayurl: 'http://localhost:8088/gray.php',
     noticenum: 10

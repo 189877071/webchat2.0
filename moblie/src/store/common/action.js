@@ -4,6 +4,8 @@ import { setAInit } from '../active/action'
 
 import { setUInit, setUName, setUAddUnreadChat } from '../users/action'
 
+import { setNInit } from '../notice/action'
+
 storage.sync.audio = (params) => {
     const { resolve } = params;
     // 声音默认开启
@@ -37,17 +39,19 @@ export const appInit = value => async (dispatch, getState) => {
     dispatch(setAudio(audio));
 
     // 访问 init 查看用户是否登录
-    const { success, activeuser, data, unreadMessage } = await ofetch('/init', value);
+    let { success, activeuser, data, unreadMessage, notice } = await ofetch('/init', value);
 
     if (!success) {
         dispatch(setLoginActiveState(2));
         return;
     }
 
-    dispatch(setCData({ activeuser, data, unreadMessage }));
+    notice.read = activeuser.readnotice;
+
+    dispatch(setCData({ activeuser, data, unreadMessage, notice }));
 }
 
-export const setCData = ({ activeuser, data, unreadMessage }) => async (dispatch, getState) => {
+export const setCData = ({ activeuser, data, unreadMessage, notice }) => async (dispatch, getState) => {
     if (activeuser) {
         dispatch(setAInit(activeuser));
     }
@@ -58,6 +62,8 @@ export const setCData = ({ activeuser, data, unreadMessage }) => async (dispatch
     if (unreadMessage && unreadMessage.length) {
         dispatch(setUAddUnreadChat(unreadMessage));
     }
+
+    dispatch(setNInit(notice));
 
     dispatch(setLoginActiveState(1));
 }

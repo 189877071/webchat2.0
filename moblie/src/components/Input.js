@@ -262,27 +262,29 @@ export class LoginForm extends PureComponent {
             await AsyncStorage.removeItem('autokey');
         }
 
-        // alert(JSON.stringify({ username, password, autokey, ...this.props.socketInfor }));
-
-        const { success, data, activeuser, error, unreadMessage } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
+        const { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
 
         if (!success) {
             this.setState({ passerr: '密码输入不正确！' });
             return;
         }
 
-        this.props.callback({ data, activeuser, unreadMessage });
+        notice.read = activeuser.readnotice;
+
+        this.props.callback({ data, activeuser, unreadMessage, notice });
     }
 
     // 测试登录
     testSubmit = async () => {
-        const { success, data, activeuser, error, unreadMessage } = await ofetch('/login?optation=test', this.props.socketInfor);
+        let { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login?optation=test', this.props.socketInfor);
         if (!success) {
             alert('登录失败！');
             return;
         }
 
-        this.props.callback({ data, activeuser, unreadMessage });
+        notice.read = activeuser.readnotice;
+
+        this.props.callback({ data, activeuser, unreadMessage, notice });
     }
 
     render() {

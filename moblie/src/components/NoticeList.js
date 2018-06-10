@@ -4,7 +4,9 @@ import { BoxShadow } from 'react-native-shadow'
 
 import { View, StyleSheet, Text, TouchableNativeFeedback, Image, Button } from 'react-native'
 
-import { ratio } from '../public/fn'
+import { FeedBackBtn } from './Button'
+
+import { ratio, getTextDate } from '../public/fn'
 
 const [w976, w490, w30, w130, w42, w28, color, w58, w35, w75, w106, w49, w10, unreadjpg, w24] = [
     ratio(976),
@@ -136,7 +138,7 @@ class Deleted extends PureComponent {
     render() {
         return (
             <View style={styles.deleted}>
-                <Button 
+                <Button
                     title="删除"
                     color="#ff3a31"
                     onPress={() => alert(123)}
@@ -162,20 +164,25 @@ class Unread extends PureComponent {
 
 export class NoticeItem extends PureComponent {
     render() {
+        const { title, otime, description, id, read, href } = this.props;
+
         return (
             <View style={styles.outbox}>
                 <BoxShadow setting={setting}>
-                    <TouchableNativeFeedback
-                        background={TouchableNativeFeedback.SelectableBackground()}
-                    >
-                        <View style={styles.box}>
-                            <Title />
-                            <Synopsis />
-                            <Deleted />
+                    <View style={styles.box}>
+                        <View style={styles.titleBox}>
+                            <Text style={styles.title}>{title && title.slice(0, 15)}……</Text>
+                            <Text style={styles.time}>{getTextDate(otime)}</Text>
                         </View>
-                    </TouchableNativeFeedback>
+                        <View style={styles.synopsis}>
+                            <Text style={styles.synopsistext}>
+                                {description && description.slice(0, 80)}……
+                                </Text>
+                        </View>
+                        <FeedBackBtn onPress={() => href({ id })} />
+                    </View>
                 </BoxShadow>
-                <Unread />
+                {read || <Unread />}
             </View>
         )
     }
