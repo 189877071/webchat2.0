@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Component } from 'react'
 
 import { View, TextInput, StyleSheet, Button, Text, AsyncStorage } from 'react-native'
 
@@ -7,6 +7,8 @@ import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 import { ratio, windowW, ofetch, uuid } from '../public/fn'
 
 import { BigButton, EditorBtn } from './Button'
+
+import Icons from '../Icons'
 
 import { LoginFormBottom } from './Bottom'
 
@@ -93,6 +95,26 @@ const style = StyleSheet.create({
         paddingLeft: pleft,
         paddingRight: pright,
         maxHeight: ratio(324)
+    },
+    search: {
+        borderBottomWidth: 1,
+        borderColor: '#07bb98',
+        flexDirection: 'row',
+        height: ratio(120),
+        marginTop: ratio(27)
+    },
+    searchicon: {
+        width: ratio(60),
+        justifyContent: 'center',
+    },
+    searchinput: {
+        flex: 1,
+        color: '#111',
+        fontSize: ratio(40),
+        height: ratio(120),
+        paddingBottom: 0,
+        paddingTop: 0,
+        lineHeight: ratio(120)
     }
 });
 
@@ -242,25 +264,25 @@ export class LoginForm extends PureComponent {
 
         // alert(JSON.stringify({ username, password, autokey, ...this.props.socketInfor }));
 
-        const { success, data, activeuser, error } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
+        const { success, data, activeuser, error, unreadMessage } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
 
         if (!success) {
             this.setState({ passerr: '密码输入不正确！' });
             return;
         }
 
-        this.props.callback({ data, activeuser });
+        this.props.callback({ data, activeuser, unreadMessage });
     }
 
     // 测试登录
     testSubmit = async () => {
-        const { success, data, activeuser, error } = await ofetch('/login?optation=test', this.props.socketInfor);
+        const { success, data, activeuser, error, unreadMessage } = await ofetch('/login?optation=test', this.props.socketInfor);
         if (!success) {
-            alert(error);
+            alert('登录失败！');
             return;
         }
 
-        this.props.callback({ data, activeuser });
+        this.props.callback({ data, activeuser, unreadMessage });
     }
 
     render() {
@@ -309,6 +331,32 @@ export class EditorInput extends PureComponent {
                 >
                 </TextInput>
                 <EditorBtn submit={this.props.send} />
+            </View>
+        )
+    }
+}
+
+export class SearchInput extends PureComponent {
+    render() {
+        const { value, change } = this.props;
+        const transfrom = {
+            transform: [{
+                translateY: ratio(5)
+            }]
+        }
+        return (
+            <View style={style.search}>
+                <View style={style.searchicon}>
+                    <Icons name='icon-sousuo' style={transfrom} size={ratio(50)} color='#627385' />
+                </View>
+                <TextInput
+                    underlineColorAndroid="transparent"
+                    placeholder='账户/邮箱/昵称'
+                    placeholderTextColor='#999'
+                    style={style.searchinput}
+                    defaultValue={value}
+                    onChangeText={change}
+                />
             </View>
         )
     }

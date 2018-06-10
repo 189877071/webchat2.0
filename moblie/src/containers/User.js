@@ -61,6 +61,10 @@ class User extends PureComponent {
         }, 0);
     }
 
+    toSearch = () => {
+        this.props.navigation.navigate('search');
+    }
+
     render() {
         const { users, show } = this.props;
 
@@ -75,7 +79,7 @@ class User extends PureComponent {
                 <Header title="好友列表" />
 
                 <SectionList
-                    ListHeaderComponent={SearchBtn}
+                    ListHeaderComponent={<SearchBtn href={this.toSearch} />}
                     ListFooterComponent={(
                         <View style={{ height: ratio(200), borderTopWidth: 1, borderColor: borderColor }}></View>
                     )}

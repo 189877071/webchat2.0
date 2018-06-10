@@ -9,15 +9,6 @@ const [w50, w450] = [
     ratio(450)
 ]
 
-const img = {
-    login: require('../public/image/login.jpg'),
-    message: require('../public/image/message.jpg'),
-    notice: require('../public/image/notice.jpg'),
-    user: require('../public/image/user.jpg'),
-    setting: require('../public/image/setting.jpg'),
-    settingchildren: require('../public/image/settingchildren.jpg'),
-    chat: require('../public/image/chat.jpg'), 
-}
 
 const style = StyleSheet.create({
     box: {
@@ -74,19 +65,33 @@ export class LogoBox extends PureComponent {
 }
 
 export class Background extends PureComponent {
-    render() {
-        let source = img.login;
 
-        if (this.props.active && img[this.props.active]) {
-            source = img[this.props.active];
+    getImg = () => {
+        switch (this.props.active) {
+            case 'login':
+                return require('../public/image/login.jpg');
+            case 'message':
+                return require('../public/image/message.jpg');
+            case 'notice':
+                return require('../public/image/notice.jpg');
+            case 'user':
+                return require('../public/image/user.jpg');
+            case 'setting':
+                return require('../public/image/setting.jpg');
+            case 'settingchildren':
+                return require('../public/image/settingchildren.jpg');
+            case 'chat':
+                return require('../public/image/chat.jpg');
+            case 'infor':
+                return require('../public/image/infor.jpg');
+            case 'search':
+                return require('../public/image/search.jpg');
         }
+    }
 
+    render() {
         return (
-            <Image
-                source={source}
-                resizeMode='cover'
-                style={style.bg}
-            />
+            <Image source={this.getImg()} resizeMode='cover' style={style.bg} />
         )
     }
 }

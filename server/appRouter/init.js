@@ -4,6 +4,8 @@ const mysql = require('../common/db');
 
 const { tables, userField } = require('../common/config');
 
+const { isAllString, escape } = require('../common/fn');
+
 const loginMixin = require('./loginMixin');
 
 module.exports = async (ctx) => {
@@ -11,13 +13,18 @@ module.exports = async (ctx) => {
 
     let userid = null;
 
-    if (!autokey && (!ctx.session || !ctx.session.mlogin)) {
+    const verifykey = isAllString([autokey]);
+
+    if (!verifykey && (!ctx.session || !ctx.session.mlogin)) {
         ctx.oerror();
         return;
     }
-    else if (autokey && (!ctx.session || !ctx.session.mlogin)) {
+    else if (verifykey && (!ctx.session || !ctx.session.mlogin)) {
         // 查询自动登录
-        const resuser = await mysql(sql.table(tables.dbautokey).field('userid').where({ autokey }).select);
+        const resuser = await mysql(
+            sql.table(tables.dbautokey).field('userid').where({ autokey: escape(autokey) }).select()
+        );
+
         if (!resuser || !resuser.length) {
             ctx.oerror();
             return;
@@ -41,16 +48,18 @@ module.exports = async (ctx) => {
         return;
     }
 
-    const data = await loginMixin(ctx, userid, Date.now());
+    const resMixin = await loginMixin(ctx, userid, Date.now());
 
-    if (!data) {
+    if (!resMixin) {
         ctx.oerror('users / aclass / islogin / loginusers 读取出错');
         return;
     }
+
+    const { data, unreadMessage, notice } = resMixin;
 
     ctx.session.mlogin = true;
 
     ctx.session.userid = userid;
 
-    ctx.body = { success: true, data, activeuser: activeuser[0] };
+    ctx.body = { success: true, data, activeuser: activeuser[0], unreadMessage, notice };
 }

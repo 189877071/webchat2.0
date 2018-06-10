@@ -2,13 +2,15 @@ import React, { PureComponent } from 'react'
 
 import { View, Text, StyleSheet, Image, Animated, PanResponder } from 'react-native'
 
-import { borderColor, listBg, pleft, pright } from '../public/config'
+import { borderColor, listBg, pleft, pright, hostname } from '../public/config'
 
-import { ratio, windowW } from '../public/fn'
+import { ratio, windowW, getTextDate } from '../public/fn'
 
 import { FeedBackBtn } from './Button'
 
 import Icons from '../Icons'
+
+import { TypeMessage } from './Chat'
 
 const [w130, w174, w126, w162, w450, w20, w26, w30, w60, w40, w35, w55, w28, w46] = [
     ratio(130),
@@ -141,13 +143,12 @@ const styles = StyleSheet.create({
     }
 })
 
-
 class UserPortrait extends PureComponent {
     render() {
         return (
             <View style={styles.portrait}>
                 <Image
-                    source={require('../public/image/user-photo.jpg')}
+                    source={{ uri: this.props.uri }}
                     resizeMethod='scale'
                     style={styles.portraitimg}
                 />
@@ -158,16 +159,46 @@ class UserPortrait extends PureComponent {
 
 class UserMessage extends PureComponent {
     render() {
+
+        const { isonline, message, name, unread } = this.props;
+
+        let content = null;
+
+        if (message.otype === 'message') {
+            content = <TypeMessage content={message.content} />;
+        }
+        else {
+            let text = '';
+            switch (message.otype) {
+                case 'voice':
+                    text = '语音';
+                    break;
+                case 'shock':
+                    text = '震动';
+                    break;
+                case 'image':
+                    text = '图片';
+                    break;
+                case 'video':
+                    text = '视频';
+                    break;
+            }
+            content = <Text>{text}</Text>
+        }
+
         return (
             <View style={styles.usermessage}>
                 <View style={styles.usermessagelist}>
-                    <Text style={styles.name}>须继月</Text>
-                    <Text style={styles.time}>昨天</Text>
+                    <Text style={styles.name}>{name}</Text>
+                    <Text style={styles.time}>{getTextDate(message.time, true)}</Text>
                 </View>
                 <View style={styles.usermessagelist}>
-                    <Text>[离线] 阿拉啦啦……</Text>
-                    <View style={styles.unlbox}>
-                        <Text style={styles.unl}>1</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ lineHeight: ratio(70), paddingRight: ratio(10) }}>[{isonline ? '在线' : '离线'}]</Text>
+                        {content}
+                    </View>
+                    <View style={[styles.unlbox, { display: unread ? 'flex' : 'none' }]}>
+                        <Text style={styles.unl}>{unread}</Text>
                     </View>
                 </View>
             </View>
@@ -195,7 +226,7 @@ class UserHideBtn extends PureComponent {
         return (
             <View style={styles.hidebox}>
                 <View style={styles.unshift}>
-                    <Text style={styles.white}>置顶</Text>
+                    <Text style={styles.white}>{this.props.top ? '取消置顶' : '置顶'}</Text>
                 </View>
                 <View style={styles.delete}>
                     <Text style={styles.white}>删除</Text>
@@ -217,16 +248,16 @@ class MessageContent extends PureComponent {
         };
 
         this.state.panResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (evt) => {
+                return true;
+            },
             onMoveShouldSetPanResponder: (evt) => {
-                this.state.pan.extractOffset();
-                this.setState({ start: evt.nativeEvent.pageX + this.state.move });
                 return true;
             },
             onPanResponderGrant: (evt, gestureState) => {
-                Animated.timing(this.state.bg, {
-                    toValue: 1,
-                    duration: 600
-                }).start();
+                Animated.timing(this.state.bg, { toValue: 1, duration: 100 }).start();
+                this.state.pan.extractOffset();
+                this.setState({ start: evt.nativeEvent.pageX + this.state.move });
             },
             onPanResponderMove: (evt, gestureState) => {
                 let move = this.state.start - evt.nativeEvent.pageX;
@@ -238,11 +269,47 @@ class MessageContent extends PureComponent {
                 }
                 this.state.pan.setOffset({ x: -move, y: 0 });
                 this.setState({ move });
+
             },
             onPanResponderRelease: (evt, gestureState) => {
+                const { id, delet, setTop, href } = this.props;
+                if (gestureState.dx === 0) {
+                    // 点击事件
+                    if (this.state.show) {
+                        // 计算点击位置 设置
+                        const endx = windowW - evt.nativeEvent.pageX;
+                        if (endx < w450) {
+                            // 操作 置顶 、删除
+                            if (endx < w450 / 2) {
+                                // 删除操作
+                                this.restore(0, () => delet(id));
+                            }
+                            else {
+                                // 置顶操作
+                                this.restore(0, () => setTop(id));
+                            }
+                        }
+                        else {
+                            // 还原操作
+                            this.restore(0);
+                        }
+                        this.setState({ show: false });
+                    }
+                    else {
+                        // 转跳页面
+                        href({ id });
+                        Animated.timing(this.state.bg, {
+                            toValue: 0,
+                            duration: 300
+                        }).start();
+                    }
+                    return;
+                }
+
                 let r = this.state.move / w450;
                 let move = 0;
                 let show = false;
+
                 if (!this.state.show) {
                     if (r > 0.2) {
                         move = w450;
@@ -256,38 +323,42 @@ class MessageContent extends PureComponent {
                     }
                 }
 
-                this.state.pan.flattenOffset();
-
-                Animated.parallel([
-                    Animated.timing(this.state.pan, {
-                        toValue: { x: -move, y: 0 },
-                        duration: 150
-                    }),
-                    Animated.timing(this.state.bg, {
-                        toValue: 0,
-                        duration: 300
-                    })
-                ]).start();
+                this.restore(move);
 
                 this.setState({ move, show });
+
             },
         });
     }
+    // 还原
+    restore = (move, call) => {
+        this.state.pan.flattenOffset();
+        Animated.parallel([
+            Animated.timing(this.state.pan, {
+                toValue: { x: -move, y: 0 },
+                duration: 150
+            }),
+            Animated.timing(this.state.bg, {
+                toValue: 0,
+                duration: 300
+            })
+        ]).start(() => {
+            call && call();
+        });
+    }
     render() {
+        const style = [
+            styles.messageContent,
+            {
+                transform: this.state.pan.getTranslateTransform(),
+                backgroundColor: this.state.bg.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,.07)']
+                })
+            }
+        ];
         return (
-            <Animated.View
-                style={[
-                    styles.messageContent,
-                    {
-                        transform: this.state.pan.getTranslateTransform(),
-                        backgroundColor: this.state.bg.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,.07)']
-                        })
-                    }
-                ]}
-                {...this.state.panResponder.panHandlers}
-            >
+            <Animated.View style={style} {...this.state.panResponder.panHandlers}>
                 {this.props.children}
             </Animated.View>
         )
@@ -296,14 +367,16 @@ class MessageContent extends PureComponent {
 
 export class MessageItem extends PureComponent {
     render() {
+        const { headphoto, top, settop, id, tochat, delet } = this.props;
+
         return (
             <View style={styles.useritembox}>
-                <MessageContent>
+                <MessageContent setTop={settop} id={id} href={tochat} delet={delet}>
                     <View style={styles.useritemlist}>
-                        <UserPortrait />
-                        <UserMessage />
+                        <UserPortrait uri={hostname + headphoto} />
+                        <UserMessage {...this.props} />
                     </View>
-                    <UserHideBtn />
+                    <UserHideBtn top={top} />
                 </MessageContent>
             </View>
         )
@@ -346,9 +419,11 @@ export class UserClassify extends PureComponent {
                         })
                     }]
                 }]}>
-                    <Icons name='icon-202-copy' size={ratio(50)} style={{transform: [{
-                        translateY: ratio(3)
-                    }]}} color='#bebec0' />
+                    <Icons name='icon-202-copy' size={ratio(50)} style={{
+                        transform: [{
+                            translateY: ratio(3)
+                        }]
+                    }} color='#bebec0' />
                 </Animated.View>
                 <View>
                     <Text style={styles.classTitle}>默认项目组</Text>

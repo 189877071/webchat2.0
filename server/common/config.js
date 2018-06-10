@@ -10,7 +10,8 @@ module.exports = {
         "dbautokey": "chat_autologin",
         "dbclass": "chat_class",
         "dbchat": "chat_record",
-        "dbnotice": "chat_notice"
+        "dbnotice": "chat_notice",
+        "dberrsql": "chat_sqlerrlog"
     },
     origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:3000'],
     static: join(__dirname, '../static'),
@@ -104,5 +105,6 @@ module.exports = {
     },
     userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class'],
     expires: 24 * 60 * 60 * 1000,
-    grayurl: 'http://localhost:8088/gray.php'
+    grayurl: 'http://localhost:8088/gray.php',
+    noticenum: 10
 }

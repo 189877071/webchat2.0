@@ -1,19 +1,10 @@
-import { ofetch, storage, getAction, uuid, copyObj } from '../../public/fn'
+import { ofetch, storage, getAction, uuid, copyObj, editorTranition } from '../../public/fn'
 
 import { databasename } from '../../public/config'
 
-storage.sync.chatting = (params) => {
+storage.sync[databasename] = (params) => {
     const { resolve, dbname } = params;
     // 保存聊天记录 需要保存不同的账户的数据
-    /**
-        {
-            // 当前用户的数据
-            dbname: {
-                // 当前用户的聊天记录
-                userid: [{},……]
-            }
-        }
-    */
     let data = { [dbname]: {} };
 
     storage.save({ key: databasename, data, expires: null });
@@ -34,6 +25,7 @@ export const type = {
     show: uuid(),
     name: uuid(),
     currentid: uuid(),
+    top: uuid(),
 };
 
 export const setUUsers = getAction(type.users);
@@ -47,6 +39,8 @@ export const setUShow = getAction(type.show);
 export const setUName = getAction(type.name);
 
 export const setUActiveid = getAction(type.currentid);
+
+export const setUTop = getAction(type.top);
 
 export const setUInit = (value) => async (dispatch, getState) => {
 
@@ -71,6 +65,10 @@ export const setUInit = (value) => async (dispatch, getState) => {
     // 提取聊天记录
     const chattings = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname } });
 
+    chattings[dbname].top || (chattings[dbname].top = []);
+
+    dispatch(setUTop(chattings[dbname].top));
+
     dispatch(setUChat(chattings[dbname] || {}));
 }
 
@@ -94,11 +92,18 @@ export const setUonLine = ({ userid, onoff }) => (dispatch, getState) => {
     dispatch(setUUsers(users));
 }
 
-export const setUAddChat = ({ otype, userid, content, id, sender, state, alertid, time }) => async (dispatch, getState) => {
+export const setUAddChat = (params) => async (dispatch, getState) => {
+
+    let { otype, userid, content, id, sender, state, alter, time } = params;
 
     if (!otype || !userid || !id || !sender) return;
 
     if (typeValues.indexOf(otype) === -1 || senderValues.indexOf(sender) === -1) return;
+
+    if (otype === 'message' && sender === 'he') {
+        if (!content) return;
+        content = editorTranition(content);
+    }
 
     const { name, currentid } = getState().u;
 
@@ -109,19 +114,19 @@ export const setUAddChat = ({ otype, userid, content, id, sender, state, alertid
         return;
     }
 
-    const data = await storage.load({ key: databasename });
+    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
 
-    data[name] && (data[name] = {});
+    data[name] || (data[name] = {});
 
-    data[name][userid] && (data[name][userid] = []);
+    data[name][userid] || (data[name][userid] = []);
 
-    let message = { otype, userid, content, id, sender, state, time };
+    let message = { otype, content, id, sender, state, time };
 
     // 提交成功修改状态
-    if (alertid) {
+    if (alter) {
         let chatting = data[name][userid];
         for (let i = 0; i < chatting.length; i++) {
-            if (chatting[i].id == alertid) {
+            if (chatting[i].id == id) {
                 chatting[i] = message;
                 break;
             }
@@ -139,4 +144,104 @@ export const setUAddChat = ({ otype, userid, content, id, sender, state, alertid
     await storage.save({ key: databasename, data });
 
     dispatch(setUChat(data[name]));
+}
+// 删除
+export const setUDeletChat = (id, all) => async (dispatch, getState) => {
+    const { name, currentid } = getState().u;
+
+    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+
+    data[name] || (data[name] = {});
+
+    if (all) {
+        data[name][id] = [];
+        const index = data[name].top.indexOf(id);
+        if (index !== -1) {
+            data[name].top.splice(index, 1);
+        }
+        data[name] = { ...data[name] };
+    }
+    else {
+        data[name][currentid] || (data[name][currentid] = []);
+
+        for (let i = 0; i < data[name][currentid].length; i++) {
+            if (id === data[name][currentid][i].id) {
+                data[name][currentid].splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    // 保存数据
+    await storage.save({ key: databasename, data });
+
+    dispatch(setUChat(data[name]));
+}
+// 取消
+export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
+    if (!message || !Array.isArray(message)) return;
+
+    let { name, currentid } = getState().u;
+
+    const { id } = getState().a;
+
+    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+
+    data[name] || (data[name] = {});
+
+    message.forEach(item => {
+        let content = item.otype == 'message' ? editorTranition(item.content) : item.content;
+
+        let userid = item.userid == id ? item.heid : item.userid;
+
+        const message = {
+            otype: item.otype,
+            content,
+            id: item.oid,
+            sender: item.userid == id ? 'mi' : 'he',
+            state: 'unread',
+            time: item.otime
+        };
+
+        if (!data[name][userid]) {
+            data[name][userid] = [message];
+        }
+        else {
+            data[name][userid].push(message);
+
+            if (data[name][userid] > 200) {
+                data[name][userid].shift();
+            }
+        }
+    });
+
+    await storage.save({ key: databasename, data });
+
+    dispatch(setUChat(data[name]));
+}
+// 置顶
+export const SetUTopChat = (id) => async (dispatch, getState) => {
+    if (!id) return;
+    let { name, currentid } = getState().u;
+
+    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+
+    if (!data[name][id]) return;
+
+    let top = data[name].top || [];
+
+    let index = top.indexOf(id);
+
+    if (index === -1) {
+        top.push(id);
+    }
+    else {
+        top.splice(index, 1);
+    }
+
+    data[name].top = top;
+
+    await storage.save({ key: databasename, data });
+
+    dispatch(setUTop([...data[name].top]));
 }

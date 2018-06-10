@@ -2,6 +2,7 @@ const md5 = require('md5');
 const sql = require('node-transform-mysql');
 const mysql = require('../common/db');
 const { tables } = require('../common/config');
+const { escape } = require('../common/fn');
 
 
 module.exports = async (ctx) => {
@@ -20,7 +21,7 @@ module.exports = async (ctx) => {
         return;
     }
 
-    const sqlstr = sql.table(tables.dbadminUser).where({ username, password: md5(password) }).select();
+    const sqlstr = sql.table(tables.dbadminUser).where({ username: escape(username), password: md5(escape(password)) }).select();
     const results = await mysql(sqlstr);
 
     if (!results || !results[0]) {

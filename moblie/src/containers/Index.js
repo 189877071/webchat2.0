@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { View, Text } from 'react-native'
+import { View, Text, TouchableNativeFeedback } from 'react-native'
 
 import { createBottomTabNavigator } from 'react-navigation'
 
@@ -21,7 +21,7 @@ export default createBottomTabNavigator(
         'message': Message,
         'user': User,
         'notice': Notice,
-        'setting': Setting
+        'setting': Setting,
     },
     {
         initialRouteName: 'message',
@@ -83,7 +83,8 @@ export default createBottomTabNavigator(
                     return (
                         <Text style={style}>{name}</Text>
                     )
-                }
+                },
+                tabBarVisible: navigation.state.routeName == 'search' ? false : true
             }
         }
     }

@@ -67,3 +67,52 @@ exports.userclassify = (aclass, users, loginusers) => {
 
 exports.log = (text) => console.log(text);
 
+const escape = (str) => {
+    if(!str || typeof(str) != 'string') {
+        return str;
+    }
+    return str.replace(/\n|\0|\r|\t|\b|\'|\"|\%|\_/g, ($1) => {
+        switch ($1) {
+            case '\n':
+                return '\\n';
+            case '\0':
+                return '\\0';
+            case '\r':
+                return '\\r';
+            case '\t':
+                return '\\t';
+            case '\b':
+                return '\\b';
+            case '\'':
+                return "\\'";
+            case '\"':
+                return '\\"';
+            case '\%':
+                return '\\%';
+            case '\_':
+                return '\\_';
+            default:
+                return '';
+        }
+    });
+}
+
+exports.escape = escape;
+
+exports.isAllString = (param) => {
+    if (Array.isArray(param)) {
+        return param.every(item => (item && typeof item === 'string'));
+    }
+    else {
+        return (param && typeof param === 'string');
+    }
+};
+
+exports.isAllType = (param, type) => {
+    if (Array.isArray(param)) {
+        return param.every(item => (typeof item === type));
+    }
+    else {
+        return (typeof param === type);
+    }
+}; 

@@ -8,10 +8,13 @@ import users from './users'
 
 import active from './active'
 
+import notice from './notice'
+
 const reducers = combineReducers({
     c: common,
     u: users,
-    a: active
+    a: active,
+    n: notice
 });
 
 const newCreateStore = applyMiddleware(thunk)(createStore);

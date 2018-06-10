@@ -45,7 +45,7 @@ export default class SearchBtn extends PureComponent {
                     <Icons name='icon-search' size={ratio(48)} color='#747474' />
                 </Text>
                 <Text style={style.text}>搜 索</Text>
-                <FeedBackBtn />
+                <FeedBackBtn onPress={this.props.href} />
             </View>
         )
     }

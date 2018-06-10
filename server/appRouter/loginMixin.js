@@ -2,19 +2,32 @@ const sql = require('node-transform-mysql');
 
 const mysql = require('../common/db');
 
-const { tables, userField } = require('../common/config');
+const { tables, userField, noticenum } = require('../common/config');
 
-const { userclassify } = require('../common/fn');
+const { userclassify, escape, isAllString, isAllType } = require('../common/fn');
 
 module.exports = async (ctx, userid, otime) => {
-    const { socketid, udphost, udpport } = ctx.request.body;
+    let { socketid, udphost, udpport } = ctx.request.body;
+
+    if (!isAllString([socketid, udphost]) || !isAllType(udpport, 'number')) return false;
+
+    socketid = escape(socketid);
+
+    udphost = escape(udphost);
+
     // 获取所有用户
     const users = await mysql(sql.table(tables.dbuser).field(userField).order('class,logindate desc').where({ id: { neq: userid } }).select());
     // 获取分类
     const aclass = await mysql(sql.table(tables.dbclass).order('sort desc').select());
-
     // 获取当前在线用户
     const loginusers = await mysql(sql.table(tables.dblogin).select());
+    // 获取未读消息 
+    const unreadWhere = { heid: userid, state: 0 };
+    const unreadMessage = await mysql(sql.table(tables.dbchat).where(unreadWhere).select());
+    // 获取公告
+    const notice = await mysql(sql.table(tables.dbnotice).order('id desc').limit(noticenum).select());
+    // 获取公告长度
+    const noticelen = await mysql(sql.count().table(tables.dbnotice).select());
 
     if (loginusers && loginusers.length) {
 
@@ -51,9 +64,14 @@ module.exports = async (ctx, userid, otime) => {
     // 添加到登录用户表
     const islogin = await mysql(sql.table(tables.dblogin).data({ userid, socketid, udphost, udpport, otime }).insert());
 
-    if (!users || !aclass || !islogin || !loginusers) {
+    if (!users || !aclass || !islogin || !loginusers || !unreadMessage || !notice) {
         return false;
     }
 
-    return userclassify(aclass, users, loginusers);
+    // 把未读消息转化成已读
+    await mysql(sql.table(tables.dbchat).where(unreadWhere).data({ state: 1 }).update());
+
+    const data = userclassify(aclass, users, loginusers);
+    
+    return { data, unreadMessage, notice: { notice, noticelen, noticenum } };
 }

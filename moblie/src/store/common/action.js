@@ -2,7 +2,7 @@ import { ofetch, storage, getAction, uuid } from '../../public/fn'
 
 import { setAInit } from '../active/action'
 
-import { setUInit, setUName } from '../users/action'
+import { setUInit, setUName, setUAddUnreadChat } from '../users/action'
 
 storage.sync.audio = (params) => {
     const { resolve } = params;
@@ -37,17 +37,17 @@ export const appInit = value => async (dispatch, getState) => {
     dispatch(setAudio(audio));
 
     // 访问 init 查看用户是否登录
-    const { success, activeuser, data } = await ofetch('/init', value);
+    const { success, activeuser, data, unreadMessage } = await ofetch('/init', value);
 
     if (!success) {
         dispatch(setLoginActiveState(2));
         return;
     }
 
-    dispatch(setCData({ activeuser, data }));
+    dispatch(setCData({ activeuser, data, unreadMessage }));
 }
 
-export const setCData = ({ activeuser, data }) => async (dispatch, getState) => {
+export const setCData = ({ activeuser, data, unreadMessage }) => async (dispatch, getState) => {
     if (activeuser) {
         dispatch(setAInit(activeuser));
     }
@@ -55,6 +55,10 @@ export const setCData = ({ activeuser, data }) => async (dispatch, getState) => 
         dispatch(setUName('chatting-' + activeuser.id));
         dispatch(setUInit(data));
     }
+    if (unreadMessage && unreadMessage.length) {
+        dispatch(setUAddUnreadChat(unreadMessage));
+    }
+
     dispatch(setLoginActiveState(1));
 }
 

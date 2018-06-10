@@ -1,5 +1,3 @@
-import WebSocket from 'isomorphic-ws'
-
 import store from '../store'
 
 import { socketurl } from './config'

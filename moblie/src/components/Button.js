@@ -34,7 +34,6 @@ const styles = StyleSheet.create({
     },
     editor: {
         position: 'relative',
-        backgroundColor: '#a7b3bf',
         height: ratio(124),
         width: ratio(175),
         justifyContent: 'center',
@@ -77,20 +76,23 @@ export class FeedBackBtn extends PureComponent {
 
 export class SmallButton extends PureComponent {
     render() {
-        const { width, height } = this.props;
+        const { width, height, href, fontSize } = this.props;
 
         let ostyle = {};
-
+        let otext = {}
         if (width) {
             ostyle.width = width;
         }
         if (height) {
             ostyle.height = height;
         }
+        if (fontSize) {
+            otext.fontSize = fontSize
+        }
         return (
             <View style={[styles.autobox, ostyle]}>
-                <Text style={styles.smailtext}>{this.props.title}</Text>
-                <FeedBackBtn />
+                <Text style={[styles.smailtext, otext]}>{this.props.title}</Text>
+                <FeedBackBtn onPress={href} />
             </View>
         )
     }
@@ -98,9 +100,10 @@ export class SmallButton extends PureComponent {
 
 export class EditorBtn extends PureComponent {
     render() {
+        const backgroundColor = this.props.deep ? '#627385' : '#a7b3bf';
         return (
             <View style={styles.editorbox}>
-                <View style={styles.editor}>
+                <View style={[styles.editor, { backgroundColor }]}>
                     <Text style={{ color: '#fff', fontSize: ratio(40) }}>发送</Text>
                     <FeedBackBtn onPress={this.props.submit} />
                 </View>

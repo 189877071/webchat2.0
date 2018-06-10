@@ -4,6 +4,8 @@ import { View } from 'react-native';
 
 import { connect } from 'react-redux';
 
+import { FlatList } from 'react-native'
+
 import Box, { ScrollBox } from '../components/Box'
 
 import { Background } from '../components/Image'
@@ -18,9 +20,12 @@ class Notice extends Component {
             <Box>
                 <Background active="notice" />
                 <Header title="公告" />
-                <ScrollBox>
+                {/* <ScrollBox>
                     <NoticeItem />
-                </ScrollBox>
+                </ScrollBox> */}
+                <FlatList 
+                    
+                />
             </Box>
         )
     }

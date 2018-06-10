@@ -6,7 +6,7 @@ import { Animated, Easing } from 'react-native'
 
 import { createStackNavigator } from 'react-navigation'
 
-import { windowW } from '../public/fn'
+import { windowW, windowH } from '../public/fn'
 
 import Loading from '../containers/Loading'
 
@@ -18,11 +18,17 @@ import Chat from '../containers/Chat'
 
 import SettingChildren from '../containers/SettingChildren'
 
+import Search from '../containers/Search'
+
+import Infor from '../containers/Infor'
+
 const Main = createStackNavigator(
     {
         index: Index,
         chat: Chat,
-        settingChildren: SettingChildren
+        settingChildren: SettingChildren,
+        search: Search,
+        infor: Infor
     },
     {
         initialRouteName: 'index',
@@ -42,7 +48,7 @@ const Main = createStackNavigator(
                     const { layout, position, scene } = sceneProps;
 
                     const { index } = scene;
-                    
+
                     const translateX = position.interpolate({
                         inputRange: [index - 1, index, index + 1],
                         outputRange: [windowW, 0, 0],

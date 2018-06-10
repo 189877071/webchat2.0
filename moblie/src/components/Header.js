@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import { StyleSheet, View, Text, TouchableNativeFeedback } from 'react-native'
+import { StyleSheet, View, Text, TouchableNativeFeedback, } from 'react-native'
 
 import { headerBackground, pleft, pright } from '../public/config'
 
@@ -9,6 +9,8 @@ import { ratio } from '../public/fn'
 import Icons from '../Icons'
 
 import { SmallButton } from './Button'
+
+import { SearchInput } from './Input'
 
 const style = StyleSheet.create({
     box: {
@@ -60,6 +62,16 @@ const style = StyleSheet.create({
     chatState: {
         fontSize: ratio(30),
         color: '#fff'
+    },
+    search: {
+        flex: 1,
+        paddingLeft: pleft,
+    },
+    searchbtn: {
+        paddingRight: pright,
+        paddingLeft: pleft,
+        justifyContent: 'flex-end',
+        height: ratio(147),
     }
 });
 
@@ -98,17 +110,19 @@ export class Header extends PureComponent {
 }
 
 export class InlineHeader extends PureComponent {
+
     render() {
+        const { title, hideBtn, backup } = this.props;
         return (
             <View style={style.box}>
-                <HeadLeft event={() => { }} color={headerBackground} />
+                <HeadLeft event={backup} color={headerBackground} />
                 <View style={style.title}>
                     <Text style={[style.titleText, { color: headerBackground }]}>
-                        {this.props.title}
+                        {title}
                     </Text>
                 </View>
                 <View style={style.btnight}>
-                    <SmallButton title='保存' />
+                    {!hideBtn && <SmallButton title='保存' />}
                 </View>
             </View>
         )
@@ -117,7 +131,7 @@ export class InlineHeader extends PureComponent {
 
 export class ChatHeader extends PureComponent {
     render() {
-        const { goBack, name, state } = this.props;
+        const { goBack, name, state, infor } = this.props;
         const transform = {
             transform: [{
                 translateY: ratio(3)
@@ -133,11 +147,27 @@ export class ChatHeader extends PureComponent {
                     </View>
                 </View>
                 <View style={style.btnight}>
-                    <TouchableNativeFeedback onPress={() => { }}>
+                    <TouchableNativeFeedback onPress={infor}>
                         <Text style={transform}>
                             <Icons name='icon-xingming' size={ratio(52)} color='#fff' />
                         </Text>
                     </TouchableNativeFeedback>
+                </View>
+            </View>
+        )
+    }
+}
+
+export class SearchHeaser extends PureComponent {
+    render() {
+        const { value, change, href } = this.props;
+        return (
+            <View style={[style.box, { justifyContent: 'flex-start' }]}>
+                <View style={style.search}>
+                    <SearchInput value={value} change={change} />
+                </View>
+                <View style={style.searchbtn}>
+                    <SmallButton height={ratio(105)} fontSize={ratio(40)} href={href} title='取消' />
                 </View>
             </View>
         )

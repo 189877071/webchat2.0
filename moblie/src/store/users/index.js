@@ -13,6 +13,8 @@ const init = {
     name: '',
     // 当前正在在聊天的id null 没有聊天
     currentid: null,
+    // 置顶
+    top: []
 }
 
 export default function (state = init, action) {
@@ -30,6 +32,8 @@ export default function (state = init, action) {
             return { ...state, name: value };
         case type.currentid:
             return { ...state, currentid: value };
+        case type.top:
+        return { ...state, top: value };
     }
     return state;
 }
