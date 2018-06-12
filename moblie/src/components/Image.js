@@ -69,7 +69,7 @@ export class Background extends PureComponent {
     getImg = () => {
         switch (this.props.active) {
             case 'login':
-                return require('../public/image/login.jpg');
+                return require('../public/image/bglogin.jpg');
             case 'message':
                 return require('../public/image/message.jpg');
             case 'notice':

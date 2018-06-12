@@ -92,10 +92,6 @@ module.exports = async (ctx, userid, otime) => {
         return false;
     }
 
-    for (let i = 0; i < notice.length; i++) {
-        notice[i].key = `${i}`;
-    }
-
     // 把未读消息转化成已读
     await mysql(
         sql.table(tables.dbchat).where(unreadWhere).data({ state: 1 }).update()

@@ -39,11 +39,16 @@ const styles = StyleSheet.create({
 
 export class AlterName extends PureComponent {
     render() {
+        const { name, change, error } = this.props;
         return (
             <View style={styles.box}>
                 <BigInput
                     borderColor='#07bb98'
                     placeholder='输入您的昵称'
+                    value={name}
+                    change={change}
+                    error={error}
+                    maxlength={15}
                 />
                 <View style={styles.nameexplan}>
                     <Text style={styles.nameexplantext}>昵称可以方便您的朋友更快速的找到您！</Text>
@@ -55,22 +60,38 @@ export class AlterName extends PureComponent {
 
 export class AlterEmail extends PureComponent {
     render() {
+        const {
+            value, error, change, verify, verifychange, verifyerror, getverify, verifbuttonvalue
+            , submit
+        } = this.props;
+
         return (
             <View style={styles.box}>
                 <BigInput
                     borderColor='#07bb98'
                     placeholder='输入新的邮箱地址'
+                    value={value}
+                    error={error}
+                    change={change}
                 />
                 <View style={styles.verify}>
-                    <VerifyInput placeholder='输入验证码' />
-                    <View style={{
-                        justifyContent: 'flex-end',
-                    }}>
-                        <SmallButton title='获取验证码' width={ratio(325)} height={ratio(85)} />
+                    <VerifyInput
+                        placeholder='输入验证码'
+                        value={verify}
+                        change={verifychange}
+                        error={verifyerror}
+                        maxlength={6}
+                    />
+                    <View style={{ justifyContent: 'flex-end' }}>
+                        <SmallButton
+                            title={verifbuttonvalue}
+                            width={ratio(325)}
+                            height={ratio(85)}
+                            href={getverify}
+                        />
                     </View>
-
                 </View>
-                <BigButton title='保存' />
+                <BigButton title='保存' onPress={submit} />
             </View>
         )
     }
@@ -78,20 +99,29 @@ export class AlterEmail extends PureComponent {
 
 export class AlterPassword extends PureComponent {
     render() {
+        const { passvalue, passchange, passerr, revalue, rechange, reerr, submit } = this.props;
         return (
             <View style={styles.box}>
                 <BigInput
                     borderColor='#07bb98'
                     password={true}
                     placeholder='输入新密码'
+                    maxlength={20}
+                    value={passvalue}
+                    error={passerr}
+                    change={passchange}
                 />
                 <BigInput
                     borderColor='#07bb98'
                     password={true}
                     placeholder='确认密码'
+                    maxlength={20}
+                    value={revalue}
+                    error={reerr}
+                    change={rechange}
                 />
                 <View style={{ marginTop: ratio(20) }}>
-                    <BigButton title='保存' />
+                    <BigButton onPress={submit} title='保存' />
                 </View>
             </View>
         )
@@ -100,9 +130,15 @@ export class AlterPassword extends PureComponent {
 
 export class AlterSynopsis extends PureComponent {
     render() {
+        const { value, change } = this.props;
         return (
             <View>
-                <Textarea placeholder='填写您的个性签名'/>
+                <Textarea
+                    placeholder='填写您的个性签名'
+                    value={value}
+                    change={change}
+                    maxlength={50}
+                />
                 <Text style={styles.textareabottom}>个人介绍 更好的展示自己！</Text>
             </View>
         )

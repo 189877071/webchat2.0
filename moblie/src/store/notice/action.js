@@ -12,7 +12,7 @@ export const setNList = getAction(type.list);
 
 export const setNPage = getAction(type.page);
 
-export const setNAction = getAction(type.active);
+export const setNActice = getAction(type.active);
 
 export const setNRead = getAction(type.read);
 
@@ -20,13 +20,13 @@ export const setNContent = getAction(type.content);
 
 export const setNInit = ({ notice, noticelen, noticenum, read }) => (dispatch, getState) => {
 
-    const page = Math.ceil(noticelen / noticenum);
+    const page = Math.ceil(noticelen[0]['COUNT(1)'] / noticenum);
 
     dispatch(setNList(notice));
 
     dispatch(setNPage(page));
 
-    dispatch(setNAction(1));
+    dispatch(setNActice(1));
     if (read) {
         try {
             dispatch(setNRead(JSON.parse(read)));
@@ -42,11 +42,11 @@ export const setNInit = ({ notice, noticelen, noticenum, read }) => (dispatch, g
 
 export const setNAddContent = (data, id) => (dispatch, getState) => {
     if (!id || !data) return;
-   
+
     const n = getState().n;
 
     let content = { ...n.content };
-    
+
     let read = [...n.read];
 
     content[id] = data;
@@ -57,4 +57,14 @@ export const setNAddContent = (data, id) => (dispatch, getState) => {
     }
 
     dispatch(setNContent(content));
+}
+
+export const setNAddList = (notice) => (dispatch, getState) => {
+    const { list, active } = getState().n;
+
+    if (!Array.isArray(notice)) return;
+
+    dispatch(setNList([...list].concat(notice)));
+
+    dispatch(setNActice(active + 1));
 }

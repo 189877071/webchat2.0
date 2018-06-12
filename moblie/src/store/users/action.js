@@ -1,5 +1,7 @@
 import { ofetch, storage, getAction, uuid, copyObj, editorTranition } from '../../public/fn'
 
+import Sound from 'react-native-sound'
+
 import { databasename } from '../../public/config'
 
 storage.sync[databasename] = (params) => {
@@ -63,7 +65,9 @@ export const setUInit = (value) => async (dispatch, getState) => {
     dispatch(setUShow(show));
 
     // 提取聊天记录
-    const chattings = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname } });
+    let chattings = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname } });
+
+    chattings[dbname] || (chattings[dbname] = {});
 
     chattings[dbname].top || (chattings[dbname].top = []);
 
@@ -91,7 +95,7 @@ export const setUonLine = ({ userid, onoff }) => (dispatch, getState) => {
 
     dispatch(setUUsers(users));
 }
-
+// 消息
 export const setUAddChat = (params) => async (dispatch, getState) => {
 
     let { otype, userid, content, id, sender, state, alter, time } = params;
@@ -144,6 +148,16 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
     await storage.save({ key: databasename, data });
 
     dispatch(setUChat(data[name]));
+
+    if (currentid == userid || !getState().c.audio) return;
+
+    // 播放声音
+    let s = new Sound(require('../../public/media/message.mp3'), (e) => {
+        if (e) {
+            return;
+        }
+        s.play(() => s.release());
+    });
 }
 // 删除
 export const setUDeletChat = (id, all) => async (dispatch, getState) => {
@@ -177,7 +191,7 @@ export const setUDeletChat = (id, all) => async (dispatch, getState) => {
 
     dispatch(setUChat(data[name]));
 }
-// 取消
+// 初始化未读信息
 export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
     if (!message || !Array.isArray(message)) return;
 
@@ -222,7 +236,7 @@ export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
 // 置顶
 export const SetUTopChat = (id) => async (dispatch, getState) => {
     if (!id) return;
-    let { name, currentid } = getState().u;
+    let { name } = getState().u;
 
     let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
 
@@ -244,4 +258,32 @@ export const SetUTopChat = (id) => async (dispatch, getState) => {
     await storage.save({ key: databasename, data });
 
     dispatch(setUTop([...data[name].top]));
+}
+// 把未读信息转换成已读
+export const setUunrad = () => async (dispatch, getState) => {
+
+    const { currentid, name } = getState().u;
+
+    if (!currentid) {
+        return;
+    }
+
+    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+
+    if (!data[name][currentid]) {
+        return;
+    }
+
+    let message = data[name][currentid];
+
+    for (let i = 0; i < message.length; i++) {
+        if (message[i].state === 'unread') {
+            message[i].state = 'read';
+        }
+    }
+
+    // 保存数据
+    await storage.save({ key: databasename, data });
+
+    dispatch(setUChat({ ...data[name] }));
 }

@@ -14,7 +14,7 @@ import { ChatTab, TextMessage, PhizIcon } from '../components/Chat'
 
 import { getuser, ofetch, ratio, uuid, editorTranition } from '../public/fn'
 
-import { setUActiveid, setUAddChat, setUDeletChat } from '../store/users/action'
+import { setUActiveid, setUAddChat, setUDeletChat, setUunrad } from '../store/users/action'
 
 import { hostname, showtimenum, pleft, pright } from '../public/config'
 
@@ -77,6 +77,7 @@ class Chat extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(setUunrad());
         setTimeout(() => {
             this.myRef.current.scrollToEnd({ animated: true });
         }, 0)

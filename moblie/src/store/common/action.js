@@ -79,3 +79,10 @@ export const setCExit = () => async (dispatch, getState) => {
     alert('检测到您的设备在其他地方登录');
     dispatch(setLoginActiveState(2));
 }
+
+// 设置声音
+export const setCoAudio = (value) => async (dispatch, getState) => {
+    // 设置声音
+    dispatch(setAudio(value));
+    await storage.save({ key: 'audio', data: !!value });
+}

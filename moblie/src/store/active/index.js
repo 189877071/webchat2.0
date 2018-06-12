@@ -15,6 +15,8 @@ const init = {
     age: null,
     // 昵称
     name: null,
+    // 简介
+    synopsis: '',
 }
 
 export default function (state = init, action) {
@@ -34,6 +36,8 @@ export default function (state = init, action) {
             return { ...state, age: value };
         case type.name:
             return { ...state, name: value };
+        case type.synopsis:
+            return { ...state, synopsis: value };
     }
     return state;
 }

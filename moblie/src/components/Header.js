@@ -112,7 +112,7 @@ export class Header extends PureComponent {
 export class InlineHeader extends PureComponent {
 
     render() {
-        const { title, hideBtn, backup } = this.props;
+        const { title, hideBtn, backup, submit } = this.props;
         return (
             <View style={style.box}>
                 <HeadLeft event={backup} color={headerBackground} />
@@ -122,7 +122,7 @@ export class InlineHeader extends PureComponent {
                     </Text>
                 </View>
                 <View style={style.btnight}>
-                    {!hideBtn && <SmallButton title='保存' />}
+                    {!hideBtn && <SmallButton href={submit} title='保存' />}
                 </View>
             </View>
         )

@@ -47,6 +47,7 @@ const style = StyleSheet.create({
         marginTop: ratio(20),
         paddingLeft: ratio(20),
         borderBottomWidth: 1,
+        position: 'relative'
     },
     verifyinput: {
         width: ratio(580),
@@ -118,6 +119,13 @@ const style = StyleSheet.create({
     }
 });
 
+const ErrorCom = (props) => (
+    <View style={style.err}>
+        <Text style={style.errText}>{props.error}</Text>
+    </View>
+)
+
+
 export class BigInput extends PureComponent {
     errorView = () => (
         <View style={style.err}>
@@ -147,7 +155,7 @@ export class BigInput extends PureComponent {
                     autoCorrect={false}
                     blurOnSubmit={true}
                 />
-                {error ? this.errorView() : false}
+                <ErrorCom error={error} />
             </View>
         )
     }
@@ -155,7 +163,7 @@ export class BigInput extends PureComponent {
 
 export class VerifyInput extends PureComponent {
     render() {
-        const { borderColor, placeholder } = this.props;
+        const { borderColor, placeholder, value, change, error } = this.props;
 
         const ostyle = { borderColor: '#07bb98' };
 
@@ -170,21 +178,18 @@ export class VerifyInput extends PureComponent {
                     placeholder={placeholder}
                     placeholderTextColor="#afa6a7"
                     underlineColorAndroid="transparent"
+                    value={value}
+                    onChangeText={change}
                 />
+                <ErrorCom error={error} />
             </View>
         )
     }
 }
 
 export class Textarea extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            val: ''
-        };
-    }
     render() {
-        const { placeholder } = this.props;
+        const { placeholder, value, change, maxlength } = this.props;
         return (
             <View style={style.textarea}>
                 <TextInput
@@ -193,12 +198,13 @@ export class Textarea extends PureComponent {
                     placeholderTextColor='#aba7a8'
                     underlineColorAndroid="transparent"
                     style={style.textareainput}
-                    onChangeText={(val) => this.setState({ val })}
+                    onChangeText={change}
+                    maxLength={maxlength}
                 >
-                    <Text style={{ lineHeight: ratio(80) }}>{this.state.val}</Text>
+                    <Text style={{ lineHeight: ratio(80) }}>{value}</Text>
                 </TextInput>
                 <View style={style.bottomnum}>
-                    <Text style={style.bottomnumt}>0 / 50</Text>
+                    <Text style={style.bottomnumt}>{value.length} / {maxlength}</Text>
                 </View>
             </View>
         )

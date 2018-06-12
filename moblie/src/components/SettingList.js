@@ -1,6 +1,6 @@
 import React, { PureComponent, Component } from 'react'
 
-import { View, StyleSheet, Text, Image, TouchableNativeFeedback, Switch } from 'react-native'
+import { View, StyleSheet, Text, Image, TouchableNativeFeedback, Switch, DatePickerAndroid, TouchableOpacity } from 'react-native'
 
 import Icons from '../Icons'
 
@@ -8,9 +8,9 @@ import { BoxShadow } from 'react-native-shadow'
 
 import Redio from './Redio'
 
-import { ratio } from '../public/fn'
+import { ratio, getAge, hint, ofetch } from '../public/fn'
 
-import { listBg } from '../public/config'
+import { listBg, hostname } from '../public/config'
 
 import { FeedBackBtn } from './Button'
 
@@ -97,11 +97,13 @@ export class UserPhoto extends PureComponent {
         return (
             <View style={[styles.box, { marginTop: w100 }]}>
                 <BoxShadow setting={setting}>
-                    <Image
-                        source={require('../public/image/user-photo.jpg')}
-                        resizeMode='cover'
-                        style={styles.img}
-                    />
+                    <TouchableOpacity onPress={this.props.open}>
+                        <Image
+                            source={{ uri: this.props.uri }}
+                            resizeMode='cover'
+                            style={styles.img}
+                        />
+                    </TouchableOpacity>
                 </BoxShadow>
             </View>
         )
@@ -112,46 +114,57 @@ export class UserName extends PureComponent {
     render() {
         return (
             <View style={[styles.box, { height: w162 }]}>
-                <Text style={styles.name}>189877071</Text>
+                <Text style={styles.name}>{this.props.name}</Text>
             </View>
         )
     }
 }
 
 export class SettingItems extends PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = {
-            audio: false,
-            sex: 1
-        };
-    }
-    audiochange = (newval) => {
-        this.setState({
-            audio: newval
-        })
-    }
+    // 修改性别
     sexchange = (value) => {
-        this.setState({
-            sex: value
-        })
+        this.props.setsex(value);
     }
+    // 修改年龄
+    setAge = async () => {
+        const { action, year, month, day } = await DatePickerAndroid.open({
+            date: new Date(this.props.age),
+            mode: 'default'
+        });
+
+        // alert(action); // dismissedAction dateSetAction
+
+        if (action !== 'dateSetAction') return;
+
+        const oDate = new Date(year, month, day);
+
+        const { success } = await ofetch('/setting?optation=age', { age: oDate.getTime() });
+
+        if (!success) {
+            hint('修改失败');
+            return;
+        }
+
+        this.props.setage(oDate.getTime());
+    }
+    // 修改指定资料
+    toSetting = (optation) => {
+        this.props.navigation.navigate('settingChildren', { optation })
+    }
+
     render() {
+        const { name, email, age, sex, synopsis, audio, setaudio } = this.props;
         return (
             <View style={styles.itembox}>
 
                 <View style={styles.item}>
                     <View style={styles.iteemleft}>
-                        <Icons name='icon-shengyin' size={w46} style={{
-                            transform: [{
-                                translateY: w4
-                            }]
-                        }} color={color} />
+                        <Icons name='icon-shengyin' size={w46} style={{ transform: [{ translateY: w4 }] }} color={color} />
                         <Text style={styles.itemtitle}>声音</Text>
                     </View>
                     <Switch
-                        value={this.state.audio}
-                        onValueChange={this.audiochange}
+                        value={audio}
+                        onValueChange={setaudio}
                         thumbTintColor='#1bbc9b'
                         onTintColor='#627385'
                         tintColor='#c4c8d4'
@@ -167,8 +180,8 @@ export class SettingItems extends PureComponent {
                         }} color={color} />
                         <Text style={styles.itemtitle}>昵称</Text>
                     </View>
-                    <Text style={styles.itemrtext}>忘语</Text>
-                    <FeedBackBtn />
+                    <Text style={styles.itemrtext}>{name || '修改昵称……'}</Text>
+                    <FeedBackBtn onPress={() => this.toSetting('name')} />
                 </View>
 
                 <View style={styles.item}>
@@ -180,8 +193,8 @@ export class SettingItems extends PureComponent {
                         }} color={color} />
                         <Text style={styles.itemtitle}>邮箱</Text>
                     </View>
-                    <Text style={styles.itemrtext}>189877071@qq.com</Text>
-                    <FeedBackBtn />
+                    <Text style={styles.itemrtext}>{email}</Text>
+                    <FeedBackBtn onPress={() => this.toSetting('email')} />
                 </View>
 
                 <View style={styles.item}>
@@ -194,20 +207,21 @@ export class SettingItems extends PureComponent {
                         <Text style={styles.itemtitle}>密码</Text>
                     </View>
                     <Text style={styles.itemrtext}>********</Text>
-                    <FeedBackBtn />
+                    <FeedBackBtn onPress={() => this.toSetting('pass')} />
                 </View>
 
                 <View style={styles.item}>
                     <View style={styles.iteemleft}>
-                        <Icons name='icon-nianling' size={w46} style={{
-                            transform: [{
-                                translateY: w4
-                            }]
-                        }} color={color} />
+                        <Icons
+                            name='icon-nianling'
+                            size={w46}
+                            style={{ transform: [{ translateY: w4 }] }}
+                            color={color}
+                        />
                         <Text style={styles.itemtitle}>年龄</Text>
                     </View>
-                    <Text style={styles.itemrtext}>27岁</Text>
-                    <FeedBackBtn />
+                    <Text style={styles.itemrtext}>{getAge(age)}岁</Text>
+                    <FeedBackBtn onPress={this.setAge} />
                 </View>
 
                 <View style={styles.item}>
@@ -220,8 +234,8 @@ export class SettingItems extends PureComponent {
                         <Text style={styles.itemtitle}>性别</Text>
                     </View>
                     <View style={styles.sex}>
-                        <Redio value={1} active={this.state.sex} onChange={this.sexchange}>男</Redio>
-                        <Redio value={2} active={this.state.sex} onChange={this.sexchange}>女</Redio>
+                        <Redio value={1} active={sex} onChange={this.sexchange}>男</Redio>
+                        <Redio value={2} active={sex} onChange={this.sexchange}>女</Redio>
                     </View>
                 </View>
 
@@ -234,8 +248,8 @@ export class SettingItems extends PureComponent {
                         }} color={color} />
                         <Text style={styles.itemtitle}>简介</Text>
                     </View>
-                    <Text style={styles.itemrtext}>来点什么，巴拉巴拉一下吧…</Text>
-                    <FeedBackBtn />
+                    <Text style={styles.itemrtext}>{synopsis || '来点什么，巴拉巴拉一下吧…'}</Text>
+                    <FeedBackBtn onPress={() => this.toSetting('synopsis')} />
                 </View>
             </View>
         )

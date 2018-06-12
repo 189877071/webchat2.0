@@ -1,10 +1,12 @@
-import { Dimensions, AsyncStorage } from 'react-native'
+import { Dimensions, AsyncStorage, ToastAndroid } from 'react-native'
 
 import DeviceInfo from 'react-native-device-info'
 
 import Storage from 'react-native-storage'
 
 const { height, width } = Dimensions.get('window');
+
+const hostname = 'http://39.104.80.68:3500/app';
 
 export const windowW = width;
 
@@ -28,7 +30,7 @@ export function ratio(w) {
 
 export async function ofetch(url, data) {
     return new Promise((reslove) => {
-        fetch('http://39.104.80.68:3500/app' + url, {
+        fetch(hostname + url, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -40,22 +42,9 @@ export async function ofetch(url, data) {
             .then(response => response.json())
             .then(data => reslove(data))
             .catch(() => {
-                alert(url);
                 reslove(false);
             })
     });
-
-    // const response = await fetch('http://39.104.80.68:3500/app' + url, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Accept': 'application/json',
-    //         'Content-Type': 'application/json',
-    //         'credentials': "include"
-    //     },
-    //     body: JSON.stringify(data ? data : {})
-    // });
-
-    // return await response.json();
 }
 
 export const storage = new Storage({
@@ -330,4 +319,44 @@ export function getMessage(chatting, users, toparr) {
     }
 
     return top.concat(arr);
+}
+
+export const hint = (str) => {
+    ToastAndroid.show(str, ToastAndroid.SHORT);
+}
+
+export const uploadImage = (uri) => {
+    if (!uri) return 'lalall';
+    return new Promise(reslove => {
+        let formData = new FormData();
+
+        let rpname = uri.match(/(?:[^\/]{1,})$/);
+
+        let name = '';
+
+        if (!rpname) {
+            name = uuid() + '.jpg';
+        }
+        else {
+            name = rpname[0];
+        }
+
+        let file = { uri, type: 'multipart/form-data', name };
+
+        formData.append("image", file);
+       
+        fetch(hostname + '/uploadimg',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'credentials': "include"
+                },
+                body: formData
+            }
+        )
+            .then(response => response.json())
+            .then(data => reslove(data))
+            .catch((err) => reslove(false));
+    });
 }
