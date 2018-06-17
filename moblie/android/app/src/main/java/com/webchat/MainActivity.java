@@ -1,4 +1,4 @@
-package com.moblie;
+package com.webchat;
 
 import com.facebook.react.ReactActivity;
 import com.oblador.vectoricons.VectorIconsPackage;

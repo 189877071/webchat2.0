@@ -8,10 +8,14 @@ const { getVerify, grayImg } = require('../common/fn');
 
 module.exports = async (ctx) => {
 
+    const { optation } = ctx.req.body;
+
     if (!ctx.req.files || !ctx.req.files['image']) {
         ctx.oerror();
         return;
     }
+
+    const { nouserphoto } = ctx.req.body;
 
     // 判断文件夹是否存在 如果不存在就创建
     const cfDir = (dir) => new Promise(reslove => {
@@ -36,8 +40,8 @@ module.exports = async (ctx) => {
 
     const d = new Date();
 
-    // /uploads/image/2018-6-12
-    let name = join('/uploads/image', `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+    // /uploads/image/2018-6-12 /uploads/voice/2018-6-12
+    let name = join(`/uploads/${optation === 'voice' ? 'voice' : 'image'}`, `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
 
     const dir = join(static, name);
 
@@ -53,6 +57,10 @@ module.exports = async (ctx) => {
     let newflie = file.match(/(?:[^\/]{1,})$/);
 
     if (!newflie) {
+        if (optation === 'voice') {
+            ctx.oerror();
+            return;
+        }
         newflie = d.now() + getVerify(6) + '.jpg';
     }
     else {
@@ -69,6 +77,11 @@ module.exports = async (ctx) => {
 
     if (!rnonof) {
         ctx.oerror();
+        return;
+    }
+
+    if (nouserphoto || optation === 'voice') {
+        ctx.body = { success: true, name };
         return;
     }
 

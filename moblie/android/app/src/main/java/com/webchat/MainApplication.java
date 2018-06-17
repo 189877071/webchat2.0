@@ -1,8 +1,10 @@
-package com.moblie;
+package com.webchat;
 
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import com.rnim.rn.audio.ReactNativeAudioPackage;
 import com.horcrux.svg.SvgPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 import com.imagepicker.ImagePickerPackage;
@@ -15,7 +17,11 @@ import com.facebook.soloader.SoLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.jpush.reactnativejpush.JPushPackage;
+
 public class MainApplication extends Application implements ReactApplication {
+  private boolean SHUTDOWN_TOAST = false;
+  private boolean SHUTDOWN_LOG = false;
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -27,10 +33,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFSPackage(),
+            new ReactNativeAudioPackage(),
             new SvgPackage(),
             new RNSoundPackage(),
             new ImagePickerPackage(),
-            new RNDeviceInfo()
+            new RNDeviceInfo(),
+            new JPushPackage(SHUTDOWN_TOAST, SHUTDOWN_LOG)
       );
     }
 

@@ -1,8 +1,10 @@
-import { ofetch, storage, getAction, uuid, copyObj, editorTranition } from '../../public/fn'
+import { ofetch, storage, getAction, uuid, copyObj, editorTranition, hint } from '../../public/fn'
 
 import Sound from 'react-native-sound'
 
-import { databasename } from '../../public/config'
+import { Vibration } from 'react-native'
+
+import { databasename, maxMessage } from '../../public/config'
 
 storage.sync[databasename] = (params) => {
     const { resolve, dbname } = params;
@@ -76,6 +78,7 @@ export const setUInit = (value) => async (dispatch, getState) => {
     dispatch(setUChat(chattings[dbname] || {}));
 }
 
+// 有人离线 / 上线
 export const setUonLine = ({ userid, onoff }) => (dispatch, getState) => {
 
     const users = [...getState().u.users];
@@ -95,6 +98,7 @@ export const setUonLine = ({ userid, onoff }) => (dispatch, getState) => {
 
     dispatch(setUUsers(users));
 }
+
 // 消息
 export const setUAddChat = (params) => async (dispatch, getState) => {
 
@@ -126,6 +130,11 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
 
     let message = { otype, content, id, sender, state, time };
 
+    // 震动
+    if (otype === 'shock' && !alter) {
+        Vibration.vibrate([0, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]);
+    }
+
     // 提交成功修改状态
     if (alter) {
         let chatting = data[name][userid];
@@ -138,8 +147,8 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
     }
     else {
         data[name][userid].push(message);
-        // 最大只能储存200条聊天记录
-        if (data[name][userid].length > 200) {
+        // 设置最大储存聊天记录
+        if (data[name][userid].length > maxMessage) {
             data[name][userid].shift();
         }
     }
@@ -147,7 +156,7 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
     // 保存数据
     await storage.save({ key: databasename, data });
 
-    dispatch(setUChat(data[name]));
+    dispatch(setUChat({ ...data[name] }));
 
     if (currentid == userid || !getState().c.audio) return;
 
@@ -159,6 +168,7 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
         s.play(() => s.release());
     });
 }
+
 // 删除
 export const setUDeletChat = (id, all) => async (dispatch, getState) => {
     const { name, currentid } = getState().u;
@@ -181,6 +191,7 @@ export const setUDeletChat = (id, all) => async (dispatch, getState) => {
         for (let i = 0; i < data[name][currentid].length; i++) {
             if (id === data[name][currentid][i].id) {
                 data[name][currentid].splice(i, 1);
+                data[name][currentid] = [...data[name][currentid]];
                 break;
             }
         }
@@ -189,10 +200,12 @@ export const setUDeletChat = (id, all) => async (dispatch, getState) => {
     // 保存数据
     await storage.save({ key: databasename, data });
 
-    dispatch(setUChat(data[name]));
+    dispatch(setUChat({ ...data[name] }));
 }
+
 // 初始化未读信息
 export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
+
     if (!message || !Array.isArray(message)) return;
 
     let { name, currentid } = getState().u;
@@ -205,6 +218,19 @@ export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
 
     message.forEach(item => {
         let content = item.otype == 'message' ? editorTranition(item.content) : item.content;
+
+        if (item.otype == 'message') {
+            content = editorTranition(item.content);
+        }
+        else if ((item.otype === 'image' || item.otype === 'voice') && typeof item.otype === 'string') {
+            try {
+                content = JSON.parse(item.content);
+            }
+            catch (e) { }
+        }
+        else {
+            content = item.content;
+        }
 
         let userid = item.userid == id ? item.heid : item.userid;
 
@@ -231,8 +257,9 @@ export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
 
     await storage.save({ key: databasename, data });
 
-    dispatch(setUChat(data[name]));
+    dispatch(setUChat({ ...data[name] }));
 }
+
 // 置顶
 export const SetUTopChat = (id) => async (dispatch, getState) => {
     if (!id) return;
@@ -259,6 +286,7 @@ export const SetUTopChat = (id) => async (dispatch, getState) => {
 
     dispatch(setUTop([...data[name].top]));
 }
+
 // 把未读信息转换成已读
 export const setUunrad = () => async (dispatch, getState) => {
 
@@ -268,9 +296,9 @@ export const setUunrad = () => async (dispatch, getState) => {
         return;
     }
 
-    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+    let data = await getData(name);
 
-    if (!data[name][currentid]) {
+    if (!data[name] || !data[name][currentid]) {
         return;
     }
 
@@ -283,7 +311,108 @@ export const setUunrad = () => async (dispatch, getState) => {
     }
 
     // 保存数据
-    await storage.save({ key: databasename, data });
+    await setData(data);
 
     dispatch(setUChat({ ...data[name] }));
+}
+
+// 刷新聊天记录
+export const setUrefresh = (message) => async (dispatch, getState) => {
+
+    const { currentid, name } = getState().u;
+
+    if (!message || !Array.isArray(message) || !currentid) {
+        return;
+    }
+
+    let arr = [];
+
+    for (let i = 0; i < message.length; i++) {
+        let { otype, userid, heid, content, otime, oid } = message[i];
+
+        if (typeValues.indexOf(otype) === -1) {
+            break;
+        }
+
+        let sender = '';
+
+        if (userid === currentid) {
+            // mi
+            sender = 'he';
+        }
+        else if (heid === currentid) {
+            // he
+            sender = 'mi';
+        }
+        else {
+            break;
+        }
+
+        if (otype === 'message') {
+            content = editorTranition(content);
+        }
+        else if ((otype === 'image' || otype === 'voice') && typeof otype === 'string') {
+            try {
+                content = JSON.parse(content);
+                if (otype === 'voice') {
+                    content.read = true;
+                }
+            }
+            catch (e) { }
+        }
+
+        arr.push({ otype, content, id: oid, sender, state: 'read', time: otime });
+    }
+
+    let data = await getData(name);
+
+    data[name] || (data[name] = {});
+
+    data[name][currentid] = arr;
+
+    // 保存数据
+    await setData(data);
+
+    dispatch(setUChat({ ...data[name] }));
+
+    hint('聊天记录更新成功');
+}
+
+// 设置语音已读状态
+export const setUVoiceRead = (id) => async (dispatch, getState) => {
+
+    const { currentid, name } = getState().u;
+
+    if (!currentid || !id) {
+        return;
+    }
+
+    const data = await getData(name);
+
+    if (!data[name] || !data[name][currentid]) {
+        return;
+    }
+
+    let message = data[name][currentid];
+
+    for (let i = 0; i < message.length; i++) {
+        if (message[i].id === id) {
+            message[i].content.read = true;
+            message[i] = { ...message[i] };
+            break;
+        }
+    }
+
+    await setData(data);
+
+    dispatch(setUChat({ ...data[name] }));
+}
+
+// 获取数据
+async function getData(name) {
+    return await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+}
+// 修改数据
+async function setData(data) {
+    await storage.save({ key: databasename, data });
 }

@@ -31,3 +31,5 @@ export const socketurl = 'ws://39.104.80.68:4500';
 export const databasename = 'chattingdb';
 
 export const showtimenum = 1000 * 60 * 30;
+// 最大储存消息数量
+export const maxMessage = 200;

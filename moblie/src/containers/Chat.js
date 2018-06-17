@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 
 import { View, ScrollView, TouchableWithoutFeedback, StyleSheet, TextInput } from 'react-native';
 
+import ImagePicker from 'react-native-image-picker'
+
 import { connect } from 'react-redux';
+
+import Sound from 'react-native-sound'
 
 import Box from '../components/Box'
 
@@ -10,11 +14,11 @@ import { Background } from '../components/Image'
 
 import { ChatHeader } from '../components/Header'
 
-import { ChatTab, TextMessage, PhizIcon } from '../components/Chat'
+import { ChatTab, TextMessage, PhizIcon, Voicebox } from '../components/Chat'
 
-import { getuser, ofetch, ratio, uuid, editorTranition } from '../public/fn'
+import { getuser, ofetch, ratio, uuid, editorTranition, hint, uploadImage, uploadvoice } from '../public/fn'
 
-import { setUActiveid, setUAddChat, setUDeletChat, setUunrad } from '../store/users/action'
+import { setUActiveid, setUAddChat, setUDeletChat, setUunrad, setUrefresh, setUVoiceRead } from '../store/users/action'
 
 import { hostname, showtimenum, pleft, pright } from '../public/config'
 
@@ -42,6 +46,7 @@ const styles = StyleSheet.create({
 })
 
 class Chat extends Component {
+
     constructor(props) {
         super(props);
 
@@ -59,6 +64,8 @@ class Chat extends Component {
             showTab: '',
             deepbut: false,
             isdelet: false,
+            id: this.props.navigation.getParam('id'),
+            playid: null,
         }
 
         this.value = '';
@@ -70,7 +77,10 @@ class Chat extends Component {
         const data = this.props.chatting[user.id] || [];
 
         this.messageLen = this.getMessage().length;
+
+        this.whoosh = null;
     }
+
     // 获取消息记录
     getMessage = () => {
         return this.props.chatting[this.state.user.id] || [];
@@ -98,13 +108,20 @@ class Chat extends Component {
             }
         }
 
-
     }
+
+    componentWillUnmount() {
+        if (this.whoosh && this.state.playid) {
+            this.whoosh.stop(() => this.whoosh.release());
+        }
+    }
+
     // 返回
     backup = () => {
         this.props.dispatch(setUActiveid(null));
         this.props.navigation.goBack();
     }
+
     // 更新输入框内容
     setvalue = value => {
         if (value && !this.state.deepbut) {
@@ -115,31 +132,23 @@ class Chat extends Component {
         }
         this.value = value;
     }
+
     // 发送按钮发送消息
-    send = async () => {
+    send = () => {
         // 发送消息
         if (!this.value) return;
 
-        const oid = uuid();
+        const [oid, content, otype, id] = [
+            uuid(),
+            editorTranition(this.value),
+            'message',
+            this.state.id
+        ]
 
-        const value = editorTranition(this.value);
-
-        const data = {
-            heid: this.props.navigation.getParam('id'),
-            otype: 'message',
-            content: this.value,
-            oid
-        };
-
-        let odata = {
-            time: Date.now(),
-            id: oid,
-            sender: 'mi',
-            otype: data.otype,
-            content: value,
-            userid: data.heid,
-            state: 'transmit'
-        };
+        this.osend(
+            { heid: id, otype, content: this.value, oid },
+            { time: Date.now(), id: oid, sender: 'mi', otype, content, userid: id, state: 'transmit' }
+        );
 
         this.setState({ defvalue: this.value, deepbut: false });
 
@@ -147,6 +156,10 @@ class Chat extends Component {
             this.value = '';
             this.updatevalue();
         }, 0);
+    }
+
+    // 提交上传
+    osend = async (data, odata) => {
 
         this.props.dispatch(setUAddChat(odata));
 
@@ -158,8 +171,84 @@ class Chat extends Component {
 
         this.props.dispatch(setUAddChat(odata));
     }
+
+    // 发送图片
+    sendimg = async (uri, width, height) => {
+        if (!uri || !width || !height) {
+            return;
+        }
+
+        const [oid, content, otype, id] = [
+            uuid(),
+            { uri, width, height },
+            'image',
+            this.state.id
+        ];
+
+        this.osend(
+            { heid: id, otype, content, oid },
+            { time: Date.now(), id: oid, sender: 'mi', otype, content, userid: id, state: 'transmit' }
+        );
+    }
+
+    // 发送语音
+    sendvoice = async (uri, time) => {
+        if (!uri) {
+            return;
+        }
+
+        // 上传语音
+        const { success, name } = await uploadvoice(uri);
+
+        if (!success) {
+            hint('语音文件上传失败');
+            return;
+        }
+
+        const [oid, content, otype, id] = [
+            uuid(),
+            { uri: name, time },
+            'voice',
+            this.state.id
+        ];
+
+        this.osend(
+            { heid: id, otype, content, oid },
+            { time: Date.now(), id: oid, sender: 'mi', otype, content, userid: id, state: 'transmit' },
+            true
+        );
+    }
+
+    // 震动
+    sendshock = async () => {
+        const [oid, content, otype, id] = [
+            uuid(),
+            '',
+            'shock',
+            this.state.id
+        ];
+
+        this.osend(
+            { heid: id, otype, content, oid },
+            { time: Date.now(), id: oid, sender: 'mi', otype, content, userid: id, state: 'transmit' }
+        );
+    }
+
+    // 跟新聊天记录
+    refreshMessage = async () => {
+        const { success, message } = await ofetch('/message?optation=refresh', { id: this.state.id });
+
+        if (!success) {
+            hint('获取数据失败');
+            return;
+        }
+
+        this.props.dispatch(setUrefresh(message));
+    }
+
     // 跟新TextInput组件的 value值
     updatevalue = () => this.setState({ defvalue: this.value });
+
     // 显示 消息列表组件的删除按钮 与隐藏删除按钮
     setShowDelet = (id) => {
 
@@ -175,15 +264,18 @@ class Chat extends Component {
             this.setState({ showdelet, isdelet: true });
         }
     }
+
     // 删除消息
     deletMessage = (id) => {
         if (!id) return;
         this.props.dispatch(setUDeletChat(id));
     }
+
     // 当消息列表 ScrollView 高度跟新时触发事件 用来设置消息box的最小高度
     layout = ({ nativeEvent }) => {
         this.setState({ mlminh: nativeEvent.layout.height });
     }
+
     // 显示指定的 tab选项 
     showTab = (tab) => {
         this.inputRef.current.blur();
@@ -191,25 +283,30 @@ class Chat extends Component {
             this.setState({ showTab: (this.state.showTab === tab) ? '' : tab });
         }, 0);
     }
+
     // 当输入框获取焦点时隐藏 tab
     focus = () => {
         this.setState({ showTab: '' });
     }
+
     // 输入框组件
-    EditorInputCom = () => (
-        <View style={styles.editorbox}>
-            <TextInput
-                multiline={true}
-                underlineColorAndroid="transparent"
-                style={styles.editor}
-                onChangeText={this.setvalue}
-                defaultValue={this.state.defvalue}
-                ref={this.inputRef}
-                onFocus={this.focus}
-            />
-            <EditorBtn submit={this.send} deep={this.state.deepbut} />
-        </View>
-    );
+    EditorInputCom = () => {
+        return (
+            <View style={styles.editorbox}>
+                <TextInput
+                    multiline={true}
+                    underlineColorAndroid="transparent"
+                    style={styles.editor}
+                    onChangeText={this.setvalue}
+                    defaultValue={this.state.defvalue}
+                    ref={this.inputRef}
+                    onFocus={this.focus}
+                />
+                <EditorBtn submit={this.send} deep={this.state.deepbut} />
+            </View>
+        )
+    }
+
     // 添加 图标
     addIcon = (icon) => {
         this.value += icon;
@@ -218,10 +315,88 @@ class Chat extends Component {
             this.setState({ deepbut: true });
         }
     }
+
     // 转跳到用户信息页
     toInfor = () => {
         this.props.navigation.navigate('infor', { user: this.state.user });
+        if (this.whoosh && this.state.playid) {
+            this.whoosh.stop(() => this.whoosh.release());
+            this.setState({ playid: null });
+        }
     }
+
+    // 打开图片
+    openimg = () => {
+
+        const photoOptions = {
+            title: '请选择',
+            quality: 0.8,
+            cancelButtonTitle: '取消',
+            takePhotoButtonTitle: '拍照',
+            chooseFromLibraryButtonTitle: '选择相册',
+            allowsEditing: true,
+            noData: false,
+            maxWidth: 700,
+            maxHeight: 1200,
+            storageOptions: {
+                skipBackup: true,
+                path: 'images'
+            }
+        };
+
+        ImagePicker.showImagePicker(photoOptions, async (response) => {
+
+            if (response.didCancel || response.error || response.customButton) {
+                hint('操作失败……');
+                return;
+            }
+
+            hint('正在上传图片……');
+
+            const { width, height, uri } = response;
+
+            const { success, name } = await uploadImage(uri, true);
+
+            if (!success) {
+                hint('图片上传失败');
+                return;
+            }
+
+            // 发送图片地址
+            await this.sendimg(name, ratio(Math.floor(width)), ratio(Math.floor(height)));
+        });
+
+    }
+
+    // 播放语音
+    playVoice = (uri, playid, onoff) => {
+        if (this.whoosh && playid === this.state.playid) {
+            this.whoosh.stop(() => this.whoosh.release());
+            this.setState({ playid: null });
+            return;
+        }
+
+        if(onoff) {
+            this.props.dispatch(setUVoiceRead(playid));
+        }
+
+        if (this.state.playid) {
+            this.whoosh.stop(() => this.whoosh.release());
+        }
+
+        this.whoosh = new Sound(hostname + uri, '', (error) => {
+            if (error) {
+                hint('音频文件加载失败');
+                return;
+            }
+            this.setState({ playid });
+            this.whoosh.play(() => {
+                this.whoosh.release();
+                this.setState({ playid: null });
+            });
+        });
+    }
+
     render() {
         const user = this.state.user;
         const messageArr = this.getMessage();
@@ -240,6 +415,8 @@ class Chat extends Component {
                     showDelet={this.state.showdelet.indexOf(item.id) !== -1}
                     setDeletId={this.setShowDelet}
                     delet={this.deletMessage}
+                    play={this.playVoice}
+                    playid={this.state.playid}
                 />
             );
         });
@@ -265,9 +442,16 @@ class Chat extends Component {
 
                 {this.EditorInputCom()}
 
-                <ChatTab toggle={this.showTab} active={this.state.showTab} />
+                <ChatTab
+                    toggle={this.showTab}
+                    active={this.state.showTab}
+                    openimg={this.openimg}
+                    shock={this.sendshock}
+                    refresh={this.refreshMessage}
+                />
 
                 {this.state.showTab === 'phiza' && <PhizIcon addIcon={this.addIcon} />}
+                {this.state.showTab === 'yuyin' && <Voicebox send={this.sendvoice} />}
             </Box>
         )
     }

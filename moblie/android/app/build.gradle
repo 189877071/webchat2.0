@@ -98,11 +98,16 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.moblie"
+        applicationId "com.webchat"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        manifestPlaceholders = [
+                JPUSH_APPKEY: "c6c3e69976ff35a9c5cf772e",
+                APP_CHANNEL : "default"
+        ]
+
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -146,6 +151,10 @@ android {
 }
 
 dependencies {
+    compile project(':jcore-react-native')
+    compile project(':jpush-react-native')
+    compile project(':react-native-fs')
+    compile project(':react-native-audio')
     compile project(':react-native-svg')
     compile project(':react-native-sound')
     compile project(':react-native-image-picker')

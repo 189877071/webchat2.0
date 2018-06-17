@@ -4,6 +4,8 @@ import DeviceInfo from 'react-native-device-info'
 
 import Storage from 'react-native-storage'
 
+import RNFS from 'react-native-fs'
+
 const { height, width } = Dimensions.get('window');
 
 const hostname = 'http://39.104.80.68:3500/app';
@@ -325,8 +327,8 @@ export const hint = (str) => {
     ToastAndroid.show(str, ToastAndroid.SHORT);
 }
 
-export const uploadImage = (uri) => {
-    if (!uri) return 'lalall';
+export const uploadImage = (uri, onoff) => {
+    if (!uri) return { success: false };
     return new Promise(reslove => {
         let formData = new FormData();
 
@@ -344,8 +346,12 @@ export const uploadImage = (uri) => {
         let file = { uri, type: 'multipart/form-data', name };
 
         formData.append("image", file);
-       
-        fetch(hostname + '/uploadimg',
+
+        if (onoff) {
+            formData.append("nouserphoto", '1');
+        }
+
+        fetch(hostname + '/upload',
             {
                 method: 'POST',
                 headers: {
@@ -357,6 +363,62 @@ export const uploadImage = (uri) => {
         )
             .then(response => response.json())
             .then(data => reslove(data))
-            .catch((err) => reslove(false));
+            .catch((err) => reslove({ success: false }));
     });
+}
+
+export const uploadvoice = (uri) => {
+    const error = { success: false };
+
+    return new Promise(async (reslove) => {
+        if (!uri) {
+            reslove(error);
+            return;
+        }
+
+        // 判断文件是否存在
+        const onoff = await RNFS.exists(uri);
+
+        if (!onoff) {
+            hint('文件不存在');
+            reslove(error);
+            return;
+        }
+
+        RNFS.uploadFiles({
+            toUrl: hostname + '/upload',
+            files: [{
+                name: 'image',
+                filename: uri.match(/(?:[^\/]{1,})$/)[0],
+                filepath: uri,
+                filetype: 'audio/x-acc'
+            }],
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            withCredentials: true,
+            fields: { 'optation': 'voice' }
+        }).promise.then((response) => {
+            if (response.statusCode == 200) {
+                try {
+                    reslove(JSON.parse(response.body));
+                }
+                catch (e) {
+                    reslove(error);
+                }
+                return;
+            }
+            reslove(error);
+        })
+    })
+}
+
+export const getRecordTime = (time) => {
+    if (time < 60) {
+        return `00:${time < 10 ? '0' + time : time}`;
+    }
+    else {
+        const m = time % 60;
+        const f = Math.floor(time / 60);
+        return `${f < 10 ? '0' + f : f}:${m < 10 ? '0' + m : m}`;
+    }
 }

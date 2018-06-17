@@ -183,7 +183,7 @@ class UserMessage extends PureComponent {
                     text = '视频';
                     break;
             }
-            content = <Text>{text}</Text>
+            content = <Text style={{ lineHeight: ratio(70), color: '#666' }}>{text}</Text>
         }
 
         return (

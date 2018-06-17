@@ -27,7 +27,7 @@ router.post('/notice', islogin, require('./notice'));
 
 router.post('/setting', islogin, require('./setting'));
 
-router.post('/uploadimg', islogin, multiparty(), require('./uploadimg'));
+router.post('/upload', multiparty(), require('./upload'));
 
 router.get('*', (ctx) => {
     ctx.status = 404;

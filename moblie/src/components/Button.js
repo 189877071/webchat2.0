@@ -79,7 +79,7 @@ export class SmallButton extends PureComponent {
         const { width, height, href, fontSize } = this.props;
 
         let ostyle = {};
-        let otext = {}
+        let otext = {};
         if (width) {
             ostyle.width = width;
         }
