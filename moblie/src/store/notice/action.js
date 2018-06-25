@@ -55,7 +55,7 @@ export const setNAddContent = (data, id) => (dispatch, getState) => {
         read.push(id);
         dispatch(setNRead(read));
     }
-
+    
     dispatch(setNContent(content));
 }
 
@@ -67,4 +67,32 @@ export const setNAddList = (notice) => (dispatch, getState) => {
     dispatch(setNList([...list].concat(notice)));
 
     dispatch(setNActice(active + 1));
+}
+
+// 推送接收一条新的公告，把期添加到列表中
+export const setNAddNoticelist = (id, fn) => async (dispatch, getState) => {
+
+    if (!id) return;
+
+    // 根据id获取到简介数据
+    const { success, notice } = await ofetch('/notice?optation=refresh', { id });
+
+    if (!success) return;
+
+    // title,otime,description,id
+    const list = [...getState().n.list];
+
+    list.unshift(notice);
+
+    const [title, content, extra] = [
+        notice.title ? notice.title.slice(0, 10) : false,
+        notice.description ? notice.description.slice(0, 15) : false,
+        { optation: 'noticechildren', id: `${id}` }
+    ];
+
+    if (!title || !content || !fn) return;
+
+    dispatch(setNList(list));
+
+    fn(title, content, extra, true);
 }

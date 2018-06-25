@@ -29,6 +29,9 @@ module.exports = async (ctx) => {
             return;
         }
 
+        // 群发消息有新公告
+        await ctx.udpsends({ controller: 'newnotice', id: results.insertId });
+
         ctx.body = { success: true };
     }
 

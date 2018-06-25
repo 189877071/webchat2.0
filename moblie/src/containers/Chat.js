@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
-import { View, ScrollView, TouchableWithoutFeedback, StyleSheet, TextInput } from 'react-native';
+import { View, ScrollView, TouchableWithoutFeedback, StyleSheet, TextInput, Modal } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker'
+
 
 import { connect } from 'react-redux';
 
@@ -15,6 +16,8 @@ import { Background } from '../components/Image'
 import { ChatHeader } from '../components/Header'
 
 import { ChatTab, TextMessage, PhizIcon, Voicebox } from '../components/Chat'
+
+import { ShowImageZoom } from '../components/NoticeList'
 
 import { getuser, ofetch, ratio, uuid, editorTranition, hint, uploadImage, uploadvoice } from '../public/fn'
 
@@ -66,6 +69,9 @@ class Chat extends Component {
             isdelet: false,
             id: this.props.navigation.getParam('id'),
             playid: null,
+            uri: '',
+            zoomimgw: 0,
+            zoomimgh: 0
         }
 
         this.value = '';
@@ -87,6 +93,7 @@ class Chat extends Component {
     }
 
     componentDidMount() {
+        this.props.dispatch(setUActiveid(this.state.id));
         this.props.dispatch(setUunrad());
         setTimeout(() => {
             this.myRef.current.scrollToEnd({ animated: true });
@@ -111,8 +118,14 @@ class Chat extends Component {
     }
 
     componentWillUnmount() {
+        this.stopAudio();
+    }
+
+    // 停止声音播放
+    stopAudio = () => {
         if (this.whoosh && this.state.playid) {
             this.whoosh.stop(() => this.whoosh.release());
+            this.setState({ playid: null });
         }
     }
 
@@ -319,10 +332,7 @@ class Chat extends Component {
     // 转跳到用户信息页
     toInfor = () => {
         this.props.navigation.navigate('infor', { user: this.state.user });
-        if (this.whoosh && this.state.playid) {
-            this.whoosh.stop(() => this.whoosh.release());
-            this.setState({ playid: null });
-        }
+        this.stopAudio();
     }
 
     // 打开图片
@@ -376,7 +386,7 @@ class Chat extends Component {
             return;
         }
 
-        if(onoff) {
+        if (onoff) {
             this.props.dispatch(setUVoiceRead(playid));
         }
 
@@ -397,10 +407,26 @@ class Chat extends Component {
         });
     }
 
+    // 显示大图
+    seturi = (uri, zoomimgw, zoomimgh) => {
+        this.setState({ uri, zoomimgw, zoomimgh });
+    }
+
+    // 视频通话
+    callvoide = () => {
+        if (!this.state.user.isonline) {
+            hint('对方没有在线，无法进行视频通话');
+            return;
+        }
+        this.props.navigation.navigate('call', { id: this.state.id });
+        this.stopAudio();
+    }
+
     render() {
         const user = this.state.user;
         const messageArr = this.getMessage();
         const Message = messageArr.map((item, index) => {
+
             const [userphoto, showtime] = [
                 hostname + (item.sender === 'mi' ? this.props.headphoto : user.headphoto),
                 (messageArr[index - 1] && item.time - messageArr[index - 1].time < showtimenum) ? false : true
@@ -417,6 +443,7 @@ class Chat extends Component {
                     delet={this.deletMessage}
                     play={this.playVoice}
                     playid={this.state.playid}
+                    seturi={this.seturi}
                 />
             );
         });
@@ -448,10 +475,17 @@ class Chat extends Component {
                     openimg={this.openimg}
                     shock={this.sendshock}
                     refresh={this.refreshMessage}
+                    callvideo={this.callvoide}
                 />
 
                 {this.state.showTab === 'phiza' && <PhizIcon addIcon={this.addIcon} />}
                 {this.state.showTab === 'yuyin' && <Voicebox send={this.sendvoice} />}
+                <ShowImageZoom
+                    uri={this.state.uri}
+                    close={() => this.seturi('', 0, 0)}
+                    width={this.state.zoomimgw}
+                    height={this.state.zoomimgh}
+                />
             </Box>
         )
     }

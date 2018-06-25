@@ -99,9 +99,18 @@ module.exports = {
         http: [
             { "port": 3500, main: true }
         ],
-        socket: [
-            { socketport: 4500, udpport: 5500, udphost: '127.0.0.1' }
-        ]
+        // socket: [
+        //     {
+        //         "socketport": 5000,
+        //         "udpport": 7000,
+        //         "udphost": "127.0.0.1"
+        //     },
+        //     {
+        //         "socketport": 5001,
+        //         "udpport": 7001,
+        //         "udphost": "127.0.0.1"
+        //     }
+        // ]
     },
     userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class', 'readnotice'],
     expires: 24 * 60 * 60 * 1000,

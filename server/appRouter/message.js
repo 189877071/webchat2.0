@@ -64,7 +64,7 @@ module.exports = async (ctx) => {
 
         const user = await mysql(userLoginInfor());
 
-        const state = (!user && !user.length) ? 1 : 0;
+        const state = (user && user.length) ? 1 : 0;
 
         // 保存消息
         const saveMessage = () => sql
@@ -73,7 +73,6 @@ module.exports = async (ctx) => {
             .insert();
 
         rankmysql(saveMessage());
-
 
         if (!state) {
             ctx.body = { success: true };
@@ -105,9 +104,10 @@ module.exports = async (ctx) => {
         const messages = await mysql(
             sql
                 .table(tables.dbchat)
-                .where(`(userid=${userid} AND heid=${id} ) OR (userid=${id} AND heid=${userid} )`)
+                .where(`(userid=${userid} AND heid=${id} AND mishow='1') OR (userid=${id} AND heid=${userid}) AND heshow='1'`)
                 .limit(100)
-                .order('id desc')
+                .field([`userid`, `heid`, `content`, `otime`, `otype`, `oid`])
+                .order('otime desc')
                 .select()
         );
 
@@ -122,10 +122,87 @@ module.exports = async (ctx) => {
         ctx.body = { success: true, message: messages };
     }
 
-    if (optation) {
-        await getMessage();
+    // 删除消息
+    const deletMessage = async () => {
+        const { oid } = ctx.request.body;
+
+        // 查找到要删除的
+        const message = await mysql(
+            sql
+                .table(tables.dbchat)
+                .where({ oid })
+                .select()
+        );
+
+        if (!message || !message.length) {
+            ctx.oerror();
+            return;
+        }
+
+        let where = { [message[0].userid == userid ? 'mishow' : 'heshow']: '0' };
+
+        // 更改状态
+        rankmysql(
+            sql
+                .table(tables.dbchat)
+                .where({ oid })
+                .data({ [message[0].userid == userid ? 'mishow' : 'heshow']: '0' })
+                .update()
+        );
+
+        ctx.body = { success: true };
     }
-    else {
-        await sendMessage();
+
+    // 视频通话消息
+    const callMessage = async () => {
+        const { heid, sdp, ice, answer, reject } = ctx.request.body;
+
+        if (!reject && (!heid || !sdp || !ice)) {
+            ctx.oerror();
+            return;
+        }
+
+        const userLoginInfor = () => sql
+            .table(tables.dblogin)
+            .where({ userid: heid })
+            .order('otime desc')
+            .limit(1)
+            .select();
+
+        const user = await mysql(userLoginInfor());
+
+        if (!user || !user.length) {
+            ctx.oerror();
+            return;
+        }
+
+        const message = { controller: answer ? 'answer' : 'offer', userid, sdp, ice, reject };
+
+        const respush = await ctx.udpsend({
+            data: { message, socketid: user[0].socketid },
+            host: user[0].udphost,
+            port: user[0].udpport
+        });
+
+        if (!respush) {
+            ctx.oerror();
+            return;
+        }
+
+        ctx.body = { success: true }
+    }
+
+    switch (optation) {
+        case 'refresh':
+            await getMessage();
+            break;
+        case 'delete':
+            await deletMessage();
+            break;
+        case 'call':
+            await callMessage();
+            break;
+        default:
+            await sendMessage();
     }
 }

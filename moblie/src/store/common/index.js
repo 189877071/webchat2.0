@@ -27,6 +27,12 @@ const init = {
      * false 关闭
      * */
     audio: true,
+    // 消息推送点击信息
+    dataPush: null,
+    // 是否正在进行视频通话
+    videoCall: false,
+    // 视频通话对方信息
+    peerData: { ice: [], sdp: null, userid: 0 }
 }
 
 // 先做登录
@@ -41,6 +47,12 @@ export default function (state = init, action) {
             return { ...state, loginActiveState: value };
         case type.audio:
             return { ...state, audio: value };
+        case type.dataPush:
+            return { ...state, dataPush: value };
+        case type.videoCall:
+            return { ...state, videoCall: value };
+        case type.peerData:
+            return { ...state, peerData: value };
     }
     return state;
 }

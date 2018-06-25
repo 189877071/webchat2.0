@@ -56,7 +56,7 @@ class User extends PureComponent {
 
     tochat = (data) => {
         setTimeout(() => {
-            this.props.dispatch(setUActiveid(data.id));
+            // this.props.dispatch(setUActiveid(data.id));
             this.props.navigation.navigate('chat', data);
         }, 0);
     }

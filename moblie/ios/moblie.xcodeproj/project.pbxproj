@@ -70,6 +70,8 @@
 		383B33C2DCFE47F3A46724AA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31BFFB654003416096A9E3D5 /* UIKit.framework */; };
 		045462C0298E49EE8D488D23 /* libresolv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8529F9C1939D4EE1A79DB762 /* libresolv.tbd */; };
 		7ED464448EC84646B943AAD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09788365732A4DC7B7B3236E /* CoreGraphics.framework */; };
+		DA8F5702A9A74045B04FC9D7 /* libRCTWebRTC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F700CE3C644B24AE699650 /* libRCTWebRTC.a */; };
+		00EC35A947D041E4B8D73433 /* libRNInCallManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C06FB02319AE43A6ABA51849 /* libRNInCallManager.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -417,6 +419,10 @@
 		31BFFB654003416096A9E3D5 /* UIKit.framework */ = {isa = PBXFileReference; name = "UIKit.framework"; path = "System/Library/Frameworks/UIKit.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 		8529F9C1939D4EE1A79DB762 /* libresolv.tbd */ = {isa = PBXFileReference; name = "libresolv.tbd"; path = "usr/lib/libresolv.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
 		09788365732A4DC7B7B3236E /* CoreGraphics.framework */ = {isa = PBXFileReference; name = "CoreGraphics.framework"; path = "System/Library/Frameworks/CoreGraphics.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		EC8079C829EE4B089C4CDFFA /* RCTWebRTC.xcodeproj */ = {isa = PBXFileReference; name = "RCTWebRTC.xcodeproj"; path = "../node_modules/react-native-webrtc/ios/RCTWebRTC.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		D4F700CE3C644B24AE699650 /* libRCTWebRTC.a */ = {isa = PBXFileReference; name = "libRCTWebRTC.a"; path = "libRCTWebRTC.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		F4243FEEFE0248AEB43B827C /* RNInCallManager.xcodeproj */ = {isa = PBXFileReference; name = "RNInCallManager.xcodeproj"; path = "../node_modules/react-native-incall-manager/ios/RNInCallManager.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		C06FB02319AE43A6ABA51849 /* libRNInCallManager.a */ = {isa = PBXFileReference; name = "libRNInCallManager.a"; path = "libRNInCallManager.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -465,6 +471,8 @@
 				383B33C2DCFE47F3A46724AA /* UIKit.framework in Frameworks */,
 				045462C0298E49EE8D488D23 /* libresolv.tbd in Frameworks */,
 				7ED464448EC84646B943AAD4 /* CoreGraphics.framework in Frameworks */,
+				DA8F5702A9A74045B04FC9D7 /* libRCTWebRTC.a in Frameworks */,
+				00EC35A947D041E4B8D73433 /* libRNInCallManager.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -673,6 +681,8 @@
 				1CD6DFD70CFE4786BF405F1D /* RNFS.xcodeproj */,
 				E8DE1F5EA9E141FABCF16151 /* RCTJCoreModule.xcodeproj */,
 				3D1E486066D649A3A4F2EDD0 /* RCTJPushModule.xcodeproj */,
+				EC8079C829EE4B089C4CDFFA /* RCTWebRTC.xcodeproj */,
+				F4243FEEFE0248AEB43B827C /* RNInCallManager.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1341,6 +1351,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1352,6 +1364,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Debug;
@@ -1383,6 +1397,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1394,6 +1410,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Release;
@@ -1423,6 +1441,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Debug;
@@ -1451,6 +1471,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Release;
@@ -1491,6 +1513,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1502,6 +1526,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Debug;
@@ -1542,6 +1568,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1553,6 +1581,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Release;
@@ -1592,6 +1622,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1603,6 +1635,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Debug;
@@ -1642,6 +1676,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1653,6 +1689,8 @@
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
 					"$(SRCROOT)\..\node_modules\jcore-react-native\ios\RCTJCoreModule",
 					"$(SRCROOT)\..\node_modules\jpush-react-native\ios\RCTJPushModule",
+					"$(SRCROOT)\..\node_modules\react-native-webrtc\ios\RCTWebRTC/**",
+					"$(SRCROOT)\..\node_modules\react-native-incall-manager\ios\RNInCallManager",
 				);
 			};
 			name = Release;

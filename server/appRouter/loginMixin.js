@@ -32,10 +32,16 @@ module.exports = async (ctx, userid, otime) => {
     const loginusers = await mysql(
         sql.table(tables.dblogin).select()
     );
-    // 获取未读消息 
+
     const unreadWhere = { heid: userid, state: 0 };
+
+    // 获取未读消息 
     const unreadMessage = await mysql(
-        sql.table(tables.dbchat).where(unreadWhere).select()
+        sql
+            .table(tables.dbchat)
+            .where(unreadWhere)
+            .field([`userid`, `heid`, `content`, `otime`, `otype`, `oid`])
+            .select()
     );
     // 获取公告
     const notice = await mysql(

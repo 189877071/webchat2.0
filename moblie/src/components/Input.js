@@ -4,7 +4,7 @@ import { View, TextInput, StyleSheet, Button, Text, AsyncStorage } from 'react-n
 
 import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
-import { ratio, windowW, ofetch, uuid } from '../public/fn'
+import { ratio, windowW, ofetch, uuid, hint } from '../public/fn'
 
 import { BigButton, EditorBtn } from './Button'
 
@@ -221,6 +221,8 @@ export class LoginForm extends PureComponent {
             usererr: '',
             passerr: ''
         }
+
+        this.isload = false;
     }
 
     checkBoxChange = () => this.setState({ autologin: this.state.checkbox ? false : true });
@@ -268,7 +270,16 @@ export class LoginForm extends PureComponent {
             await AsyncStorage.removeItem('autokey');
         }
 
+        if (this.isload) {
+            hint('正在发送请求……');
+            return;
+        }
+
+        this.isload = true;
+
         const { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
+
+        this.isload = false;
 
         if (!success) {
             this.setState({ passerr: '密码输入不正确！' });
@@ -282,7 +293,17 @@ export class LoginForm extends PureComponent {
 
     // 测试登录
     testSubmit = async () => {
+        if (this.isload) {
+            hint('正在发送请求……');
+            return;
+        }
+
+        this.isload = true;
+
         let { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login?optation=test', this.props.socketInfor);
+
+        this.isload = false;
+
         if (!success) {
             alert('登录失败！');
             return;

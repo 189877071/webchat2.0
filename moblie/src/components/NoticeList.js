@@ -2,11 +2,13 @@ import React, { PureComponent, Component } from 'react'
 
 import { BoxShadow } from 'react-native-shadow'
 
-import { View, StyleSheet, Text, TouchableNativeFeedback, Image, Button } from 'react-native'
+import ImageZoom from 'react-native-image-pan-zoom'
+
+import { View, StyleSheet, Text, Image, Modal } from 'react-native'
 
 import { FeedBackBtn } from './Button'
 
-import { ratio, getTextDate } from '../public/fn'
+import { ratio, getTextDate, sliceStr, windowH, windowW } from '../public/fn'
 
 const [w976, w490, w30, w130, w42, w28, color, w58, w35, w75, w106, w49, w10, unreadjpg, w24] = [
     ratio(976),
@@ -51,8 +53,8 @@ const styles = StyleSheet.create({
         borderColor: '#d2d1cf'
     },
     title: {
-        fontSize: w42,
-        color
+        fontSize: ratio(50),
+        color: '#000'
     },
     time: {
         fontSize: w35,
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     },
     synopsistext: {
         lineHeight: w75,
-        fontSize: w42,
+        fontSize: ratio(50),
         color
     },
     unread: {
@@ -111,42 +113,6 @@ const setting = {
     y: 0,
 }
 
-class Title extends PureComponent {
-    render() {
-        return (
-            <View style={styles.titleBox}>
-                <Text style={styles.title}>测试数据</Text>
-                <Text style={styles.time}>2017-11-27</Text>
-            </View>
-        )
-    }
-}
-
-class Synopsis extends PureComponent {
-    render() {
-        return (
-            <View style={styles.synopsis}>
-                <Text style={styles.synopsistext}>
-                    上面的代码定义了一个名为HelloWorldApp的新的组件（Component）。你在编写React Native应用时，肯定会写出很多新的组件。而一个App的最终界面，其实也就是各式各……
-                </Text>
-            </View>
-        )
-    }
-}
-
-class Deleted extends PureComponent {
-    render() {
-        return (
-            <View style={styles.deleted}>
-                <Button
-                    title="删除"
-                    color="#ff3a31"
-                    onPress={() => alert(123)}
-                />
-            </View>
-        )
-    }
-}
 
 class Unread extends PureComponent {
     render() {
@@ -164,26 +130,59 @@ class Unread extends PureComponent {
 
 export class NoticeItem extends PureComponent {
     render() {
-        const { title, otime, description, id, read, href } = this.props;
+        let { title, otime, description, id, read, href } = this.props;
 
         return (
             <View style={styles.outbox}>
                 <BoxShadow setting={setting}>
                     <View style={styles.box}>
                         <View style={styles.titleBox}>
-                            <Text style={styles.title}>{title && title.slice(0, 15)}……</Text>
+                            <Text style={styles.title}>{sliceStr(title, 15)}</Text>
                             <Text style={styles.time}>{getTextDate(otime)}</Text>
                         </View>
                         <View style={styles.synopsis}>
                             <Text style={styles.synopsistext}>
-                                {description && description.slice(0, 80)}……
-                                </Text>
+                                {sliceStr(description, 68)}
+                            </Text>
                         </View>
                         <FeedBackBtn onPress={() => href({ id })} />
                     </View>
                 </BoxShadow>
                 {read || <Unread />}
             </View>
+        )
+    }
+}
+
+export class ShowImageZoom extends PureComponent {
+    render() {
+        const [width, height] = [
+            this.props.width || windowW,
+            this.props.height || ratio(500)
+        ];
+       
+        return (
+            <Modal
+                animationType='fade'
+                onRequestClose={() => { }}
+                transparent={false}
+                visible={!!this.props.uri}
+            >
+                <ImageZoom
+                    cropWidth={windowW}
+                    cropHeight={windowH}
+                    imageWidth={width}
+                    imageHeight={height}
+                    style={{ backgroundColor: '#000' }}
+                    onClick={this.props.close}
+                >
+                    <Image
+                        source={{ uri: this.props.uri }}
+                        resizeMode='cover'
+                        style={{ width, height }}
+                    />
+                </ImageZoom>
+            </Modal>
         )
     }
 }

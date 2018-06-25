@@ -2,6 +2,8 @@ import { Dimensions, AsyncStorage, ToastAndroid } from 'react-native'
 
 import DeviceInfo from 'react-native-device-info'
 
+import InCallManager from 'react-native-incall-manager'
+
 import Storage from 'react-native-storage'
 
 import RNFS from 'react-native-fs'
@@ -235,6 +237,17 @@ export function editorTranition(str) {
     return arr;
 }
 
+// 获取文本聊天信息的文字
+export function getMessageText(content) {
+    let str = '';
+    for (let i = 0; i < content.length; i++) {
+        if (content[i].type = 'text') {
+            str += content[i].content;
+        }
+    }
+    return str;
+}
+
 export function getAge(time) {
     const oDate = new Date(time);
     const aDate = new Date();
@@ -422,3 +435,94 @@ export const getRecordTime = (time) => {
         return `${f < 10 ? '0' + f : f}:${m < 10 ? '0' + m : m}`;
     }
 }
+
+export const sliceStr = (str, mun) => {
+    return str.length > mun ? str.slice(0, mun - 2) + '……' : str;
+}
+
+// 自定义事件 （观测者）
+export function customEvent() {
+    let obj = {};
+    // 注册事件
+    const on = (event, fn, id) => {
+        if (obj[event]) {
+            obj[event].push({ fn, id });
+        }
+        else {
+            obj[event] = [{ fn, id }];
+        }
+    }
+
+    // 执行事件
+    const exec = (event, param) => {
+        if (obj[event]) {
+            obj[event].forEach(item => {
+                item.fn(param);
+            });
+        }
+    }
+
+    // 删除事件
+    const delet = (event, id) => {
+        if (!id) {
+            delete obj[event];
+        }
+        else {
+            let len = obj[event].length;
+            for (let i = 0; i < len; i++) {
+                if (obj[event][i].id === id) {
+                    obj[event][i].splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }
+
+    customEvent = () => {
+        return { on, exec, delet };
+    }
+
+    return customEvent();
+}
+
+// 呼叫声音
+export async function callAudio() {
+    let onoff = true;
+
+    let time = null;
+
+    const verify = () => (
+        new Promise(reslove => InCallManager
+            .requestRecordPermission()
+            .then(() => reslove(true))
+            .catch((err) => reslove(false)))
+    );
+
+    if (InCallManager.recordPermission !== 'granted') {
+        onoff = await verify();
+    }
+
+    if (!onoff) return;
+
+    // 播放声音
+    const play = () => {
+        clearTimeout(this.time);
+        this.time = setTimeout(() => this.stop(), 30000);
+        InCallManager.startRingtone('_BUNDLE_');
+    }
+    // 停止声音
+    const stop = () => {
+        clearTimeout(this.time);
+        InCallManager.stopRingtone();
+    }
+
+    const setKSO = (onoff) => {
+        InCallManager.setKeepScreenOn(onoff);
+    }
+
+    callAudio = () => ({ play, stop, setKSO });
+
+    return callAudio();
+}
+// 先执行一遍
+callAudio();

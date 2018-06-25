@@ -1,4 +1,4 @@
-import { ofetch, storage, getAction, uuid } from '../../public/fn'
+import { ofetch, storage, getAction, uuid, getuser, callAudio, customEvent } from '../../public/fn'
 
 import { setAInit } from '../active/action'
 
@@ -13,11 +13,16 @@ storage.sync.audio = (params) => {
     resolve(true);
 }
 
+const oCustomEvent = customEvent();
+
 export const type = {
     Keyboard: uuid(),
     socketInfor: uuid(),
     loginActiveState: uuid(),
     audio: uuid(),
+    dataPush: uuid(),
+    videoCall: uuid(),
+    peerData: uuid(),
 }
 
 export const setKeyboard = getAction(type.Keyboard);
@@ -27,6 +32,12 @@ export const setAudio = getAction(type.audio);
 export const setSocketInfor = getAction(type.socketInfor);
 
 export const setLoginActiveState = getAction(type.loginActiveState);
+
+export const setNavigation = getAction(type.dataPush);
+
+export const setVideoCall = getAction(type.videoCall);
+
+export const setPeerData = getAction(type.peerData);
 
 // 初始化信息
 export const appInit = value => async (dispatch, getState) => {
@@ -86,3 +97,25 @@ export const setCoAudio = (value) => async (dispatch, getState) => {
     dispatch(setAudio(value));
     await storage.save({ key: 'audio', data: !!value });
 }
+
+// 视频通话接收到呼叫信息
+export const setVideoCallOffer = (data, fn) => (dispatch, getState) => {
+    const { sdp, ice, userid } = data;
+    // 先判断 是否正在通话 就不回复
+    const { videoCall } = getState().c;
+    const { users } = getState().u;
+    if (videoCall || !sdp || !ice || !userid) return;
+
+    dispatch(setPeerData({ sdp, ice, userid }));
+
+    oCustomEvent.exec('messagecall', { id: userid });
+
+    if (fn) {
+        const { name, username } = getuser(userid, users);
+        const mctct = '呼叫视频通话……'
+        fn(name || username, mctct, { optation: 'call', id: `${userid}`, answer: '1' });
+    }
+    // 呼叫声音
+    callAudio().play();
+}
+

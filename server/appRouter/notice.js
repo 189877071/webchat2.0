@@ -9,7 +9,7 @@ const { noticenum } = require('../common/config')
 module.exports = async (ctx) => {
 
     const { optation } = ctx.query;
-    
+
     // 查看公告
     const getContent = async () => {
         const { id } = ctx.request.body;
@@ -63,30 +63,54 @@ module.exports = async (ctx) => {
 
     // 刷新
     const refresh = async () => {
+        const { id } = ctx.request.body;
+
+        let where = {};
+
+        if (id) {
+            where.id = id;
+        }
+
         // 获取公告
         const notice = await mysql(
             sql
                 .table(tables.dbnotice)
                 .field('title,otime,description,id')
                 .order('id desc')
+                .where(where)
                 .limit(noticenum)
                 .select()
         );
-        // 获取公告长度
-        const noticelen = await mysql(
-            sql.count().table(tables.dbnotice).select()
-        );
-        // 获取已读数据
-        const userdata = await mysql(
-            sql.table(tables.dbuser).where({ id: ctx.session.userid }).field('readnotice').select()
-        )
+        
+        if (!id) {
+            // 获取公告长度
+            const noticelen = await mysql(
+                sql.count().table(tables.dbnotice).select()
+            );
 
-        if (!notice || !noticelen || !userdata || !userdata.length) {
-            ctx.oerror();
+            // 获取已读数据
+            const userdata = await mysql(
+                sql.table(tables.dbuser).where({ id: ctx.session.userid }).field('readnotice').select()
+            );
+
+            if (!notice || !noticelen || !userdata || !userdata.length) {
+                ctx.oerror();
+                return;
+            }
+
+            ctx.body = { success: true, data: { notice, noticelen, noticenum, read: userdata[0].readnotice } };
+
             return;
         }
 
-        ctx.body = { success: true, data: { notice, noticelen, noticenum, read: userdata[0].readnotice } }
+        if (!notice || !notice.length) {
+            ctx.body = { success: false };
+        }
+        else {
+            ctx.body = { success: true, notice: notice[0] };
+        }
+
+
     }
 
     // 上拉加载
@@ -106,7 +130,7 @@ module.exports = async (ctx) => {
                 .select()
         );
 
-        if(!notice || !notice.length) {
+        if (!notice || !notice.length) {
             ctx.oerror();
             return;
         }

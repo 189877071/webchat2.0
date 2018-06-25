@@ -19,6 +19,21 @@ const udpsend = ({ data, host, port }) => new Promise((reslove, reject) => {
     }
 });
 
+// 群发消息
+const udpsends = async (message) => {
+    // 获取到所有在线用户
+    const onLineUsers = await mysql(sql.table(dblogin).select());
+
+    if (onLineUsers && onLineUsers.length) {
+        // 推送消息 有人离线了
+        onLineUsers.forEach(item => udpsend({
+            data: { socketid: item.socketid, message },
+            host: item.udphost,
+            port: item.udpport
+        }));
+    }
+}
+
 const exit = async (msg, rinfo) => {
     let data = null;
 
@@ -27,7 +42,7 @@ const exit = async (msg, rinfo) => {
     }
     catch (e) { }
 
-    if (!data) return ;
+    if (!data) return;
 
     const { socketid } = data;
 
@@ -45,22 +60,15 @@ const exit = async (msg, rinfo) => {
     // 删除用户登录数据
     await mysql(sql.table(dblogin).where({ socketid }).delet());
 
-    // 获取到所有在线用户不包括当前用户
-    const onLineUsers = await mysql(sql.table(dblogin).select());
-
-    if (onLineUsers && onLineUsers.length) {
-        // 推送消息 有人离线了
-        onLineUsers.forEach(item => udpsend({
-            data: { socketid: item.socketid, message: { controller: 'userexit', userid } },
-            host: item.udphost,
-            port: item.udpport
-        }));
-    }
+    // 获取到所有在线用户
+    await udpsends({ controller: 'userexit', userid });
 
     return true;
 }
 
 exports.udpsend = udpsend;
+
+exports.udpsends = udpsends;
 
 exports.udpexit = exit;
 

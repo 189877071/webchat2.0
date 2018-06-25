@@ -41,7 +41,7 @@ class Notice extends Component {
             hint('数据获取失败');
             return;
         }
-
+       
         this.props.dispatch(setNInit(data));
     }
     // 加载
@@ -78,7 +78,7 @@ class Notice extends Component {
                     ListHeaderComponent={<View style={{ height: ratio(50) }} />}
                     ListFooterComponent={(
                         <View style={{ height: ratio(100), justifyContent: 'center', alignItems: 'center' }}>
-                            <Text style={{ fontSize: ratio(35), color: '#333' }}>
+                            <Text style={{ fontSize: ratio(50), color: '#111' }}>
                                 {this.state.isload ? '正在加载数据……' : ''}
                             </Text>
                         </View>

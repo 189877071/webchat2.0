@@ -88,6 +88,8 @@ export class Background extends PureComponent {
                 return require('../public/image/search.jpg');
             case 'noticechildren':
                 return require('../public/image/noticechildren.jpg');
+            case 'call':
+                return require('../public/image/call.jpg');
         }
     }
     render() {

@@ -1,10 +1,10 @@
-import React, { PureComponent, Component } from 'react'
+import React, { PureComponent } from 'react'
 
 import { View, StyleSheet, Text, Image, FlatList, TouchableOpacity, TouchableWithoutFeedback, Animated, Platform, PermissionsAndroid } from 'react-native'
 
 import { pleft, pright, hostname } from '../public/config'
 
-import { ratio, getTextDate, getRecordTime, hint } from '../public/fn'
+import { ratio, getTextDate, getRecordTime, hint, windowW } from '../public/fn'
 
 import Icons from '../Icons'
 
@@ -219,11 +219,13 @@ const getImg = (n) => {
     }
 }
 
+const maxImgW = windowW - ratio(380);
+
 export class ChatTab extends PureComponent {
     setColor = (active) => (this.props.active === active ? '#25b8a6' : '#617286');
 
     render() {
-        const { active, toggle, openimg, shock, refresh } = this.props;
+        const { active, toggle, openimg, shock, refresh, callvideo } = this.props;
 
         return (
             <View style={styles.tabbox}>
@@ -245,7 +247,7 @@ export class ChatTab extends PureComponent {
                 </View>
                 <View style={styles.tabItem}>
                     <Icons name='icon-shexiangtou' size={ratio(70)} color='#617286' />
-                    <FeedBackBtn onPress={refresh} />
+                    <FeedBackBtn onPress={callvideo} />
                 </View>
                 <View style={styles.tabItem}>
                     <Icons name='icon-shuaxin1' size={ratio(70)} color='#617286' />
@@ -327,7 +329,7 @@ export class TextMessage extends PureComponent {
     )
 
     ContentCom = () => {
-        const { sender, content, setDeletId, id, otype, play, playid } = this.props;
+        const { sender, content, setDeletId, id, otype, play, playid, seturi } = this.props;
 
         const textstyle = [styles.textbox, styles[sender === 'mi' ? 'rtext' : 'ltext']];
 
@@ -354,14 +356,25 @@ export class TextMessage extends PureComponent {
         }
         // 图片
         else if (otype === 'image') {
-            const { uri, width, height } = content;
-            ocontent = (
+            let { uri, width, height } = content;
+
+            // 每个屏幕的宽度都是不同的所以要判断一下最大宽度
+            if (width > maxImgW) width = maxImgW;
+
+            uri = hostname + uri;
+
+            return (
                 <View style={textstyle}>
-                    <Image
-                        source={{ uri: hostname + uri }}
-                        style={{ width, height }}
-                        resizeMode='cover'
-                    />
+                    <TouchableWithoutFeedback
+                        onPress={() => seturi(uri, width, height)}
+                        onLongPress={() => setDeletId(id)}
+                    >
+                        <Image
+                            source={{ uri }}
+                            style={{ width, height }}
+                            resizeMode='cover'
+                        />
+                    </TouchableWithoutFeedback>
                 </View>
             );
         }
@@ -549,10 +562,11 @@ export class PhizIcon extends PureComponent {
     }
 }
 
-const wlen = ratio(600);
+
 export class TypeMessage extends PureComponent {
 
     render() {
+        const wlen = ratio(600);
         const { content } = this.props;
         let w = 0;
         const List = content.map((item, index) => {

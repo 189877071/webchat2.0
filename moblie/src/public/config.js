@@ -26,10 +26,17 @@ export const pright = ratio(30);
 
 export const hostname = 'http://39.104.80.68:3500';
 
-export const socketurl = 'ws://39.104.80.68:4500';
+export const socketurl = 'https://socket.jsonhappy.com';
 
 export const databasename = 'chattingdb';
 
 export const showtimenum = 1000 * 60 * 30;
 // 最大储存消息数量
 export const maxMessage = 200;
+
+export const iceServers = {
+    "iceServers": [
+        { "url": "stun:stun.jsonhappy.com:3478" },
+        { "url": "turn:stun.jsonhappy.com:3478", "username": "abcdef", "credential": "abcdef" }
+    ]
+}

@@ -1,6 +1,6 @@
 import React, { Component, PureComponent } from 'react';
 
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableNativeFeedback } from 'react-native';
 
 import { connect } from 'react-redux';
 
@@ -10,27 +10,26 @@ import { Background } from '../components/Image'
 
 import { InlineHeader } from '../components/Header'
 
-import { ofetch, ratio, getTextDate, windowW } from '../public/fn'
+import { ofetch, ratio, getTextDate, windowW, sliceStr } from '../public/fn'
 
-import { pleft, pright, borderColor } from '../public/config'
+import { pleft, pright, hostname } from '../public/config'
 
 import { setNAddContent } from '../store/notice/action'
 
-
+import { ShowImageZoom } from '../components/NoticeList'
 
 const styles = StyleSheet.create({
     nullbox: { height: ratio(300), justifyContent: 'center', alignItems: 'center' },
-    nulltext: { fontSize: ratio(40), color: '#666' },
+    nulltext: { fontSize: ratio(60), color: '#000' },
     title: {
-        fontSize: ratio(40), color: '#333', lineHeight: ratio(60), paddingLeft: pleft, paddingRight: pright,
+        fontSize: ratio(60), color: '#000', lineHeight: ratio(80), paddingLeft: pleft, paddingRight: pright, fontWeight: 'bold'
     },
     infor: {
         borderBottomWidth: 1, borderColor: '#07bb98', flexDirection: 'row',
-        justifyContent: 'space-between', alignItems: 'center',
-        height: ratio(80), paddingLeft: pleft, paddingRight: pright,
+        justifyContent: 'space-between', alignItems: 'center', paddingLeft: pleft, paddingRight: pright,
     },
     infortext: {
-        fontSize: ratio(35), color: '#777',
+        fontSize: ratio(40), color: '#555', lineHeight: ratio(100)
     },
     description: {
         margin: ratio(30),
@@ -38,10 +37,10 @@ const styles = StyleSheet.create({
         borderWidth: 1, borderColor: '#ddd'
     },
     descriptiontext: {
-        fontSize: ratio(40), color: '#666', lineHeight: ratio(60)
+        fontSize: ratio(50), color: '#000', lineHeight: ratio(80)
     },
     imagec: {
-        width: windowW - pleft - pright, height: ratio(500)
+        width: windowW - pleft - pright, height: ratio(600)
     },
     imgcbox: {
         alignItems: 'center', marginTop: ratio(40), marginBottom: ratio(40)
@@ -50,16 +49,22 @@ const styles = StyleSheet.create({
         paddingLeft: pleft, paddingRight: pright,
     },
     titletext: {
-        fontSize: ratio(50), fontWeight: 'bold', lineHeight: ratio(70), color: '#111'
+        fontSize: ratio(60), fontWeight: 'bold', lineHeight: ratio(80), color: '#000'
     },
     ctext: {
-        fontSize: ratio(40), lineHeight: ratio(60), color: '#555'
+        fontSize: ratio(50), lineHeight: ratio(80), color: '#000'
     }
 });
 
+const urlrep = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
+
+function _url(url) {
+    return urlrep.test(url) ? url : hostname + url;
+}
+
 class ContentCom extends PureComponent {
     render() {
-        let { title, mobliecontent, description, otime } = this.props;
+        let { title, mobliecontent, description, otime, seturi } = this.props;
         let content = null;
         try {
             mobliecontent = JSON.parse(mobliecontent);
@@ -67,9 +72,12 @@ class ContentCom extends PureComponent {
                 // image view title
                 switch (item.type) {
                     case 'image':
+                        const src = _url(item.src);
                         return (
                             <View key={index} style={styles.imgcbox}>
-                                <Image source={{ uri: item.src }} resizeMode='cover' style={styles.imagec} />
+                                <TouchableNativeFeedback onPress={() => seturi(src)}>
+                                    <Image source={{ uri: src }} resizeMode='cover' style={styles.imagec} />
+                                </TouchableNativeFeedback>
                             </View>
                         );
                     case 'title':
@@ -97,10 +105,9 @@ class ContentCom extends PureComponent {
             )
         }
 
-
         return (
             <ScrollView style={{ flex: 1 }}>
-                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.title}>{sliceStr(title, 30)}</Text>
                 <View style={styles.infor}>
                     <Text style={styles.infortext}>发布人：admin</Text>
                     <Text />
@@ -116,18 +123,24 @@ class ContentCom extends PureComponent {
     }
 }
 
-class NoticeChildren extends Component {
+class NoticeChildren extends PureComponent {
     constructor(props) {
         super(props);
+
         this.state = {
-            load: true
+            load: true,
+            uri: ''
         }
-        this.id = this.props.navigation.getParam('id', 0);
+
+        if (!this.props.content) {
+            this.getdata();
+        }
     }
     // 返回
     backup = () => {
         this.props.navigation.goBack();
     }
+
     NoDataCom = () => (
         <View style={styles.nullbox}>
             <Text style={styles.nulltext}>
@@ -135,26 +148,26 @@ class NoticeChildren extends Component {
             </Text>
         </View>
     )
+
+    seturi = (uri) => {
+        this.setState({ uri });
+    }
+
     render() {
-        let data = this.props.content[this.id];
+        let { content } = this.props;
+
         return (
             <Box>
-                <Background active="settingchildren" />
+                <Background active="noticechildren" />
                 <InlineHeader title="公告内容" hideBtn={true} backup={this.backup} />
-                {/* {!data ? this.NoDataCom() : false} */}
-                {!data ? this.NoDataCom() : <ContentCom {...data} />}
+                {!content ? this.NoDataCom() : <ContentCom {...content} seturi={this.seturi} />}
+                <ShowImageZoom uri={this.state.uri} close={() => this.seturi('')} />
             </Box>
         )
     }
-    async componentDidMount() {
-
-        // 查看 该条内容是否已经查看了
-        if (this.props.content[this.id]) {
-            // 已经阅读了
-            return;
-        }
+    async getdata() {
         // 获取数据
-        const { success, data } = await ofetch('/notice', { id: this.id });
+        const { success, data } = await ofetch('/notice', { id: this.props.id });
 
         this.setState({ load: false });
 
@@ -162,11 +175,15 @@ class NoticeChildren extends Component {
             return;
         }
         // 获取成功
-        this.props.dispatch(setNAddContent(data, this.id));
+        this.props.dispatch(setNAddContent(data, this.props.id));
     }
 }
 
-export default connect((state, props) => ({
-    navigation: props.navigation,
-    content: state.n.content
-}))(NoticeChildren);
+export default connect((state, props) => {
+    const id = props.navigation.getParam('id', 0);
+    return {
+        id,
+        navigation: props.navigation,
+        content: state.n.content[id]
+    }
+})(NoticeChildren);

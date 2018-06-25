@@ -18,7 +18,7 @@ const appRouter = require('./appRouter');
 
 const ueditor = require('./ueditor');
 
-const { udpsend, udpexit } = require('./udpServer');
+const { udpsend, udpexit, udpsends } = require('./udpServer');
 
 const mysql = require('./common/db');
 
@@ -48,6 +48,7 @@ app.use(async (ctx, next) => {
     ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
     ctx.udpsend = udpsend;
     ctx.udpexit = udpexit;
+    ctx.udpsends = udpsends;
     await next();
 });
 

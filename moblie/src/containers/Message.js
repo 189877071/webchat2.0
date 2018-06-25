@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
 
-import { FlatList, StyleSheet, View } from 'react-native'
+import { FlatList, StyleSheet, View, AppState } from 'react-native'
 
 import Box, { ScrollBox } from '../components/Box'
 
@@ -14,15 +14,50 @@ import SearchBtn from '../components/SearchBtn'
 
 import { MessageItem } from '../components/UserList'
 
-import { getMessage, ratio } from '../public/fn'
+import { getMessage, ratio, customEvent } from '../public/fn'
 
 import { borderColor } from '../public/config'
 
 import { SetUTopChat, setUDeletChat, setUActiveid } from '../store/users/action'
 
+import { setNavigation } from '../store/common/action'
+
+const oCustomEvent = customEvent();
+
 class Message extends Component {
     toSearch = () => {
         this.props.navigation.navigate('search');
+    }
+
+    _pushnavigation = () => {
+        const { dataPush, dispatch, navigation } = this.props;
+
+        if (!dataPush || AppState.currentState !== 'active') return;
+
+        const { optation, id, answer } = dataPush;
+
+        let params = { id: parseInt(id) };
+
+        if (answer) params.answer = true;
+
+        navigation.push(optation, params);
+
+        dispatch(setNavigation(null));
+    }
+
+    componentDidMount() {
+        AppState.addEventListener('change', this._pushnavigation);
+
+        oCustomEvent.on('messagecall', ({ id }) => {
+            if (AppState.currentState === 'active') {
+                this.props.navigation.push('call', { id, answer: '1' });
+            }
+        }, 2);
+
+    }
+
+    componentWillMount() {
+        AppState.removeEventListener('change', this._pushnavigation);
     }
 
     ItemCom = ({ item }) => {
@@ -46,7 +81,7 @@ class Message extends Component {
     // 转跳聊天页面
     tochat = (data) => {
         setTimeout(() => {
-            this.props.dispatch(setUActiveid(data.id));
+            // this.props.dispatch(setUActiveid(data.id));
             // 还要把未读的信息转化成已读的信息
 
             this.props.navigation.navigate('chat', data);
@@ -77,4 +112,5 @@ export default connect((state, props) => ({
     chatting: state.u.chatting,
     users: state.u.users,
     top: state.u.top,
+    dataPush: state.c.dataPush
 }))(Message);

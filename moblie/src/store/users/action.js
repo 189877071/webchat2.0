@@ -1,4 +1,4 @@
-import { ofetch, storage, getAction, uuid, copyObj, editorTranition, hint } from '../../public/fn'
+import { ofetch, storage, getAction, uuid, copyObj, editorTranition, hint, getuser, getMessageText } from '../../public/fn'
 
 import Sound from 'react-native-sound'
 
@@ -100,8 +100,7 @@ export const setUonLine = ({ userid, onoff }) => (dispatch, getState) => {
 }
 
 // 消息
-export const setUAddChat = (params) => async (dispatch, getState) => {
-
+export const setUAddChat = (params, fn) => async (dispatch, getState) => {
     let { otype, userid, content, id, sender, state, alter, time } = params;
 
     if (!otype || !userid || !id || !sender) return;
@@ -112,8 +111,14 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
         if (!content) return;
         content = editorTranition(content);
     }
+    else if (['image', 'voice'].indexOf(otype) !== -1 && sender === 'he') {
+        try {
+            content = JSON.parse(content);
+        }
+        catch (e) { }
+    }
 
-    const { name, currentid } = getState().u;
+    const { name, currentid, users } = getState().u;
 
     if (!state && sender === 'he') {
         state = (currentid == userid) ? 'read' : 'unread';
@@ -122,7 +127,7 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
         return;
     }
 
-    let data = await storage.load({ key: databasename, autoSync: true, syncParams: { dbname: name } });
+    let data = await getData(name);
 
     data[name] || (data[name] = {});
 
@@ -132,7 +137,7 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
 
     // 震动
     if (otype === 'shock' && !alter) {
-        Vibration.vibrate([0, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]);
+        Vibration.vibrate([0, 1000, 500, 1000, 500, 1000, 500, 1000]);
     }
 
     // 提交成功修改状态
@@ -154,9 +159,29 @@ export const setUAddChat = (params) => async (dispatch, getState) => {
     }
 
     // 保存数据
-    await storage.save({ key: databasename, data });
+    await setData(data);
 
     dispatch(setUChat({ ...data[name] }));
+
+    if (fn) {
+        const { name, username } = getuser(userid, users);
+        let mctct = '';
+        switch (otype) {
+            case 'message':
+                mctct = getMessageText(content);
+                break;
+            case 'voice':
+                mctct = '语音消息';
+                break;
+            case 'shock':
+                mctct = '震动';
+                break;
+            case 'image':
+                mctct = '图片';
+                break;
+        }
+        fn(name || username, mctct, { optation: 'chat', id: `${userid}` });
+    }
 
     if (currentid == userid || !getState().c.audio) return;
 
@@ -201,6 +226,12 @@ export const setUDeletChat = (id, all) => async (dispatch, getState) => {
     await storage.save({ key: databasename, data });
 
     dispatch(setUChat({ ...data[name] }));
+
+    const { success } = await ofetch('/message?optation=delete', { oid: id });
+
+    if (success) {
+        hint('删除成功!');
+    }
 }
 
 // 初始化未读信息
@@ -416,3 +447,4 @@ async function getData(name) {
 async function setData(data) {
     await storage.save({ key: databasename, data });
 }
+

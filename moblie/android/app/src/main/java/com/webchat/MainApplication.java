@@ -3,6 +3,8 @@ package com.webchat;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zxcpoiu.incallmanager.InCallManagerPackage;
+import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.rnfs.RNFSPackage;
 import com.rnim.rn.audio.ReactNativeAudioPackage;
 import com.horcrux.svg.SvgPackage;
@@ -20,8 +22,8 @@ import java.util.List;
 import cn.jpush.reactnativejpush.JPushPackage;
 
 public class MainApplication extends Application implements ReactApplication {
-  private boolean SHUTDOWN_TOAST = false;
-  private boolean SHUTDOWN_LOG = false;
+  private boolean SHUTDOWN_TOAST = true;
+  private boolean SHUTDOWN_LOG = true;
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -33,6 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new InCallManagerPackage(),
+            new WebRTCModulePackage(),
             new RNFSPackage(),
             new ReactNativeAudioPackage(),
             new SvgPackage(),

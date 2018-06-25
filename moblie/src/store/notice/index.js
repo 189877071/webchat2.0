@@ -26,7 +26,7 @@ export default function (state = init, action) {
         case type.read:
             return { ...state, read: value };
         case type.content:
-            return {...state, content: value}
+            return { ...state, content: value }
     }
     return state;
 }
