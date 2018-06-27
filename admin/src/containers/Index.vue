@@ -6,7 +6,7 @@
         </div>
         <div class="t-center">{{title}}</div>
         <div class="t-right">
-            <a href="javascript:;"><i class="iconfont icon-084tuichu"></i> 退出</a>
+            <a href="javascript:;" @click="exit"><i class="iconfont icon-084tuichu"></i> 退出</a>
         </div>
     </el-header>
 
@@ -99,11 +99,25 @@
 </style>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
+import axios from "../axios";
+import commonMixin from "../commonMixin";
 export default {
     name: "Index",
     computed: {
         ...mapState("index", ["title"])
+    },
+    mixins: [commonMixin],
+    methods: {
+        async exit() {
+            const { data: { success } } = await axios.post("/exit");
+            if (!success) {
+                this.error("退出失败");
+                return;
+            }
+            
+            this.$store.commit("init/login", false);
+        }
     },
     beforeRouteUpdate(to, from, next) {
         this.$store.commit("index/setTitle", to.meta.title);

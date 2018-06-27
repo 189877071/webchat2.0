@@ -13,7 +13,7 @@ module.exports = {
         "dbnotice": "chat_notice",
         "dberrsql": "chat_sqlerrlog"
     },
-    origin: ['http://127.0.0.1:8080', 'http://127.0.0.1:3000'],
+    origin: ['http://adminv2.jsonhappy.com'],
     static: join(__dirname, '../static'),
     ueditor: {
         /* 上传图片配置项 */
@@ -97,20 +97,9 @@ module.exports = {
     },
     server: {
         http: [
-            { "port": 3500, main: true }
-        ],
-        // socket: [
-        //     {
-        //         "socketport": 5000,
-        //         "udpport": 7000,
-        //         "udphost": "127.0.0.1"
-        //     },
-        //     {
-        //         "socketport": 5001,
-        //         "udpport": 7001,
-        //         "udphost": "127.0.0.1"
-        //     }
-        // ]
+            { "port": 3500, main: true },
+            { "port": 3501 }
+        ]
     },
     userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class', 'readnotice'],
     expires: 24 * 60 * 60 * 1000,

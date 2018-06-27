@@ -39,10 +39,10 @@ module.exports = async (ctx) => {
     else {
         userid = ctx.session.userid;
     }
-
+    
     // 获取当前用户信息
     const activeuser = await mysql(sql.table(tables.dbuser).field(userField).where({ id: userid }).select());
-
+    
     if (!activeuser || !activeuser.length) {
         ctx.oerror();
         return;
@@ -51,7 +51,7 @@ module.exports = async (ctx) => {
     const resMixin = await loginMixin(ctx, userid, Date.now());
 
     if (!resMixin) {
-        ctx.oerror('users / aclass / islogin / loginusers 读取出错');
+        ctx.oerror();
         return;
     }
 

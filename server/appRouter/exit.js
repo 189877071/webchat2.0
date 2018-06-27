@@ -1,6 +1,6 @@
 const sql = require('node-transform-mysql');
 
-const mysql = require('../common/db');
+const rankmysql = require('../common/rankdb');
 
 const { tables } = require('../common/config');
 
@@ -28,8 +28,7 @@ module.exports = async (ctx) => {
     if (optation) {
         // 被动退出
         // 删除登录数据
-
-        await mysql(sql.table(tables.dblogin).where({ socketid }).delet());
+        rankmysql(sql.table(tables.dblogin).where({ socketid }).delet());
 
         ctx.session = {};
         // 退出成功

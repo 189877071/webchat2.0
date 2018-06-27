@@ -24,7 +24,7 @@ export const pleft = ratio(30);
 // 右边距
 export const pright = ratio(30);
 
-export const hostname = 'http://39.104.80.68:3500';
+export const hostname = 'https://apiv2.jsonhappy.com';
 
 export const socketurl = 'https://socket.jsonhappy.com';
 

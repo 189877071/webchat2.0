@@ -2,18 +2,16 @@ const sql = require('node-transform-mysql');
 
 const mysql = require('../common/db');
 
+const rankmysql = require('../common/rankdb');
+
 const { tables, userField, noticenum } = require('../common/config');
 
 const { userclassify, escape, isAllString, isAllType } = require('../common/fn');
 
 module.exports = async (ctx, userid, otime) => {
     let { socketid, udphost, udpport } = ctx.request.body;
-
+  
     if (!isAllString([socketid, udphost]) || !isAllType(udpport, 'number')) return false;
-
-    socketid = escape(socketid);
-
-    udphost = escape(udphost);
 
     // 获取所有用户
     const users = await mysql(
@@ -62,6 +60,9 @@ module.exports = async (ctx, userid, otime) => {
         const loginArr = loginusers.filter(item => item.userid === userid);
 
         if (loginArr.length) {
+            // 删除登录数据
+            await mysql(sql.table(tables.dblogin).where({ userid }).delet());
+
             // 当前用户已在其他设备登录，通知其退出
             loginArr.forEach(item => {
                 ctx.udpsend({
@@ -88,6 +89,8 @@ module.exports = async (ctx, userid, otime) => {
         host: udphost,
         port: udpport
     });
+
+    // 删除socketid 防止socketid占用导致登录失败
 
     // 添加到登录用户表
     const islogin = await mysql(

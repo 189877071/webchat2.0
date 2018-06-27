@@ -34,7 +34,7 @@ const udpsends = async (message) => {
     }
 }
 
-const exit = async (msg, rinfo) => {
+const exit = async (msg) => {
     let data = null;
 
     try {
@@ -52,7 +52,7 @@ const exit = async (msg, rinfo) => {
     const loginResult = await mysql(sql.table(dblogin).where({ socketid }).select());
 
     if (!loginResult || !loginResult.length) {
-        return false;
+        return true;
     }
 
     let userid = loginResult[0].userid;
@@ -60,8 +60,13 @@ const exit = async (msg, rinfo) => {
     // 删除用户登录数据
     await mysql(sql.table(dblogin).where({ socketid }).delet());
 
-    // 获取到所有在线用户
-    await udpsends({ controller: 'userexit', userid });
+    // 判断用户是否还有登录
+    const isLogin = await mysql(sql.table(dblogin).where({ userid }).select())
+
+    if (!isLogin || !isLogin.length) {
+        // 推送所有在线用户有人下线了
+        await udpsends({ controller: 'userexit', userid });
+    }
 
     return true;
 }

@@ -82,11 +82,8 @@ export const setCData = ({ activeuser, data, unreadMessage, notice }) => async (
 export const setCExit = () => async (dispatch, getState) => {
     const { socketInfor } = getState().c;
 
-    const { success, error } = await ofetch('/exit?optation=1', socketInfor);
+    await ofetch('/exit?optation=1', socketInfor);
 
-    if (!success) {
-        alert(error);
-    }
     alert('检测到您的设备在其他地方登录');
     dispatch(setLoginActiveState(2));
 }

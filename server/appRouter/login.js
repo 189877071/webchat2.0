@@ -14,7 +14,6 @@ const [emailRex] = [
     /^([A-Za-z0-9_\.-]+)@([\dA-Za-z\.-]+)\.([A-Za-z\.]{2,6})$/
 ];
 
-
 module.exports = async (ctx) => {
     const { optation } = ctx.query;
 

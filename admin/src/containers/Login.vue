@@ -77,7 +77,7 @@ export default {
                 this.error("用户名或密码错误！");
                 return;
             }
-
+            this.$store.commit("init/login", true);
             this.$router.replace("/");
         }
     },

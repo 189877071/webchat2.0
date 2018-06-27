@@ -1,4 +1,4 @@
-import { Dimensions, AsyncStorage, ToastAndroid } from 'react-native'
+import { Dimensions, AsyncStorage, ToastAndroid, NetInfo } from 'react-native'
 
 import DeviceInfo from 'react-native-device-info'
 
@@ -10,7 +10,7 @@ import RNFS from 'react-native-fs'
 
 const { height, width } = Dimensions.get('window');
 
-const hostname = 'http://39.104.80.68:3500/app';
+const hostname = 'https://apiv2.jsonhappy.com/app';
 
 export const windowW = width;
 
@@ -32,23 +32,59 @@ export function ratio(w) {
     return ratio(w);
 }
 
-export async function ofetch(url, data) {
-    return new Promise((reslove) => {
-        fetch(hostname + url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'credentials': "include"
-            },
-            body: JSON.stringify(data ? data : {})
-        })
-            .then(response => response.json())
-            .then(data => reslove(data))
-            .catch(() => {
-                reslove(false);
-            })
+let abdhd = false;
+
+export function ofetch(url, data) {
+    let [time, ctime, connection] = [null, null, true];
+
+    NetInfo.addEventListener('connectionChange', (connectionInfo) => {
+        if (connectionInfo.type.toLowerCase() !== 'none') {
+            connection = false;
+            clearInterval(time);
+            time = setInterval(async () => {
+                await ofetch('/test', {}, true);
+                connection = true;
+                clearInterval(time);
+            }, 1000);
+        }
     });
+
+    isConnection = () => new Promise(reslove => {
+        if (connection) {
+            reslove(true);
+            return;
+        }
+
+        ctime = setInterval(() => {
+            if (connection) {
+                reslove(true);
+                clearInterval(ctime);
+            }
+        }, 500);
+    })
+
+    ofetch = async (url, data, v) => {
+        if (!v) {
+            await isConnection();
+        }
+        try {
+            const response = await fetch(hostname + url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'credentials': "include"
+                },
+                body: JSON.stringify(data ? data : {})
+            });
+            return await response.json();
+        }
+        catch (e) {
+            return {};
+        }
+    }
+
+    return ofetch(url, data);
 }
 
 export const storage = new Storage({

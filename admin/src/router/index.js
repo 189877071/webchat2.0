@@ -85,7 +85,7 @@ export default new Router({
     },
     {
       path: '/login',
-      name: '登录',
+      name: 'Login',
       component: () => import('@/containers/Login')
     }
   ]

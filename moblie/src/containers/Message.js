@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 
 import { FlatList, StyleSheet, View, AppState } from 'react-native'
 
+import JPushModule from 'jpush-react-native'
+
 import Box, { ScrollBox } from '../components/Box'
 
 import { Background } from '../components/Image'
@@ -43,6 +45,9 @@ class Message extends Component {
         navigation.push(optation, params);
 
         dispatch(setNavigation(null));
+
+        // 清除所有推送信息
+        JPushModule.cleanTags();
     }
 
     componentDidMount() {

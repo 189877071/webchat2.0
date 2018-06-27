@@ -28,6 +28,11 @@ router.post('/headphoto', islogin, require('./headphoto'));
 
 router.all('/notice', islogin, require('./notice'));
 
+router.post('/exit', async (ctx) => {
+    ctx.session = {};
+    ctx.body = { success: true };
+});
+
 router.get('*', (ctx) => {
     ctx.status = 404;
     ctx.body = { error: 404, success: false };
