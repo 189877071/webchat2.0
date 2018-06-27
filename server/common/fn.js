@@ -1,5 +1,7 @@
 const http = require('http');
 
+const crypto = require('crypto');
+
 const { writeFile } = require('fs');
 
 const { static, grayurl } = require('./config');
@@ -68,7 +70,7 @@ exports.userclassify = (aclass, users, loginusers) => {
 exports.log = (text) => console.log(text);
 
 const escape = (str) => {
-    if(!str || typeof(str) != 'string') {
+    if (!str || typeof (str) != 'string') {
         return str;
     }
     return str.replace(/\n|\0|\r|\t|\b|\'|\"|\%|\_/g, ($1) => {
@@ -115,4 +117,28 @@ exports.isAllType = (param, type) => {
     else {
         return (typeof param === type);
     }
-}; 
+};
+
+// 加密数据
+exports.enc = function (obj, key) {
+    const str = JSON.stringify(JSON.stringify(obj));
+
+    const cipher = crypto.createCipher('aes192', key);
+
+    let enc = cipher.update(str, 'utf8', 'hex');
+
+    enc += cipher.final('hex');
+
+    return enc;
+}
+
+// 解密数据
+exports.dec = function (str, key) {
+    const decipher = crypto.createDecipher('aes192', key);
+
+    let dec = decipher.update(str, 'hex', 'utf8');
+
+    dec += decipher.final('utf8');
+
+    return dec;
+}

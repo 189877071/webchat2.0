@@ -103,6 +103,7 @@ module.exports = {
     },
     userField: ['id', 'username', 'headphoto', 'grayheadphoto', 'email', 'synopsis', 'sex', 'age', 'logindate', 'name', 'class', 'readnotice'],
     expires: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
     grayurl: 'http://localhost:8088/gray.php',
     noticenum: 5
 }
