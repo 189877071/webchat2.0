@@ -40,19 +40,15 @@ module.exports = async (ctx, next) => {
                 session = t;
             }
         }
-        catch (e) {
-            session = {};
-            console.log('解析失败')
-        }
+        catch (e) { }
     }
 
     ctx.session = session;
-
     await next();
 
     // 加密
     if (ctx.session) {
-        ctx.cookies.set('token', enc(ctx.session, key), { maxAge: Date.now() + maxAge });
+        ctx.cookies.set('token', enc(ctx.session, key));
     }
     else {
         ctx.cookies.set('token', '');

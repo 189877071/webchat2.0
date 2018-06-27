@@ -8,9 +8,9 @@ const cors = require('koa2-cors');
 
 const bodyParse = require('koa-bodyparser');
 
-// const session = require('./common/session');
+const session = require('./common/session');
 
-const jwt = require('./common/jwt');
+// const jwt = require('./common/jwt');
 
 const { origin } = require('./common/config');
 
@@ -44,8 +44,8 @@ app.use(ueditor.routes());
 
 app.use(bodyParse());
 
-// app.use(session());
-app.use(jwt);
+app.use(session());
+// app.use(jwt);
 
 app.use(async (ctx, next) => {
     ctx.oerror = (error = 0) => ctx.body = ({ error, success: false });
