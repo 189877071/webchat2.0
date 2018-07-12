@@ -293,16 +293,13 @@ export class LoginForm extends PureComponent {
 
     // 测试登录
     testSubmit = async () => {
-        if (this.isload) {
-            hint('正在发送请求……');
+
+        let { success, data, activeuser, error, unreadMessage, notice, rd } = await ofetch('/login?optation=test', this.props.socketInfor, false, true);
+
+        if(rd) {
+            hint('正在请求中请勿着急……')
             return;
         }
-
-        this.isload = true;
-
-        let { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login?optation=test', this.props.socketInfor);
-
-        this.isload = false;
 
         if (!success) {
             alert('登录失败！');

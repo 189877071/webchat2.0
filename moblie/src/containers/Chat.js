@@ -15,7 +15,7 @@ import { Background } from '../components/Image'
 
 import { ChatHeader } from '../components/Header'
 
-import { ChatTab, TextMessage, PhizIcon, Voicebox } from '../components/Chat'
+import { ChatTab, TextMessage, PhizIcon, Voicebox, Emoji } from '../components/Chat'
 
 import { ShowImageZoom } from '../components/NoticeList'
 
@@ -153,13 +153,13 @@ class Chat extends Component {
 
         const [oid, content, otype, id] = [
             uuid(),
-            editorTranition(this.value),
+            encodeURIComponent(this.value),
             'message',
             this.state.id
         ]
 
         this.osend(
-            { heid: id, otype, content: this.value, oid },
+            { heid: id, otype, content, oid },
             { time: Date.now(), id: oid, sender: 'mi', otype, content, userid: id, state: 'transmit' }
         );
 
@@ -478,7 +478,7 @@ class Chat extends Component {
                     callvideo={this.callvoide}
                 />
 
-                {this.state.showTab === 'phiza' && <PhizIcon addIcon={this.addIcon} />}
+                {this.state.showTab === 'phiza' && <Emoji addIcon={this.addIcon} />}
                 {this.state.showTab === 'yuyin' && <Voicebox send={this.sendvoice} />}
                 <ShowImageZoom
                     uri={this.state.uri}

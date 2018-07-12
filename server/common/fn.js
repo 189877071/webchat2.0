@@ -6,7 +6,7 @@ const { writeFile } = require('fs');
 
 const { static, grayurl } = require('./config');
 
-const getVerify = (num, type) => {
+const getVerify = exports.getVerify = (num, type) => {
     const str = type ? '1234567890' : 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKMNOPQRSTUVWXYZ0123456789';
     let verify = '';
     for (var i = 0; i < num; i++) {
@@ -15,10 +15,8 @@ const getVerify = (num, type) => {
     return verify;
 }
 
-exports.getVerify = getVerify;
-
 // 把图片转换成黑白色
-const grayImg = (originFile, grayFile) => new Promise(reslove => {
+const grayImg = exports.grayImg = (originFile, grayFile) => new Promise(reslove => {
     http.get(`${grayurl}?origin=${originFile}&gray=${grayFile}`, function (r) {
         let str = "";
         r.setEncoding("utf8");
@@ -28,8 +26,6 @@ const grayImg = (originFile, grayFile) => new Promise(reslove => {
         });
     });
 });
-
-exports.grayImg = grayImg;
 
 exports.writeFileAsync = (str) => new Promise(resolve => {
 
@@ -69,11 +65,11 @@ exports.userclassify = (aclass, users, loginusers) => {
 
 exports.log = (text) => console.log(text);
 
-const escape = (str) => {
+const escape = exports.escape = (str) => {
     if (!str || typeof (str) != 'string') {
         return str;
     }
-    return str.replace(/\n|\0|\r|\t|\b|\'|\"|\%|\_/g, ($1) => {
+    return str.replace(/\n|\0|\r|\t|\b|\'|\"|\%/g, ($1) => {
         switch ($1) {
             case '\n':
                 return '\\n';
@@ -91,15 +87,11 @@ const escape = (str) => {
                 return '\\"';
             case '\%':
                 return '\\%';
-            case '\_':
-                return '\\_';
             default:
                 return '';
         }
     });
 }
-
-exports.escape = escape;
 
 exports.isAllString = (param) => {
     if (Array.isArray(param)) {

@@ -32,10 +32,21 @@ export function ratio(w) {
     return ratio(w);
 }
 
-let abdhd = false;
+export function ofetch(url, data, onoff) {
+    let [time, ctime, connection, removeDuplicate] = [null, null, true, {}];
 
-export function ofetch(url, data) {
-    let [time, ctime, connection] = [null, null, true];
+    const isConnection = () => new Promise(reslove => {
+        if (connection) {
+            reslove(true);
+            return;
+        }
+        ctime = setInterval(() => {
+            if (connection) {
+                reslove(true);
+                clearInterval(ctime);
+            }
+        }, 300);
+    });
 
     NetInfo.addEventListener('connectionChange', (connectionInfo) => {
         if (connectionInfo.type.toLowerCase() !== 'none') {
@@ -49,42 +60,51 @@ export function ofetch(url, data) {
         }
     });
 
-    isConnection = () => new Promise(reslove => {
-        if (connection) {
-            reslove(true);
-            return;
-        }
+    ofetch = async (url, data, onoff) => {
+        
+        if (!url) return {};
 
-        ctime = setInterval(() => {
-            if (connection) {
-                reslove(true);
-                clearInterval(ctime);
+        const body = JSON.stringify(data ? data : {});
+
+        const rdKey = encodeURIComponent(url + body);
+        
+        // 处理重复请求
+        if (!removeDuplicate[rdKey]) {
+            
+            removeDuplicate[rdKey] = true;
+
+            if (!onoff) await isConnection();
+
+            try {
+
+                const response = await fetch(hostname + url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'credentials': "include"
+                    },
+                    body
+                });
+                
+                setTimeout(() => {
+                    delete removeDuplicate[rdKey];
+                }, 300);
+                
+                return await response.json();
             }
-        }, 500);
-    })
-
-    ofetch = async (url, data, v) => {
-        if (!v) {
-            await isConnection();
+            catch (e) {
+                delete removeDuplicate[rdKey];
+                return {};
+            }
         }
-        try {
-            const response = await fetch(hostname + url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'credentials': "include"
-                },
-                body: JSON.stringify(data ? data : {})
-            });
-            return await response.json();
-        }
-        catch (e) {
-            return {};
+        else {
+            // hint('重复请求');
+            return { rd: true };
         }
     }
 
-    return ofetch(url, data);
+    return ofetch(url, data, onoff);
 }
 
 export const storage = new Storage({

@@ -337,22 +337,21 @@ export class TextMessage extends PureComponent {
 
         // 文本
         if (otype === 'message') {
-            const List = content.map((item, index) => {
-                if (item.type === 'text') {
-                    return (
-                        <Text key={index} style={styles.text}>{item.content}</Text>
-                    )
-                }
-                else if (item.type === 'img') {
-                    return (
-                        <View style={styles.stbox} key={index}>
-                            <Image source={getImg(Number(item.content))} style={styles.stimg} />
-                        </View>
-                    )
-                }
-            });
-
-            ocontent = <View style={textstyle}>{List}</View>;
+            // const List = content.map((item, index) => {
+            //     if (item.type === 'text') {
+            //         return (
+            //             <Text key={index} style={styles.text}>{item.content}</Text>
+            //         )
+            //     }
+            //     else if (item.type === 'img') {
+            //         return (
+            //             <View style={styles.stbox} key={index}>
+            //                 <Image source={getImg(Number(item.content))} style={styles.stimg} />
+            //             </View>
+            //         )
+            //     }
+            // });
+            ocontent = <View style={textstyle}><Text>{decodeURIComponent(content)}</Text></View>;
         }
         // 图片
         else if (otype === 'image') {
@@ -528,75 +527,29 @@ class VoiceCom extends PureComponent {
     }
 }
 
-export class PhizIcon extends PureComponent {
-    ItemCom = ({ item, index }) => {
-        return (
-            <View style={{ width: ratio(152), alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => { this.props.addIcon(`{{icon${index}}}`) }}>
-                    <Image
-                        source={getImg(item.uri)}
-                        style={styles.phizimg}
-                    />
-                </TouchableOpacity>
-            </View>
-        )
-    }
-
-    ItemSeparatorComponent = () => (<View style={{ height: ratio(55) }} />);
-
-    BothEndCom = () => (<View style={{ height: ratio(30) }} />);
-
-    render() {
-        return (
-            <View style={styles.bqbbox}>
-                <FlatList
-                    data={imgs}
-                    numColumns={7}
-                    renderItem={this.ItemCom}
-                    ItemSeparatorComponent={this.ItemSeparatorComponent}
-                    ListHeaderComponent={this.BothEndCom}
-                    ListFooterComponent={this.BothEndCom}
-                />
-            </View>
-        )
-    }
-}
-
-
 export class TypeMessage extends PureComponent {
 
     render() {
-        const wlen = ratio(600);
         const { content } = this.props;
-        let w = 0;
-        const List = content.map((item, index) => {
 
-            if (item.type == 'text') {
-                let o = w;
-                w += item.content.length * ratio(30);
-                let content = item.content;
-                if (w > wlen) {
-                    Math.floor((wlen - o) / ratio(30));
-                    content = content.slice(0, Math.floor((wlen - o) / ratio(30)));
+        let str = decodeURIComponent(content);
+        
+        let ostr = '';
+
+        let i = 25;
+
+        if (str.length > 25) {
+            for (i = 0; i < 25; i++) {
+                if (str.codePointAt(i) > 0xFFFF) {
+                    i++;
                 }
-                return (
-                    <Text key={index} style={[styles.text, { color: '#666' }]}>{content}</Text>
-                )
             }
-            else {
-                w += ratio(60);
-                if (w > wlen) {
-                    return null;
-                }
-                return (
-                    <View style={styles.stbox} key={index}>
-                        <Image source={getImg(Number(item.content))} style={styles.stimg} />
-                    </View>
-                )
-            }
-        });
+        }
+
+        ostr = str.substr(0, i);
+
         return (
-            <View style={{ flexDirection: 'row', height: ratio(70), alignItems: 'center' }}>{List}</View>
+            <View style={{ flexDirection: 'row', height: ratio(70), alignItems: 'center' }}><Text>{ostr}</Text></View>
         )
     }
 }
@@ -830,6 +783,196 @@ export class Voicebox extends PureComponent {
                 {this.state.title === 2 && this.TimeBox(<Text style={styles.countdown}>语音还有 <Text style={{ color: '#ff5500' }}>0{this.state.countdown}</Text> 秒发送</Text>)}
                 {this.state.title !== 2 && this.StartBtn()}
                 {this.state.title === 2 && this.EndBtn()}
+            </View>
+        )
+    }
+}
+
+// 图片表情包
+export class PhizIcon extends PureComponent {
+    ItemCom = ({ item, index }) => {
+        return (
+            <View style={{ width: ratio(152), alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => { this.props.addIcon(`{{icon${index}}}`) }}>
+                    <Image
+                        source={getImg(item.uri)}
+                        style={styles.phizimg}
+                    />
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    ItemSeparatorComponent = () => (<View style={{ height: ratio(55) }} />);
+
+    BothEndCom = () => (<View style={{ height: ratio(30) }} />);
+
+    render() {
+        return (
+            <View style={styles.bqbbox}>
+                <FlatList
+                    data={imgs}
+                    numColumns={7}
+                    renderItem={this.ItemCom}
+                    ItemSeparatorComponent={this.ItemSeparatorComponent}
+                    ListHeaderComponent={this.BothEndCom}
+                    ListFooterComponent={this.BothEndCom}
+                />
+            </View>
+        )
+    }
+}
+
+// 表情包
+export class Emoji extends PureComponent {
+
+    _emoji = [
+        { "str": "\u{1f600}", "key": 0 },
+        { "str": "\u{1f601}", "key": 1 },
+        { "str": "\u{1f602}", "key": 2 },
+        { "str": "\u{1f603}", "key": 3 },
+        { "str": "\u{1f604}", "key": 4 },
+        { "str": "\u{1f605}", "key": 5 },
+        { "str": "\u{1f606}", "key": 6 },
+        { "str": "\u{1f609}", "key": 7 },
+        { "str": "\u{1f60a}", "key": 8 },
+        { "str": "\u{1f60b}", "key": 9 },
+        { "str": "\u{1f60e}", "key": 10 },
+        { "str": "\u{1f60d}", "key": 11 },
+        { "str": "\u{1f618}", "key": 12 },
+        { "str": "\u{1f617}", "key": 13 },
+        { "str": "\u{1f619}", "key": 14 },
+        { "str": "\u{1f61a}", "key": 15 },
+        { "str": "\u{1f607}", "key": 16 },
+        { "str": "\u{1f610}", "key": 17 },
+        { "str": "\u{1f611}", "key": 18 },
+        { "str": "\u{1f636}", "key": 19 },
+        { "str": "\u{1f60f}", "key": 20 },
+        { "str": "\u{1f623}", "key": 21 },
+        { "str": "\u{1f625}", "key": 22 },
+        { "str": "\u{1f62e}", "key": 23 },
+        { "str": "\u{1f62f}", "key": 24 },
+        { "str": "\u{1f62a}", "key": 25 },
+        { "str": "\u{1f62b}", "key": 26 },
+        { "str": "\u{1f634}", "key": 27 },
+        { "str": "\u{1f61b}", "key": 28 },
+        { "str": "\u{1f61c}", "key": 29 },
+        { "str": "\u{1f61d}", "key": 30 },
+        { "str": "\u{1f612}", "key": 31 },
+        { "str": "\u{1f613}", "key": 32 },
+        { "str": "\u{1f614}", "key": 33 },
+        { "str": "\u{1f615}", "key": 34 },
+        { "str": "\u{1f632}", "key": 35 },
+        { "str": "\u{1f637}", "key": 36 },
+        { "str": "\u{1f616}", "key": 37 },
+        { "str": "\u{1f61e}", "key": 38 },
+        { "str": "\u{1f61f}", "key": 39 },
+        { "str": "\u{1f624}", "key": 40 },
+        { "str": "\u{1f622}", "key": 41 },
+        { "str": "\u{1f62d}", "key": 42 },
+        { "str": "\u{1f626}", "key": 43 },
+        { "str": "\u{1f627}", "key": 44 },
+        { "str": "\u{1f628}", "key": 45 },
+        { "str": "\u{1f62c}", "key": 46 },
+        { "str": "\u{1f630}", "key": 47 },
+        { "str": "\u{1f631}", "key": 48 },
+        { "str": "\u{1f633}", "key": 49 },
+        { "str": "\u{1f635}", "key": 50 },
+        { "str": "\u{1f621}", "key": 51 },
+        { "str": "\u{1f620}", "key": 52 },
+        { "str": "\u{1f608}", "key": 53 },
+        { "str": "\u{1f47f}", "key": 54 },
+        { "str": "\u{1f479}", "key": 55 },
+        { "str": "\u{1f47a}", "key": 56 },
+        { "str": "\u{1f480}", "key": 57 },
+        { "str": "\u{1f47b}", "key": 58 },
+        { "str": "\u{1f47d}", "key": 59 },
+        { "str": "\u{1f347}", "key": 60 },
+        { "str": "\u{1f348}", "key": 61 },
+        { "str": "\u{1f349}", "key": 62 },
+        { "str": "\u{1f34a}", "key": 63 },
+        { "str": "\u{1f34b}", "key": 64 },
+        { "str": "\u{1f34c}", "key": 65 },
+        { "str": "\u{1f34d}", "key": 66 },
+        { "str": "\u{1f34e}", "key": 67 },
+        { "str": "\u{1f34f}", "key": 68 },
+        { "str": "\u{1f350}", "key": 69 },
+        { "str": "\u{1f351}", "key": 70 },
+        { "str": "\u{1f352}", "key": 71 },
+        { "str": "\u{1f353}", "key": 72 },
+        { "str": "\u{1f345}", "key": 73 },
+        { "str": "\u{1f346}", "key": 74 },
+        { "str": "\u{1f33d}", "key": 75 },
+        { "str": "\u{1f344}", "key": 76 },
+        { "str": "\u{1f330}", "key": 77 },
+        { "str": "\u{1f35e}", "key": 78 },
+        { "str": "\u{1f356}", "key": 79 },
+        { "str": "\u{1f357}", "key": 80 },
+        { "str": "\u{1f354}", "key": 81 },
+        { "str": "\u{1f35f}", "key": 82 },
+        { "str": "\u{1f355}", "key": 83 },
+        { "str": "\u{1f372}", "key": 84 },
+        { "str": "\u{1f371}", "key": 85 },
+        { "str": "\u{1f358}", "key": 86 },
+        { "str": "\u{1f359}", "key": 87 },
+        { "str": "\u{1f35a}", "key": 88 },
+        { "str": "\u{1f35b}", "key": 89 },
+        { "str": "\u{1f35c}", "key": 90 },
+        { "str": "\u{1f35d}", "key": 91 },
+        { "str": "\u{1f360}", "key": 92 },
+        { "str": "\u{1f362}", "key": 93 },
+        { "str": "\u{1f363}", "key": 94 },
+        { "str": "\u{1f364}", "key": 95 },
+        { "str": "\u{1f365}", "key": 96 },
+        { "str": "\u{1f361}", "key": 97 },
+        { "str": "\u{1f366}", "key": 98 },
+        { "str": "\u{1f367}", "key": 99 },
+        { "str": "\u{1f368}", "key": 100 },
+        { "str": "\u{1f369}", "key": 101 },
+        { "str": "\u{1f36a}", "key": 102 },
+        { "str": "\u{1f382}", "key": 103 },
+        { "str": "\u{1f370}", "key": 104 },
+        { "str": "\u{1f36b}", "key": 105 },
+        { "str": "\u{1f36c}", "key": 106 },
+        { "str": "\u{1f36d}", "key": 107 },
+        { "str": "\u{1f36e}", "key": 108 },
+        { "str": "\u{1f36f}", "key": 109 },
+        { "str": "\u{1f37c}", "key": 110 },
+        { "str": "\u{1f375}", "key": 111 },
+        { "str": "\u{1f376}", "key": 112 },
+        { "str": "\u{1f377}", "key": 113 },
+        { "str": "\u{1f378}", "key": 114 },
+        { "str": "\u{1f379}", "key": 115 },
+        { "str": "\u{1f37a}", "key": 116 },
+        { "str": "\u{1f37b}", "key": 117 },
+        { "str": "\u{1f374}", "key": 118 }
+    ];
+
+    ItemCom = ({ item }) => {
+        return (
+            <View style={{ width: ratio(152), alignItems: 'center', height: ratio(100), justifyContent: 'center' }}>
+                <TouchableOpacity onPress={() => { this.props.addIcon(item.str) }}>
+                    <Text style={{ fontSize: ratio(70) }}>{item.str}</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    ItemSeparatorComponent = () => (<View style={{ height: ratio(55) }} />);
+
+    BothEndCom = () => (<View style={{ height: ratio(30) }} />);
+
+    render() {
+        return (
+            <View style={styles.bqbbox}>
+                <FlatList
+                    data={this._emoji}
+                    numColumns={7}
+                    renderItem={this.ItemCom}
+                    ItemSeparatorComponent={this.ItemSeparatorComponent}
+                    ListHeaderComponent={this.BothEndCom}
+                    ListFooterComponent={this.BothEndCom}
+                />
             </View>
         )
     }
