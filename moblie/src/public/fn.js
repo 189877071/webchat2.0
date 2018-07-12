@@ -87,9 +87,7 @@ export function ofetch(url, data, onoff) {
                     body
                 });
                 
-                setTimeout(() => {
-                    delete removeDuplicate[rdKey];
-                }, 300);
+                delete removeDuplicate[rdKey];
                 
                 return await response.json();
             }
