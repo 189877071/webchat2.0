@@ -293,7 +293,7 @@ class MessageContent extends PureComponent {
                             // 还原操作
                             this.restore(0);
                         }
-                        this.setState({ show: false });
+                        this.setState({ move: 0, show: false });
                     }
                     else {
                         // 转跳页面
