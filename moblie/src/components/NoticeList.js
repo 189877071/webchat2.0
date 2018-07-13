@@ -158,7 +158,7 @@ export class ShowImageZoom extends PureComponent {
     render() {
         const [width, height] = [
             this.props.width || windowW,
-            this.props.height || ratio(500)
+            this.props.height || ratio(800)
         ];
        
         return (
