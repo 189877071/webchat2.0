@@ -118,7 +118,7 @@ socket.on('message', data => {
 
 function sendLocalNotification(title, content, extra = {}, onoff = false) {
     let num = 0;
-    sendLocalNotification = (title, content, extra = {}) => {
+    sendLocalNotification = (title, content, extra = {}, onoff = false) => {
         num++;
         if (AppState.currentState === 'background' || onoff) {
             JPushModule.sendLocalNotification({
@@ -132,5 +132,5 @@ function sendLocalNotification(title, content, extra = {}, onoff = false) {
         }
     }
 
-    sendLocalNotification(title, content, extra);
+    sendLocalNotification(title, content, extra, onoff);
 }

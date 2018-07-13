@@ -69,7 +69,7 @@ const escape = exports.escape = (str) => {
     if (!str || typeof (str) != 'string') {
         return str;
     }
-    return str.replace(/\n|\0|\r|\t|\b|\'|\"|\%/g, ($1) => {
+    return str.replace(/\n|\0|\r|\t|\b/g, ($1) => {
         switch ($1) {
             case '\n':
                 return '\\n';
@@ -81,12 +81,6 @@ const escape = exports.escape = (str) => {
                 return '\\t';
             case '\b':
                 return '\\b';
-            case '\'':
-                return "\\'";
-            case '\"':
-                return '\\"';
-            case '\%':
-                return '\\%';
             default:
                 return '';
         }

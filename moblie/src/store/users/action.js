@@ -107,11 +107,13 @@ export const setUAddChat = (params, fn) => async (dispatch, getState) => {
 
     if (typeValues.indexOf(otype) === -1 || senderValues.indexOf(sender) === -1) return;
 
-    if (otype === 'message' && sender === 'he') {
-        if (!content) return;
-        content = editorTranition(content);
-    }
-    else if (['image', 'voice'].indexOf(otype) !== -1 && sender === 'he') {
+    // if (otype === 'message' && sender === 'he') {
+    //     if (!content) return;
+
+    //     content = editorTranition(content);
+    // }
+    // else 
+    if (['image', 'voice'].indexOf(otype) !== -1 && sender === 'he') {
         try {
             content = JSON.parse(content);
         }
@@ -168,7 +170,7 @@ export const setUAddChat = (params, fn) => async (dispatch, getState) => {
         let mctct = '';
         switch (otype) {
             case 'message':
-                mctct = getMessageText(content);
+                mctct = decodeURIComponent(content);
                 break;
             case 'voice':
                 mctct = '语音消息';
@@ -248,12 +250,13 @@ export const setUAddUnreadChat = (message) => async (dispatch, getState) => {
     data[name] || (data[name] = {});
 
     message.forEach(item => {
-        let content = item.otype == 'message' ? editorTranition(item.content) : item.content;
+        // let content = item.otype == 'message' ? editorTranition(item.content) : item.content;
 
-        if (item.otype == 'message') {
-            content = editorTranition(item.content);
-        }
-        else if ((item.otype === 'image' || item.otype === 'voice') && typeof item.otype === 'string') {
+        // if (item.otype == 'message') {
+        //     content = editorTranition(item.content);
+        // }
+        // else 
+        if ((item.otype === 'image' || item.otype === 'voice') && typeof item.otype === 'string') {
             try {
                 content = JSON.parse(item.content);
             }
@@ -379,10 +382,11 @@ export const setUrefresh = (message) => async (dispatch, getState) => {
             break;
         }
 
-        if (otype === 'message') {
-            content = editorTranition(content);
-        }
-        else if ((otype === 'image' || otype === 'voice') && typeof otype === 'string') {
+        // if (otype === 'message') {
+        //     content = editorTranition(content);
+        // }
+        // else 
+        if ((otype === 'image' || otype === 'voice') && typeof otype === 'string') {
             try {
                 content = JSON.parse(content);
                 if (otype === 'voice') {

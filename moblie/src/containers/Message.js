@@ -32,6 +32,7 @@ class Message extends Component {
     }
 
     _pushnavigation = () => {
+        
         const { dataPush, dispatch, navigation } = this.props;
 
         if (!dataPush || AppState.currentState !== 'active') return;
@@ -47,7 +48,7 @@ class Message extends Component {
         dispatch(setNavigation(null));
 
         // 清除所有推送信息
-        JPushModule.cleanTags();
+        JPushModule.cleanTags(success => {});
     }
 
     componentDidMount() {
