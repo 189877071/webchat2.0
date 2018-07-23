@@ -41,6 +41,7 @@ AppState.addEventListener('change', () => {
     }
     else if (AppState.currentState === 'active') {
         socket.connect();
+        onoff = false;
     }
 });
 
@@ -70,7 +71,7 @@ BackgroundJob.register({
         }
 
         if (notice && notice.length) {
-            notice.forEach(item => sendLocalNotification(item.title, item.description, { optation: 'notice', id: `${item.id}` }));
+            notice.forEach(item => sendLocalNotification(item.title, item.description, { optation: 'noticechildren', id: `${item.id}` }));
         }
     }
 })

@@ -44,7 +44,12 @@ class Message extends Component {
         if (answer) params.answer = true;
 
         if (currentid != params.id) {
-            navigation.push(optation, params);
+            if(optation === '') {
+                navigation.navigate(optation, params);
+            }
+            else {
+                navigation.push(optation, params);
+            }
         }
 
         dispatch(setNavigation(null));
