@@ -21,7 +21,7 @@ module.exports = async (ctx) => {
     const verifyLogin = async () => {
         let { username, password, autokey, udphost, udpport, socketid } = ctx.request.body;
 
-        if (!isAllString([udphost, socketid, username, password]) || !isAllType(udpport)) {
+        if (!isAllString([socketid, username, password]) || !isAllType(udpport, 'number')) {
             ctx.oerror();
             return;
         }

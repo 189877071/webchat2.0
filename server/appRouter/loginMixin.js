@@ -115,7 +115,7 @@ module.exports = async (ctx, userid, otime) => {
             .where({ id: userid })
             .data({ uniqueid: uniqueId })
             .update()
-    )
+    );
 
     const data = userclassify(aclass, users, loginusers);
 
