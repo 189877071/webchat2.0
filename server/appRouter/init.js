@@ -41,7 +41,9 @@ module.exports = async (ctx) => {
     }
     
     // 获取当前用户信息
-    const activeuser = await mysql(sql.table(tables.dbuser).field(userField).where({ id: userid }).select());
+    const activeuser = await mysql(
+        sql.table(tables.dbuser).field(userField).where({ id: userid }).select()
+    );
     
     if (!activeuser || !activeuser.length) {
         ctx.oerror();

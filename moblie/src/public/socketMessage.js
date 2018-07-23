@@ -69,52 +69,13 @@ const controller = {
     }
 }
 
-const socket = io(socketurl);
+export const socket = io(socketurl);
 
 socket.on('message', data => {
     if (data.controller)
         controller[data.controller] && controller[data.controller](data);
 });
 
-// let socket = null;
-
-// let socketTime = null;
-
-// function connection() {
-//     socket = io(socketurl);
-
-//     socket.on('message', data => {
-//         if (data.controller)
-//             controller[data.controller] && controller[data.controller](data);
-//     });
-
-//     socket.on('disconnect', () => {
-//         try {
-//             // 再次关闭一次避免出现其他无法预测问题
-//             socket.close();
-//         }
-//         catch (e) { }
-//         clearTimeout(socketTime);
-//         socketTime = setTimeout(connection, 500);
-//     })
-// }
-
-// // 我应该怎样做呢？ 每次切换网络的时候都调用
-// // 每次网络切换都需要重新连接重新获取数据
-
-
-// // 网络切换时 重新连接socket
-// NetInfo.addEventListener('change', (connectionInfo) => {
-//     // 判断网络是否连接
-//     if (connectionInfo.toLowerCase() !== 'none') {
-//         if (socket) {
-//             socket.close();
-//         }
-//         else {
-//             connection();
-//         }
-//     }
-// });
 
 function sendLocalNotification(title, content, extra = {}, onoff = false) {
     let num = 0;

@@ -32,8 +32,8 @@ class Message extends Component {
     }
 
     _pushnavigation = () => {
-        
-        const { dataPush, dispatch, navigation } = this.props;
+
+        const { dataPush, dispatch, navigation, currentid } = this.props;
 
         if (!dataPush || AppState.currentState !== 'active') return;
 
@@ -43,15 +43,22 @@ class Message extends Component {
 
         if (answer) params.answer = true;
 
-        navigation.push(optation, params);
+        if (currentid != params.id) {
+            navigation.push(optation, params);
+        }
 
         dispatch(setNavigation(null));
 
         // 清除所有推送信息
-        JPushModule.cleanTags(success => {});
+        JPushModule.cleanTags(success => { });
     }
 
     componentDidMount() {
+
+        setTimeout(() => {
+            this._pushnavigation();
+        }, 500);
+
         AppState.addEventListener('change', this._pushnavigation);
 
         oCustomEvent.on('messagecall', ({ id }) => {
@@ -118,5 +125,6 @@ export default connect((state, props) => ({
     chatting: state.u.chatting,
     users: state.u.users,
     top: state.u.top,
-    dataPush: state.c.dataPush
+    dataPush: state.c.dataPush,
+    currentid: state.u.currentid
 }))(Message);

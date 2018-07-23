@@ -4,7 +4,7 @@ import { View, TextInput, StyleSheet, Button, Text, AsyncStorage } from 'react-n
 
 import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
-import { ratio, windowW, ofetch, uuid, hint } from '../public/fn'
+import { ratio, windowW, ofetch, uuid, hint, uniqueId } from '../public/fn'
 
 import { BigButton, EditorBtn } from './Button'
 
@@ -277,7 +277,7 @@ export class LoginForm extends PureComponent {
 
         this.isload = true;
 
-        const { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor });
+        const { success, data, activeuser, error, unreadMessage, notice } = await ofetch('/login', { username, password, autokey, ...this.props.socketInfor, uniqueId });
 
         this.isload = false;
 
@@ -294,9 +294,9 @@ export class LoginForm extends PureComponent {
     // 测试登录
     testSubmit = async () => {
 
-        let { success, data, activeuser, error, unreadMessage, notice, rd } = await ofetch('/login?optation=test', this.props.socketInfor, false, true);
+        let { success, data, activeuser, error, unreadMessage, notice, rd } = await ofetch('/login?optation=test', { ...this.props.socketInfor, uniqueId });
 
-        if(rd) {
+        if (rd) {
             hint('正在请求中请勿着急……')
             return;
         }

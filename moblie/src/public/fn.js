@@ -16,6 +16,8 @@ export const windowW = width;
 
 export const windowH = height;
 
+export const uniqueId = DeviceInfo.getUniqueID();
+
 export function ratio(w) {
 
     const _r = 1080 / width;
@@ -119,7 +121,7 @@ export function getAction(type) {
 
 export function uuid() {
     let num = 0;
-    uuid = () => `${DeviceInfo.getUniqueID()}-${++num}-${Date.now()}`;
+    uuid = () => `${uniqueId}-${++num}-${Date.now()}`;
     return uuid();
 }
 
@@ -390,9 +392,7 @@ export function getMessage(chatting, users, toparr) {
     return top.concat(arr);
 }
 
-export const hint = (str) => {
-    ToastAndroid.show(str, ToastAndroid.SHORT);
-}
+export const hint = str => ToastAndroid.show(str, ToastAndroid.SHORT);
 
 export const uploadImage = (uri, onoff) => {
     if (!uri) return { success: false };
@@ -578,5 +578,6 @@ export async function callAudio() {
 
     return callAudio();
 }
+
 // 先执行一遍
 callAudio();

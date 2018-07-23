@@ -1,4 +1,4 @@
-import { ofetch, storage, getAction, uuid, getuser, callAudio, customEvent } from '../../public/fn'
+import { ofetch, storage, getAction, uuid, getuser, callAudio, customEvent, uniqueId } from '../../public/fn'
 
 import { setAInit } from '../active/action'
 
@@ -50,7 +50,7 @@ export const appInit = value => async (dispatch, getState) => {
     dispatch(setAudio(audio));
 
     // 访问 init 查看用户是否登录
-    let { success, activeuser, data, unreadMessage, notice } = await ofetch('/init', value);
+    let { success, activeuser, data, unreadMessage, notice } = await ofetch('/init', {...value, uniqueId});
 
     if (!success) {
         dispatch(setLoginActiveState(2));

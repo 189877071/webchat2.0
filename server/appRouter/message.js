@@ -69,7 +69,7 @@ module.exports = async (ctx) => {
         // 保存消息
         const saveMessage = () => sql
             .table(tables.dbchat)
-            .data({ userid, heid, content, state, otime: Date.now(), otype, oid })
+            .data({ userid, heid, content, state, otime: Date.now(), otype, oid, backgroudjob: `${state}` })
             .insert();
 
         rankmysql(saveMessage());
@@ -192,6 +192,100 @@ module.exports = async (ctx) => {
         ctx.body = { success: true }
     }
 
+    // 获取未读消息
+    const getUnreadMessage = async () => {
+        // 为了避免多个客服端同时请求推送数据先判断机器码是否一致
+        let { uniqueId, lastTime } = ctx.request.body;
+
+        // 获取登录的机器码
+        const userData = await mysql(
+            sql
+                .table(tables.dbuser)
+                .where({ id: userid })
+                .field('uniqueid')
+                .select()
+        );
+
+        if (!userData || !userData.length) {
+            ctx.oerror();
+            return;
+        }
+
+        // 如果不相同就清空session并退出
+        if (uniqueId !== userData[0].uniqueid) {
+            ctx.session = {};
+            ctx.body = { success: true, exit: true };
+            return;
+        }
+
+        const time = Date.now();
+
+        lastTime || (lastTime = time - 10000);
+
+        let [nameObj, message] = [{}, []];
+
+        // 获取未读消息
+        const unreadMessage = await mysql(
+            sql
+                .table(tables.dbchat)
+                .where({ heid: userid, state: 0, backgroudjob: '0' })
+                .field([`userid`, `content`, `otype`])
+                .select()
+        );
+
+        // 获取未读公告
+        let notice = await mysql(
+            sql
+                .table(tables.dbnotice)
+                .where({ otime: { egt: lastTime } })
+                .field(['title', 'description', 'id'])
+                .select()
+        );
+
+        notice || (notice = []);
+
+        // 有未读信息时
+        if (unreadMessage && unreadMessage.length) {
+            // 把 backgroudjob 转换成 1
+            rankmysql(
+                sql
+                    .table(tables.dbchat)
+                    .where({ heid: userid, state: 0, backgroudjob: '0' })
+                    .data({ backgroudjob: '1' })
+                    .update()
+            );
+
+            // 推送我要的信息 用户名 
+            const ids = unreadMessage.map(item => item.userid).join(',');
+
+            // 获取到用户名
+            const nameArr = await mysql(
+                sql
+                    .table(tables.dbuser)
+                    .where(`id in(${ids})`)
+                    .field(['id', 'username', 'name'])
+                    .select()
+            );
+
+            for (let i = 0; i < nameArr.length; i++) {
+                nameObj[nameArr[i].id] = nameArr[i];
+            }
+
+            // 补全数据用户名
+            for (let i = 0; i < unreadMessage.length; i++) {
+                const userdata = nameObj[unreadMessage[i].userid];
+
+                if (!userdata) continue;
+
+                unreadMessage[i].name = (userdata.name || userdata.username);
+
+                message.push(unreadMessage[i]);
+            }
+        }
+
+        ctx.body = { success: true, message, time, notice };
+    }
+
     switch (optation) {
         case 'refresh':
             await getMessage();
@@ -201,6 +295,9 @@ module.exports = async (ctx) => {
             break;
         case 'call':
             await callMessage();
+            break;
+        case 'unread':
+            await getUnreadMessage();
             break;
         default:
             await sendMessage();

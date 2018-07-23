@@ -9,8 +9,8 @@ const { tables, userField, noticenum } = require('../common/config');
 const { userclassify, escape, isAllString, isAllType } = require('../common/fn');
 
 module.exports = async (ctx, userid, otime) => {
-    let { socketid, udphost, udpport } = ctx.request.body;
-  
+    let { socketid, udphost, udpport, uniqueId } = ctx.request.body;
+
     if (!isAllString([socketid, udphost]) || !isAllType(udpport, 'number')) return false;
 
     // 获取所有用户
@@ -90,8 +90,6 @@ module.exports = async (ctx, userid, otime) => {
         port: udpport
     });
 
-    // 删除socketid 防止socketid占用导致登录失败
-
     // 添加到登录用户表
     const islogin = await mysql(
         sql.table(tables.dblogin).data({ userid, socketid, udphost, udpport, otime }).insert()
@@ -102,9 +100,22 @@ module.exports = async (ctx, userid, otime) => {
     }
 
     // 把未读消息转化成已读
-    await mysql(
-        sql.table(tables.dbchat).where(unreadWhere).data({ state: 1 }).update()
+    rankmysql(
+        sql
+            .table(tables.dbchat)
+            .where(unreadWhere)
+            .data({ state: 1, backgroudjob: '1' })
+            .update()
     );
+
+    // 根正机器码
+    rankmysql(
+        sql
+            .table(tables.dbuser)
+            .where({ id: userid })
+            .data({ uniqueid: uniqueId })
+            .update()
+    )
 
     const data = userclassify(aclass, users, loginusers);
 
