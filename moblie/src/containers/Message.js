@@ -20,7 +20,7 @@ import { getMessage, ratio, customEvent } from '../public/fn'
 
 import { borderColor } from '../public/config'
 
-import { SetUTopChat, setUDeletChat, setUActiveid } from '../store/users/action'
+import { SetUTopChat, setUDeletChat, setUActiveid, setUunrad } from '../store/users/action'
 
 import { setNavigation } from '../store/common/action'
 
@@ -43,13 +43,14 @@ class Message extends Component {
 
         if (answer) params.answer = true;
 
-        if (currentid != params.id) {
-            if(optation === '') {
-                navigation.navigate(optation, params);
+        if (currentid) {
+            if (currentid != params.id) {
+                this.props.dispatch(setUActiveid(params.id));
+                this.props.dispatch(setUunrad());
             }
-            else {
-                navigation.push(optation, params);
-            }
+        }
+        else {
+            navigation.push(optation, params);
         }
 
         dispatch(setNavigation(null));

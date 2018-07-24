@@ -337,20 +337,6 @@ export class TextMessage extends PureComponent {
 
         // 文本
         if (otype === 'message') {
-            // const List = content.map((item, index) => {
-            //     if (item.type === 'text') {
-            //         return (
-            //             <Text key={index} style={styles.text}>{item.content}</Text>
-            //         )
-            //     }
-            //     else if (item.type === 'img') {
-            //         return (
-            //             <View style={styles.stbox} key={index}>
-            //                 <Image source={getImg(Number(item.content))} style={styles.stimg} />
-            //             </View>
-            //         )
-            //     }
-            // });
             ocontent = <View style={textstyle}><Text>{decodeURIComponent(content)}</Text></View>;
         }
         // 图片

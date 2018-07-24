@@ -53,21 +53,13 @@ class Chat extends Component {
     constructor(props) {
         super(props);
 
-        const user = getuser(this.props.navigation.getParam('id', 0), this.props.users);
-
-        if (!user) {
-            this.backup();
-        }
-
         this.state = {
             defvalue: '',
             showdelet: [],
-            user,
             mlminh: 0,
             showTab: '',
             deepbut: false,
             isdelet: false,
-            id: this.props.navigation.getParam('id'),
             playid: null,
             uri: '',
             zoomimgw: 0,
@@ -80,8 +72,6 @@ class Chat extends Component {
 
         this.inputRef = React.createRef();
 
-        const data = this.props.chatting[user.id] || [];
-
         this.messageLen = this.getMessage().length;
 
         this.whoosh = null;
@@ -89,12 +79,17 @@ class Chat extends Component {
 
     // 获取消息记录
     getMessage = () => {
-        return this.props.chatting[this.state.user.id] || [];
+        return this.props.chatting[this.props.id] || [];
+    }
+
+    componentWillMount() {
+        this.props.dispatch(setUActiveid(this.props.navigation.getParam('id', 0)));
     }
 
     componentDidMount() {
-        this.props.dispatch(setUActiveid(this.state.id));
+
         this.props.dispatch(setUunrad());
+
         setTimeout(() => {
             this.myRef.current.scrollToEnd({ animated: true });
         }, 0)
@@ -155,7 +150,7 @@ class Chat extends Component {
             uuid(),
             encodeURIComponent(this.value),
             'message',
-            this.state.id
+            this.props.id
         ]
 
         this.osend(
@@ -195,7 +190,7 @@ class Chat extends Component {
             uuid(),
             { uri, width, height },
             'image',
-            this.state.id
+            this.props.id
         ];
 
         this.osend(
@@ -222,7 +217,7 @@ class Chat extends Component {
             uuid(),
             { uri: name, time },
             'voice',
-            this.state.id
+            this.props.id
         ];
 
         this.osend(
@@ -238,7 +233,7 @@ class Chat extends Component {
             uuid(),
             '',
             'shock',
-            this.state.id
+            this.props.id
         ];
 
         this.osend(
@@ -249,7 +244,7 @@ class Chat extends Component {
 
     // 跟新聊天记录
     refreshMessage = async () => {
-        const { success, message } = await ofetch('/message?optation=refresh', { id: this.state.id });
+        const { success, message } = await ofetch('/message?optation=refresh', { id: this.props.id });
 
         if (!success) {
             hint('获取数据失败');
@@ -331,7 +326,7 @@ class Chat extends Component {
 
     // 转跳到用户信息页
     toInfor = () => {
-        this.props.navigation.navigate('infor', { user: this.state.user });
+        this.props.navigation.navigate('infor', { user: this.props.user });
         this.stopAudio();
     }
 
@@ -414,17 +409,24 @@ class Chat extends Component {
 
     // 视频通话
     callvoide = () => {
-        if (!this.state.user.isonline) {
+        if (!this.props.user.isonline) {
             hint('对方没有在线，无法进行视频通话');
             return;
         }
-        this.props.navigation.navigate('call', { id: this.state.id });
+        this.props.navigation.navigate('call', { id: this.props.id });
         this.stopAudio();
     }
 
     render() {
-        const user = this.state.user;
+        const user = this.props.user;
+
+        if(!user) {
+            this.backup();
+            return;
+        }
+
         const messageArr = this.getMessage();
+
         const Message = messageArr.map((item, index) => {
 
             const [userphoto, showtime] = [
@@ -435,7 +437,7 @@ class Chat extends Component {
             return (
                 <TextMessage
                     {...item}
-                    userphoto={hostname + this.props.headphoto}
+                    userphoto={userphoto}
                     key={item.id}
                     showtime={showtime}
                     showDelet={this.state.showdelet.indexOf(item.id) !== -1}
@@ -491,9 +493,13 @@ class Chat extends Component {
     }
 }
 
-export default connect((state, props) => ({
-    navigation: props.navigation,
-    users: state.u.users,
-    headphoto: state.a.headphoto,
-    chatting: state.u.chatting
-}))(Chat);
+export default connect((state, props) => {
+    return {
+        navigation: props.navigation,
+        users: state.u.users,
+        headphoto: state.a.headphoto,
+        chatting: state.u.chatting,
+        id: state.u.currentid,
+        user: getuser(state.u.currentid || props.navigation.getParam('id', 0), state.u.users)
+    }
+})(Chat);
