@@ -229,6 +229,8 @@ export const setUDeletChat = (id, all) => async (dispatch, getState) => {
 
     dispatch(setUChat({ ...data[name] }));
 
+    if(all) return;
+
     const { success } = await ofetch('/message?optation=delete', { oid: id });
 
     if (success) {
