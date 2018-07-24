@@ -78,7 +78,8 @@ BackgroundJob.register({
 
 BackgroundJob.schedule({
     jobKey: 'socketServer',
-    period: 10000,                     //任务执行周期
+    period: 10000,                     //任务执行周期                  
     exact: true,                      //安排一个作业在提供的时间段内准确执行
+    persist: true,                    //开机启动
     allowWhileIdle: true,             //允许计划作业在睡眠模式下执行
 });

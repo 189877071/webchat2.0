@@ -160,11 +160,11 @@ export class ChatHeader extends PureComponent {
 
 export class SearchHeaser extends PureComponent {
     render() {
-        const { value, change, href } = this.props;
+        const { value, change, href, blurCallback } = this.props;
         return (
             <View style={[style.box, { justifyContent: 'flex-start' }]}>
                 <View style={style.search}>
-                    <SearchInput value={value} change={change} />
+                    <SearchInput value={value} change={change} blurCallback={blurCallback} />
                 </View>
                 <View style={style.searchbtn}>
                     <SmallButton height={ratio(105)} fontSize={ratio(40)} href={href} title='取消' />

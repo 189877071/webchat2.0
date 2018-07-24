@@ -375,7 +375,7 @@ export function getMessage(chatting, users, toparr) {
                     name: name || username,
                     unread,
                     id,
-                    key: `${i}`
+                    key: `${id}`
                 };
 
                 if (toparr.indexOf(id) !== -1) {

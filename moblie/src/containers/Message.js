@@ -18,8 +18,6 @@ import { MessageItem } from '../components/UserList'
 
 import { getMessage, ratio, customEvent } from '../public/fn'
 
-import { borderColor } from '../public/config'
-
 import { SetUTopChat, setUDeletChat, setUActiveid, setUunrad } from '../store/users/action'
 
 import { setNavigation } from '../store/common/action'
@@ -46,8 +44,8 @@ class Message extends Component {
         if (currentid) {
             if (currentid != params.id) {
                 this.props.dispatch(setUActiveid(params.id));
-                this.props.dispatch(setUunrad());
             }
+            this.props.dispatch(setUunrad());
         }
         else {
             navigation.push(optation, params);
@@ -100,9 +98,7 @@ class Message extends Component {
     // 转跳聊天页面
     tochat = (data) => {
         setTimeout(() => {
-            // this.props.dispatch(setUActiveid(data.id));
             // 还要把未读的信息转化成已读的信息
-
             this.props.navigation.navigate('chat', data);
         }, 0);
     }

@@ -127,6 +127,14 @@ const ErrorCom = (props) => (
 
 
 export class BigInput extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+        this.props.blurCallback && this.props.blurCallback(this.blur);
+    }
+
+    blur = () => this.myRef.current.blur()
+
     errorView = () => (
         <View style={style.err}>
             <Text style={style.errText}>{this.props.error}</Text>
@@ -154,6 +162,7 @@ export class BigInput extends PureComponent {
                     maxLength={maxlength}
                     autoCorrect={false}
                     blurOnSubmit={true}
+                    ref={this.myRef}
                 />
                 <ErrorCom error={error} />
             </View>
@@ -162,6 +171,14 @@ export class BigInput extends PureComponent {
 }
 
 export class VerifyInput extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+        this.props.blurCallback && this.props.blurCallback(this.blur);
+    }
+
+    blur = () => this.myRef.current.blur()
+
     render() {
         const { borderColor, placeholder, value, change, error } = this.props;
 
@@ -180,6 +197,7 @@ export class VerifyInput extends PureComponent {
                     underlineColorAndroid="transparent"
                     value={value}
                     onChangeText={change}
+                    ref={this.myRef}
                 />
                 <ErrorCom error={error} />
             </View>
@@ -188,6 +206,14 @@ export class VerifyInput extends PureComponent {
 }
 
 export class Textarea extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+        this.props.blurCallback && this.props.blurCallback(this.blur);
+    }
+
+    blur = () => this.myRef.current.blur()
+
     render() {
         const { placeholder, value, change, maxlength } = this.props;
         return (
@@ -200,6 +226,7 @@ export class Textarea extends PureComponent {
                     style={style.textareainput}
                     onChangeText={change}
                     maxLength={maxlength}
+                    ref={this.myRef}
                 >
                     <Text style={{ lineHeight: ratio(80) }}>{value}</Text>
                 </TextInput>
@@ -363,6 +390,15 @@ export class EditorInput extends PureComponent {
 }
 
 export class SearchInput extends PureComponent {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+
+        this.props.blurCallback && this.props.blurCallback(this.blur);
+    }
+
+    blur = () => this.myRef.current.blur()
+
     render() {
         const { value, change } = this.props;
         const transfrom = {
@@ -370,6 +406,7 @@ export class SearchInput extends PureComponent {
                 translateY: ratio(5)
             }]
         }
+
         return (
             <View style={style.search}>
                 <View style={style.searchicon}>
@@ -382,6 +419,7 @@ export class SearchInput extends PureComponent {
                     style={style.searchinput}
                     defaultValue={value}
                     onChangeText={change}
+                    ref={this.myRef}
                 />
             </View>
         )

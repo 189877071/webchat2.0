@@ -1,6 +1,6 @@
 import React, { Component, PureComponent } from 'react';
 
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, Keyboard } from 'react-native';
 
 import { connect } from 'react-redux';
 
@@ -41,12 +41,30 @@ class SettingChildren extends Component {
         this.isload = false;
         this.countDownNum = 0;
         this.time = null;
+        this.keyboard = false;
+        this.blur = [];
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.keyboard = true);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.keyboard = false);
     }
+
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+
     // 返回
     backup = () => {
-        clearInterval(this.time);
-        this.props.navigation.goBack();
+        if (!this.keyboard) {
+            clearInterval(this.time);
+            this.props.navigation.goBack();
+        }
+        else {
+            this.blur && this.blur.forEach(item => item());
+        }
     }
+
+    blurCallback = (fn) => this.blur.push(fn);
+
     // 设置 昵称
     setname = async () => {
         const name = this.state.name;
@@ -80,8 +98,8 @@ class SettingChildren extends Component {
         hint('修改成功');
 
         this.props.dispatch(setAName(name));
-
         this.backup();
+        if(this.keyboard) setTimeout(() => this.backup(), 30);
     }
     // 修改邮箱
     setEmail = async () => {
@@ -114,6 +132,7 @@ class SettingChildren extends Component {
         this.props.dispatch(setAEmail(this.state.email));
 
         this.backup();
+        if(this.keyboard) setTimeout(() => this.backup(), 30);
     }
     // 修改密码
     setPass = async () => {
@@ -149,6 +168,7 @@ class SettingChildren extends Component {
         hint('修改成功');
 
         this.backup();
+        if(this.keyboard) setTimeout(() => this.backup(), 30);
     }
     // 修改简介
     setSynopsis = async () => {
@@ -159,7 +179,7 @@ class SettingChildren extends Component {
 
         const { synopsis } = this.state;
 
-        if(!synopsis) {
+        if (!synopsis) {
             hint('请先输入内容……');
             return;
         }
@@ -170,7 +190,7 @@ class SettingChildren extends Component {
 
         this.isload = false;
 
-        if(!success) {
+        if (!success) {
             hint('修改失败');
             return;
         }
@@ -178,6 +198,7 @@ class SettingChildren extends Component {
         this.props.dispatch(setSynopsis(synopsis));
 
         this.backup();
+        if(this.keyboard) setTimeout(() => this.backup(), 30);
     }
     // 提交
     submit = (value) => {
@@ -270,6 +291,7 @@ class SettingChildren extends Component {
                         name={this.state.name}
                         error={this.state.nameerr}
                         change={value => this.setState({ name: value, nameerr: '' })}
+                        blurCallback={this.blurCallback}
                     />
                 );
                 break;
@@ -286,6 +308,7 @@ class SettingChildren extends Component {
                         getverify={this.getverify}
                         verifbuttonvalue={this.state.verifybtnval}
                         submit={this.submit}
+                        blurCallback={this.blurCallback}
                     />
                 );
                 break;
@@ -304,6 +327,7 @@ class SettingChildren extends Component {
                             (value) => this.setState({ repass: value, repasserr: '' })
                         }
                         submit={this.submit}
+                        blurCallback={this.blurCallback}
                     />
                 );
                 break;
@@ -313,6 +337,7 @@ class SettingChildren extends Component {
                     <AlterSynopsis
                         value={this.state.synopsis}
                         change={value => this.setState({ synopsis: value })}
+                        blurCallback={this.blurCallback}
                     />
                 );
                 break;

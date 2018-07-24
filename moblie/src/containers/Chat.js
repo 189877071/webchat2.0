@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { View, ScrollView, TouchableWithoutFeedback, StyleSheet, TextInput, Modal } from 'react-native';
+import { View, ScrollView, TouchableWithoutFeedback, StyleSheet, TextInput, Modal, Keyboard } from 'react-native';
 
 import ImagePicker from 'react-native-image-picker'
 
@@ -75,6 +75,10 @@ class Chat extends Component {
         this.messageLen = this.getMessage().length;
 
         this.whoosh = null;
+
+        this.keyboard = false;
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.keyboard = true);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.keyboard = false);
     }
 
     // 获取消息记录
@@ -114,6 +118,8 @@ class Chat extends Component {
 
     componentWillUnmount() {
         this.stopAudio();
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
     }
 
     // 停止声音播放
@@ -126,8 +132,14 @@ class Chat extends Component {
 
     // 返回
     backup = () => {
-        this.props.dispatch(setUActiveid(null));
-        this.props.navigation.goBack();
+        if (!this.keyboard) {
+            this.props.dispatch(setUActiveid(null));
+            this.props.navigation.goBack();
+        }
+        else {
+            this.inputRef.current.blur();
+        }
+
     }
 
     // 更新输入框内容
@@ -420,7 +432,7 @@ class Chat extends Component {
     render() {
         const user = this.props.user;
 
-        if(!user) {
+        if (!user) {
             this.backup();
             return;
         }

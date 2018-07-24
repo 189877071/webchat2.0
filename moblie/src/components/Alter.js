@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
 export class AlterName extends PureComponent {
     render() {
-        const { name, change, error } = this.props;
+        const { name, change, error, blurCallback } = this.props;
         return (
             <View style={styles.box}>
                 <BigInput
@@ -49,6 +49,7 @@ export class AlterName extends PureComponent {
                     change={change}
                     error={error}
                     maxlength={15}
+                    blurCallback={blurCallback}
                 />
                 <View style={styles.nameexplan}>
                     <Text style={styles.nameexplantext}>昵称可以方便您的朋友更快速的找到您！</Text>
@@ -62,7 +63,7 @@ export class AlterEmail extends PureComponent {
     render() {
         const {
             value, error, change, verify, verifychange, verifyerror, getverify, verifbuttonvalue
-            , submit
+            , submit, blurCallback
         } = this.props;
 
         return (
@@ -73,6 +74,7 @@ export class AlterEmail extends PureComponent {
                     value={value}
                     error={error}
                     change={change}
+                    blurCallback={blurCallback}
                 />
                 <View style={styles.verify}>
                     <VerifyInput
@@ -81,6 +83,7 @@ export class AlterEmail extends PureComponent {
                         change={verifychange}
                         error={verifyerror}
                         maxlength={6}
+                        blurCallback={blurCallback}
                     />
                     <View style={{ justifyContent: 'flex-end' }}>
                         <SmallButton
@@ -99,7 +102,7 @@ export class AlterEmail extends PureComponent {
 
 export class AlterPassword extends PureComponent {
     render() {
-        const { passvalue, passchange, passerr, revalue, rechange, reerr, submit } = this.props;
+        const { passvalue, passchange, passerr, revalue, rechange, reerr, submit, blurCallback } = this.props;
         return (
             <View style={styles.box}>
                 <BigInput
@@ -110,6 +113,7 @@ export class AlterPassword extends PureComponent {
                     value={passvalue}
                     error={passerr}
                     change={passchange}
+                    blurCallback={blurCallback}
                 />
                 <BigInput
                     borderColor='#07bb98'
@@ -119,6 +123,7 @@ export class AlterPassword extends PureComponent {
                     value={revalue}
                     error={reerr}
                     change={rechange}
+                    blurCallback={blurCallback}
                 />
                 <View style={{ marginTop: ratio(20) }}>
                     <BigButton onPress={submit} title='保存' />
@@ -129,8 +134,9 @@ export class AlterPassword extends PureComponent {
 }
 
 export class AlterSynopsis extends PureComponent {
+    
     render() {
-        const { value, change } = this.props;
+        const { value, change, blurCallback } = this.props;
         return (
             <View>
                 <Textarea
@@ -138,6 +144,7 @@ export class AlterSynopsis extends PureComponent {
                     value={value}
                     change={change}
                     maxlength={50}
+                    blurCallback={blurCallback}
                 />
                 <Text style={styles.textareabottom}>个人介绍 更好的展示自己！</Text>
             </View>
