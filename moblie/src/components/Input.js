@@ -1,6 +1,6 @@
 import React, { PureComponent, Component } from 'react'
 
-import { View, TextInput, StyleSheet, Button, Text, AsyncStorage } from 'react-native'
+import { View, TextInput, StyleSheet, Button, Text, AsyncStorage, Keyboard } from 'react-native'
 
 import { inputBorderColor, btnColor, pleft, pright } from '../public/config'
 
@@ -248,9 +248,26 @@ export class LoginForm extends PureComponent {
             usererr: '',
             passerr: ''
         }
-
+        this.keyboard = false;
         this.isload = false;
+        this.blur = [];
+        this.time = false;
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.keyboard = true);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.keyboard = false);
     }
+
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+
+    blurCallback = (fn) => this.blur.push(fn);
+
+    execBlur =  () =>  new Promise(reslove => {
+        clearTimeout(this.time);
+        this.blur.forEach(item => item());
+        this.time = setTimeout(reslove, 100);
+    })
 
     checkBoxChange = () => this.setState({ autologin: this.state.checkbox ? false : true });
 
@@ -259,6 +276,8 @@ export class LoginForm extends PureComponent {
     passwordChange = (value) => this.setState({ password: value });
 
     submit = async () => {
+        if (this.keyboard) await this.execBlur();
+
         const { username, password, autologin } = this.state;
 
         const [userRex, passRex, emailRex] = [
@@ -320,6 +339,7 @@ export class LoginForm extends PureComponent {
 
     // 测试登录
     testSubmit = async () => {
+        if (this.keyboard) await this.execBlur();
 
         let { success, data, activeuser, error, unreadMessage, notice, rd } = await ofetch('/login?optation=test', { ...this.props.socketInfor, uniqueId });
 
@@ -348,6 +368,7 @@ export class LoginForm extends PureComponent {
                     change={this.usernameChange}
                     maxlength={20}
                     error={usererr}
+                    blurCallback={this.blurCallback}
                 />
                 <BigInput
                     placeholder="密码"
@@ -356,6 +377,7 @@ export class LoginForm extends PureComponent {
                     change={this.passwordChange}
                     maxlength={20}
                     error={passerr}
+                    blurCallback={this.blurCallback}
                 />
                 <BigButton
                     title="登 录"

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import { View, Text, StyleSheet, CheckBox } from 'react-native'
+import { View, Text, StyleSheet, CheckBox, TouchableNativeFeedback } from 'react-native'
 
 import Icons from '../Icons'
 
@@ -59,9 +59,15 @@ export class LoginFormBottom extends PureComponent {
                         <Text style={style.text}>记住密码</Text>
                     </View>
                 </View>
-                <View>
-                    <Text style={style.text} onPress={this.props.submit}>直接进入</Text>
-                </View>
+
+                <TouchableNativeFeedback
+                    onPress={this.props.submit}
+                    background={TouchableNativeFeedback.SelectableBackground()}
+                >
+                    <View>
+                        <Text style={style.text}>直接进入</Text>
+                    </View>
+                </TouchableNativeFeedback>
             </View>
         )
     }

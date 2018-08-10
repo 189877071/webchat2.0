@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 
-import { StyleSheet, View, Text, TouchableNativeFeedback, } from 'react-native'
+import { StyleSheet, View, Text, TouchableNativeFeedback, TouchableHighlight } from 'react-native'
 
 import { headerBackground, pleft, pright } from '../public/config'
 
@@ -35,14 +35,17 @@ const style = StyleSheet.create({
         fontSize: ratio(52),
     },
     btnleft: {
-        justifyContent: 'center',
-        paddingLeft: pleft,
         flex: 1,
+        paddingLeft: pleft,
+        height: ratio(147),
+        justifyContent: 'center'
     },
     btnight: {
         flex: 1,
         paddingRight: pright,
-        alignItems: 'flex-end'
+        height: ratio(147),
+        alignItems: 'flex-end',
+        justifyContent: 'center'
     },
     chat: {
         flex: 1,
@@ -94,6 +97,7 @@ class HeadLeft extends PureComponent {
                     </Text>
                 </TouchableNativeFeedback>
             </View>
+
         )
     }
 }
