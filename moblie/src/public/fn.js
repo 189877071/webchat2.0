@@ -311,15 +311,16 @@ export function getAge(time) {
     const [of, om, od, af, am, ad] = [
         oDate.getFullYear(),
         oDate.getMonth(),
-        aDate.getDate(),
+        oDate.getDate(),
         aDate.getFullYear(),
         aDate.getMonth(),
         aDate.getDate(),
     ];
 
     let age = af - of;
-    if (am > om || (am === om || ad > od)) {
-        age++;
+
+    if (om > am || (am === om && od > ad)) {
+        age--;
     }
 
     return age;
