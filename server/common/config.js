@@ -24,7 +24,7 @@ module.exports = {
         "imageCompressEnable": true, /* 是否压缩图片,默认是true */
         "imageCompressBorder": 1600, /* 图片压缩最长边限制 */
         "imageInsertAlign": "none", /* 插入的图片浮动方式 */
-        "imageUrlPrefix": "http://127.0.0.1:3000/uploads", /* 图片访问路径前缀 */
+        "imageUrlPrefix": "https://apiv2.jsonhappy.com/uploads", /* 图片访问路径前缀 */
         "imagePathFormat": "/uploads/image/{yyyy}{mm}{dd}/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
 
         /* 涂鸦图片上传配置项 */
