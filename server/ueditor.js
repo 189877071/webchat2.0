@@ -9,11 +9,11 @@ const { ueditor, static } = require('./common/config');
 const router = new Router();
 
 router.all('/ueditor', async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', '*');
+    // ctx.set('Access-Control-Allow-Origin', '*');
     const ActionType = ctx.query.action;
-
+  
     const uedictx = new koaueditor(ctx, next, {
-        statc_path: '/static/uploads', //静态目录,文件保存根目录
+        statc_path: '/webserver/webchat2.0/server/static/uploads', //静态目录,文件保存根目录
     });
 
     if (ActionType == "uploadimage" || ActionType == "uploadvideo" || ActionType == "uploadfile") {
